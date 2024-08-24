@@ -30,7 +30,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:3000", "운영서버"));
+        config.setAllowedOrigins(List.of("http://localhost:5173", "운영서버"));
         config.addAllowedHeader("*");
         config.addAllowedMethod("*");
 
