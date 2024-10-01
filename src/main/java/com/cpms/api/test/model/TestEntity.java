@@ -4,9 +4,11 @@ import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "sample")
 public class TestEntity {
@@ -17,14 +19,17 @@ public class TestEntity {
 
     @Column private String userId;
 
+    @Column private String userPw;
+
     @Column private String userNm;
 
-    @Column private String userAuthCd;
+    @Column private String userPhone;
 
-    public TestEntity(Integer userMasterId, String userId, String userNm, String userAuthCd) {
-        this.userMasterId = userMasterId;
-        this.userId = userId;
-        this.userNm = userNm;
-        this.userAuthCd = userAuthCd;
-    }
+    @Column private String userZoneCode;
+
+    @Column private String userAddress;
+
+    @Column private String userDetailAddress;
+
+    @Column private String userInfo;
 }

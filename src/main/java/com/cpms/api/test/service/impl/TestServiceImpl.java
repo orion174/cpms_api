@@ -2,11 +2,14 @@ package com.cpms.api.test.service.impl;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.cpms.api.test.model.TestEntity;
 import com.cpms.api.test.repository.TestRepository;
 import com.cpms.api.test.service.TestService;
+import com.cpms.common.res.ApiRes;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,8 +21,8 @@ public class TestServiceImpl implements TestService {
 
     /* DB 저장 테스트 */
     @Override
-    public void saveTestInfo(TestEntity testEntity) {
-        testRepository.save(testEntity);
+    public ResponseEntity<?> saveTestInfo(TestEntity testEntity) {
+        return new ResponseEntity<>(new ApiRes(testRepository.save(testEntity)), HttpStatus.OK);
     }
 
     /* DB 조회 테스트 */
