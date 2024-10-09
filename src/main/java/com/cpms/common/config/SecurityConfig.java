@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/login")
+                .requestMatchers("/auth/login", "/auth/saveCookie")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
