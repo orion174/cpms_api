@@ -2,6 +2,8 @@ package com.cpms.api.auth.model;
 
 import jakarta.persistence.*;
 
+import com.cpms.common.util.YesNo;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,9 +36,11 @@ public class CpmsUser {
 
     private String userInfo;
 
-    private String useYn;
+    @Enumerated(EnumType.STRING)
+    private YesNo useYn;
 
-    private String delYn;
+    @Enumerated(EnumType.STRING)
+    private YesNo delYn;
 
     public CpmsUser(
             Long userId,
@@ -48,8 +52,8 @@ public class CpmsUser {
             String userDept,
             String userPos,
             String userInfo,
-            String useYn,
-            String delYn) {
+            YesNo useYn,
+            YesNo delYn) {
         this.userId = userId;
         this.authType = authType;
         this.companyId = companyId;

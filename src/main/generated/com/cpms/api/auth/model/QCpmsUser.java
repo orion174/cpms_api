@@ -23,7 +23,7 @@ public class QCpmsUser extends EntityPathBase<CpmsUser> {
 
     public final NumberPath<Integer> companyId = createNumber("companyId", Integer.class);
 
-    public final StringPath delYn = createString("delYn");
+    public final EnumPath<com.cpms.common.util.YesNo> delYn = createEnum("delYn", com.cpms.common.util.YesNo.class);
 
     public final StringPath loginId = createString("loginId");
 
@@ -41,7 +41,7 @@ public class QCpmsUser extends EntityPathBase<CpmsUser> {
 
     public final StringPath userPos = createString("userPos");
 
-    public final StringPath useYn = createString("useYn");
+    public final EnumPath<com.cpms.common.util.YesNo> useYn = createEnum("useYn", com.cpms.common.util.YesNo.class);
 
     public QCpmsUser(String variable) {
         super(CpmsUser.class, forVariable(variable));

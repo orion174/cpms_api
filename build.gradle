@@ -40,7 +40,7 @@ dependencies {
 
     // JPA
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'  // MariaDB 드라이버
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.1.2'  // MariaDB 드라이버
 
     // JSON Web Token
     implementation "io.jsonwebtoken:jjwt-api:${JJWT_VERSION}"

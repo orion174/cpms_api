@@ -43,7 +43,10 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         ResLoginDTO userDto =
                 customAuthRepository
                         .findUserByLoginId(reqLoginDTO.getLoginId())
-                        .orElseThrow(() -> new UsernameNotFoundException("ERR_NOT_FOUND"));
+                        .orElseThrow(
+                                () ->
+                                        new UsernameNotFoundException(
+                                                "ERR_NOT_FOUND")); // 아이디가 맞지 않을 때
 
         /* 로그인 ID/PW로 Authentication 객체 생성 */
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -56,6 +59,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
             authentication =
                     authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         } catch (Exception e) {
+            // 비밀번호가 맞지 않을 때
             throw new UsernameNotFoundException("ERR_NOT_FOUND");
         }
 
@@ -79,7 +83,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
         /* RefreshToken 업데이트 */
         loginHistory.updateRefreshToken(jwtDTO.getRefreshToken());
-        loginHistoryRepository.save(loginHistory); // 이력 업데이트
+        loginHistoryRepository.save(loginHistory); // 로그인 이력 업데이트
 
         return ResLoginDTO.builder()
                 .userId(userDto.getUserId())
@@ -95,6 +99,12 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                 .build();
     }
 
+    /*
+     * 입력된 아이디를 통한 사용자 정보를 반환한다.
+     * @param loginId
+     * @return
+     * @throws UsernameNotFoundException
+     */
     @Override
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
         ResLoginDTO userDto =

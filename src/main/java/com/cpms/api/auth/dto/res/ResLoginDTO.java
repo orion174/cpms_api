@@ -1,5 +1,6 @@
 package com.cpms.api.auth.dto.res;
 
+import com.cpms.common.util.YesNo;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.*;
@@ -20,7 +21,7 @@ public class ResLoginDTO {
 
     private String loginPw;
 
-    private String useYn;
+    private YesNo useYn;
 
     private Long loginHistoryId;
 
@@ -39,7 +40,7 @@ public class ResLoginDTO {
             int companyId,
             String loginId,
             String loginPw,
-            String useYn) {
+            YesNo useYn) {
         this.userId = userId;
         this.authType = authType;
         this.companyId = companyId;
