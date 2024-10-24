@@ -1,5 +1,7 @@
 package com.cpms.api.auth.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 import lombok.AccessLevel;
@@ -16,18 +18,21 @@ public class UserLoginHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long loginHistoryId;
 
-    private Long userId;
+    @Column private Long userId;
 
-    private String loginId;
+    @Column private String loginId;
 
-    private String accessIp;
+    @Column private String accessIp;
 
-    private String refreshToken;
+    @Column private String refreshToken;
+
+    @Column private LocalDateTime regDt;
 
     public UserLoginHistory(Long userId, String loginId, String accessIp) {
         this.userId = userId;
         this.loginId = loginId;
         this.accessIp = accessIp;
+        this.regDt = LocalDateTime.now();
     }
 
     public void updateRefreshToken(String refreshToken) {

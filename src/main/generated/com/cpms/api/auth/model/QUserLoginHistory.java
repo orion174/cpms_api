@@ -27,6 +27,8 @@ public class QUserLoginHistory extends EntityPathBase<UserLoginHistory> {
 
     public final StringPath refreshToken = createString("refreshToken");
 
+    public final DateTimePath<java.time.LocalDateTime> regDt = createDateTime("regDt", java.time.LocalDateTime.class);
+
     public final NumberPath<Long> userId = createNumber("userId", Long.class);
 
     public QUserLoginHistory(String variable) {

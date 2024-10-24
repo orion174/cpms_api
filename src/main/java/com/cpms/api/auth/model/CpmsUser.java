@@ -1,5 +1,7 @@
 package com.cpms.api.auth.model;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 
 import com.cpms.common.util.YesNo;
@@ -18,29 +20,55 @@ public class CpmsUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
+    @Column(length = 30, nullable = false)
     private String authType;
 
+    @Column(columnDefinition = "int(10) unsigned", nullable = false)
     private int companyId;
 
+    @Column(length = 30)
     private String loginId;
 
+    @Column(length = 255)
     private String loginPw;
 
+    @Column(length = 30)
     private String userNm;
 
+    @Column(length = 30)
     private String userPhone;
 
+    @Column(length = 30)
     private String userDept;
 
+    @Column(length = 30)
     private String userPos;
 
+    @Column(length = 255)
     private String userInfo;
 
     @Enumerated(EnumType.STRING)
-    private YesNo useYn;
+    @Column(columnDefinition = "enum('Y','N')", nullable = false)
+    private YesNo useYn = YesNo.Y;
 
     @Enumerated(EnumType.STRING)
-    private YesNo delYn;
+    @Column(columnDefinition = "enum('Y','N')", nullable = false)
+    private YesNo delYn = YesNo.N;
+
+    @Column(columnDefinition = "int(10) unsigned")
+    private Integer regId;
+
+    @Column private LocalDateTime regDt;
+
+    @Column(columnDefinition = "int(10)")
+    private Integer udtId;
+
+    @Column private LocalDateTime udtDt;
+
+    @Column(columnDefinition = "int(10) unsigned")
+    private Integer delId;
+
+    @Column private LocalDateTime delDt;
 
     public CpmsUser(
             Long userId,

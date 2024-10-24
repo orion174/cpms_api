@@ -23,11 +23,23 @@ public class QCpmsUser extends EntityPathBase<CpmsUser> {
 
     public final NumberPath<Integer> companyId = createNumber("companyId", Integer.class);
 
+    public final DateTimePath<java.time.LocalDateTime> delDt = createDateTime("delDt", java.time.LocalDateTime.class);
+
+    public final NumberPath<Integer> delId = createNumber("delId", Integer.class);
+
     public final EnumPath<com.cpms.common.util.YesNo> delYn = createEnum("delYn", com.cpms.common.util.YesNo.class);
 
     public final StringPath loginId = createString("loginId");
 
     public final StringPath loginPw = createString("loginPw");
+
+    public final DateTimePath<java.time.LocalDateTime> regDt = createDateTime("regDt", java.time.LocalDateTime.class);
+
+    public final NumberPath<Integer> regId = createNumber("regId", Integer.class);
+
+    public final DateTimePath<java.time.LocalDateTime> udtDt = createDateTime("udtDt", java.time.LocalDateTime.class);
+
+    public final NumberPath<Integer> udtId = createNumber("udtId", Integer.class);
 
     public final StringPath userDept = createString("userDept");
 
