@@ -46,7 +46,11 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers("/auth/login", "/auth/saveCookie")
+                .requestMatchers(
+                        "/auth/login",
+                        "/auth/saveCookie",
+                        "/util/Editor/smartEditorUploadURL",
+                        "/resource/upload/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -59,19 +63,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of("http://localhost:5173", "운영서버"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-        config.addAllowedHeader("Content-Type");
-        config.addAllowedHeader("Authorization");
-        config.addAllowedHeader("X-IP-Security");
-        config.addAllowedHeader("X-Login-History-Id");
-        config.addAllowedHeader("X-Refresh-Token");
-        config.setAllowCredentials(true);
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.addAllowedHeader("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
         source.registerCorsConfiguration("/**", config);
         return source;
     }
