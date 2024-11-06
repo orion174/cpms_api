@@ -33,6 +33,8 @@ public class ResLoginDTO {
 
     private int refreshTokenExpiration;
 
+    private String option;
+
     @QueryProjection
     public ResLoginDTO(
             Long userId,

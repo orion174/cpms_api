@@ -60,7 +60,7 @@ public class CpmsUser {
 
     @Column private LocalDateTime regDt;
 
-    @Column(columnDefinition = "int(10)")
+    @Column(columnDefinition = "int(10) unsigned")
     private Integer udtId;
 
     @Column private LocalDateTime udtDt;

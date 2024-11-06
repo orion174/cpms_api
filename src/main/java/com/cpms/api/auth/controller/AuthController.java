@@ -1,19 +1,20 @@
 package com.cpms.api.auth.controller;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cpms.api.auth.dto.req.ReqLoginDTO;
+import com.cpms.api.auth.dto.req.ReqRefreshTokenDTO;
 import com.cpms.api.auth.service.AuthService;
 import com.cpms.common.res.ApiRes;
 import com.cpms.common.util.CommonUtil;
@@ -33,6 +34,26 @@ public class AuthController {
 
         return new ResponseEntity<>(
                 new ApiRes(authService.userLogin(request, reqLoginDTO)), HttpStatus.OK);
+    }
+
+    @PostMapping("/refreshToken")
+    public ResponseEntity<?> refreshToken(
+            HttpServletRequest request, @RequestBody ReqRefreshTokenDTO reqRefreshTokenDTO) {
+        String refreshToken = request.getHeader("X-Refresh-token");
+
+        if (!Objects.isNull(refreshToken)
+                && !"".equals(refreshToken)
+                && !"null".equals(refreshToken)
+                && !"undefined".equals(refreshToken)
+                && reqRefreshTokenDTO.getLoginHistoryId() > 0) {
+
+            reqRefreshTokenDTO.setRefreshToken(refreshToken);
+
+            return authService.refreshToken(reqRefreshTokenDTO);
+
+        } else {
+            return new ResponseEntity<>(new ApiRes(false), HttpStatus.UNAUTHORIZED);
+        }
     }
 
     @PostMapping("/saveCookie")
@@ -65,7 +86,7 @@ public class AuthController {
                 commonUtil.addCookie(res, "loginStayYn", loginStayYn, refreshTokenExpiration);
 
             } else {
-                // 로그인 상태 유지 X  >>  유효기간을 주지 않음으로써 브라우저 종료시 해당 쿠키가 삭제되게 함
+                // 로그인 상태 유지 X : 유효기간을 주지 않음으로써 브라우저 종료시 해당 쿠키가 삭제되게 함
                 commonUtil.addCookie(res, "loginStayYn", loginStayYn, 0);
             }
         }
@@ -87,5 +108,53 @@ public class AuthController {
         }
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(
+            value = {"/getCookie"},
+            name = "쿠키 조회")
+    @ResponseBody
+    public ResponseEntity<?> getCookie(HttpServletRequest req) {
+        Map<String, String> result = new HashMap<>();
+        Cookie[] cookies = req.getCookies();
+
+        if (cookies != null) {
+            for (Cookie c : cookies) {
+                result.put(c.getName(), c.getValue());
+            }
+        }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PostMapping(
+            value = {"/deleteCookie"},
+            name = "쿠키 삭제")
+    public void deleteCookie(
+            HttpServletRequest req,
+            HttpServletResponse res,
+            @RequestBody Map<String, String> params) {
+        String key = params.get("key");
+
+        if (null != key && !"".equals(key)) {
+            // 특정 쿠키 삭제 (adm을 포함하지 않는 경우만)
+            if (!key.contains("adm")) {
+                Cookie cookie = new Cookie(key, null);
+                cookie.setMaxAge(0);
+                res.addCookie(cookie);
+            }
+
+        } else {
+            // 전체 쿠키 중 "adm"이 포함되지 않은 것만 삭제
+            Cookie[] cookies = req.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if (!cookie.getName().contains("adm")) {
+                        cookie.setMaxAge(0);
+                        res.addCookie(cookie);
+                    }
+                }
+            }
+        }
     }
 }

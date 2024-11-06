@@ -47,8 +47,11 @@ public class SecurityConfig {
                 .and()
                 .authorizeHttpRequests()
                 .requestMatchers(
+                        "/auth/refreshToken",
                         "/auth/login",
                         "/auth/saveCookie",
+                        "/auth/getCookie",
+                        "/auth/deleteCookie",
                         "/util/Editor/smartEditorUploadURL",
                         "/resource/upload/**")
                 .permitAll()
