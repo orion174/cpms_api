@@ -35,10 +35,15 @@ import lombok.RequiredArgsConstructor;
 public class AuthServiceImpl implements AuthService, UserDetailsService {
 
     private final PasswordEncoder passwordEncoder;
+
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
+
     private final JwtTokenProvider jwtTokenProvider;
+
     private final AuthRepository authRepository;
+
     private final CustomAuthRepository customAuthRepository;
+
     private final UserLoginHistoryRepository loginHistoryRepository;
 
     @Override

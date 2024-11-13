@@ -1,10 +1,12 @@
 package com.cpms.common.util;
 
+import java.util.Optional;
 import java.util.Random;
 
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseCookie;
+import org.springframework.web.multipart.MultipartFile;
 
 public class CommonUtil {
 
@@ -76,5 +78,9 @@ public class CommonUtil {
         }
 
         return authCode.toString();
+    }
+
+    public static boolean hasFiles(MultipartFile[] file) {
+        return Optional.ofNullable(file).map(files -> files.length > 0).orElse(false);
     }
 }
