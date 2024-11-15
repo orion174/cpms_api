@@ -16,10 +16,11 @@ import com.cpms.api.suport.model.QSuportReq;
 import com.cpms.api.suport.repository.CustomSuportReqRepository;
 import com.cpms.api.user.model.QCpmsCompany;
 import com.cpms.api.user.model.QCpmsProject;
-import com.cpms.common.util.PagingUtil;
+import com.cpms.common.helper.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,8 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
             ReqSuportListDTO reqSuportListDTO, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
+        builder.and(suportReq.delYn.eq(YesNo.valueOf("N")));
+
         // 검색 조건 설정
         if (reqSuportListDTO.getSchCompanyId() != null) {
             builder.and(
@@ -57,8 +60,6 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
         if (reqSuportListDTO.getSchTitle() != null) {
             builder.and(suportReq.suportTitle.containsIgnoreCase(reqSuportListDTO.getSchTitle()));
         }
-
-        // 날짜 조건 설정
         if (reqSuportListDTO.getSchStartDt() != null && reqSuportListDTO.getSchEndDt() != null) {
             LocalDateTime startDt =
                     LocalDateTime.parse(
@@ -75,12 +76,60 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
                         .select(
                                 Projections.fields(
                                         ResSuportListDTO.SuportList.class,
-                                        suportReq.suportReqId,
-                                        suportReq.userCompany.companyNm.as("userCompanyNm"),
-                                        suportReq.reqProject.projectNm.as("reqProjectNm"),
-                                        suportReq.requestCdDetail.codeNm.as("requestCdNm"),
-                                        suportReq.statusCdDetail.codeNm.as("statusCdNm"),
-                                        suportReq.regUser.userNm.as("regUserNm"),
+                                        suportReq.suportReqId.as("suportReqId"),
+                                        Expressions.as(
+                                                JPAExpressions.select(cpmsCompany.companyNm)
+                                                        .from(cpmsCompany)
+                                                        .where(
+                                                                cpmsCompany.companyId.eq(
+                                                                        suportReq
+                                                                                .userCompany
+                                                                                .companyId)),
+                                                "userCompanyNm"),
+                                        Expressions.as(
+                                                JPAExpressions.select(cpmsProject.projectNm)
+                                                        .from(cpmsProject)
+                                                        .where(
+                                                                cpmsProject.projectId.eq(
+                                                                        suportReq
+                                                                                .reqProject
+                                                                                .projectId)),
+                                                "reqProjectNm"),
+                                        Expressions.as(
+                                                JPAExpressions.select(requestCdDetail.codeNm)
+                                                        .from(requestCdDetail)
+                                                        .where(
+                                                                requestCdDetail
+                                                                        .masterCodeId
+                                                                        .eq("10")
+                                                                        .and(
+                                                                                requestCdDetail
+                                                                                        .codeId.eq(
+                                                                                        suportReq
+                                                                                                .requestCdDetail
+                                                                                                .codeId))),
+                                                "requestCdNm"),
+                                        Expressions.as(
+                                                JPAExpressions.select(statusCdDetail.codeNm)
+                                                        .from(statusCdDetail)
+                                                        .where(
+                                                                statusCdDetail
+                                                                        .masterCodeId
+                                                                        .eq("20")
+                                                                        .and(
+                                                                                statusCdDetail
+                                                                                        .codeId.eq(
+                                                                                        suportReq
+                                                                                                .statusCdDetail
+                                                                                                .codeId))),
+                                                "statusCdNm"),
+                                        Expressions.as(
+                                                JPAExpressions.select(cpmsUser.userNm)
+                                                        .from(cpmsUser)
+                                                        .where(
+                                                                cpmsUser.userId.eq(
+                                                                        suportReq.regUser.userId)),
+                                                "regUserNm"),
                                         Expressions.stringTemplate(
                                                         "DATE_FORMAT({0}, '%Y-%m-%d')",
                                                         suportReq.regDt)
@@ -92,22 +141,11 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
                                         Expressions.stringTemplate(
                                                         "DATE_FORMAT({0}, '%Y-%m-%d')",
                                                         suportReq.resDate)
-                                                .as("resDate")))
+                                                .as("resDate"),
+                                        suportReq.suportTitle))
                         .from(suportReq)
-                        .leftJoin(suportReq.userCompany, cpmsCompany)
-                        .on(cpmsCompany.isNotNull())
-                        .leftJoin(suportReq.reqProject, cpmsProject)
-                        .on(cpmsProject.isNotNull())
-                        .leftJoin(suportReq.requestCdDetail, requestCdDetail)
-                        .on(requestCdDetail.masterCodeId.eq("10"))
-                        .leftJoin(suportReq.statusCdDetail, statusCdDetail)
-                        .on(statusCdDetail.masterCodeId.eq("20"))
-                        .leftJoin(suportReq.regUser, cpmsUser)
-                        .on(cpmsUser.isNotNull())
                         .where(builder)
-                        .orderBy(
-                                PagingUtil.getOrderBy(
-                                        pageable.getSort(), QSuportReq.class, "suportReq"))
+                        .orderBy(suportReq.suportReqId.desc())
                         .offset(pageable.getOffset())
                         .limit(pageable.getPageSize())
                         .fetch();
@@ -115,18 +153,8 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
         // 전체 데이터 개수 조회
         long total =
                 jpaQueryFactory
-                        .select(suportReq.count())
+                        .select(suportReq.suportReqId.count())
                         .from(suportReq)
-                        .leftJoin(suportReq.userCompany, cpmsCompany)
-                        .on(cpmsCompany.isNotNull())
-                        .leftJoin(suportReq.reqProject, cpmsProject)
-                        .on(cpmsProject.isNotNull())
-                        .leftJoin(suportReq.requestCdDetail, requestCdDetail)
-                        .on(requestCdDetail.masterCodeId.eq("10"))
-                        .leftJoin(suportReq.statusCdDetail, statusCdDetail)
-                        .on(statusCdDetail.masterCodeId.eq("20"))
-                        .leftJoin(suportReq.regUser, cpmsUser)
-                        .on(cpmsUser.isNotNull())
                         .where(builder)
                         .fetchOne();
 

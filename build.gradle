@@ -90,18 +90,15 @@ tasks.named('compileJava') {
     dependsOn spotlessApply
 }
 
-def querydslDir = "src/main/generated"
-
 sourceSets {
-    main.java.srcDirs += [ querydslDir ]
-}
-
-tasks.withType(JavaCompile) {
-    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
-}
-
-clean.doLast {
-    file(querydslDir).deleteDir()
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+        resources{
+            srcDir "${project.projectDir}/src/main/java"
+        }
+    }
 }
 
 tasks.named('test') {
