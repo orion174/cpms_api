@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cpms.api.suport.dto.req.ReqSuportDTO;
+import com.cpms.api.suport.dto.req.*;
 import com.cpms.api.suport.service.SuportService;
 
 import lombok.RequiredArgsConstructor;
@@ -27,5 +27,10 @@ public class SuportController {
         }
 
         return suportService.insertReqSuport(reqSuportDTO);
+    }
+
+    @PostMapping("/list")
+    public ResponseEntity<?> selectSuportList(@RequestBody ReqSuportListDTO reqSuportListDTO) {
+        return suportService.selectSuportList(reqSuportListDTO);
     }
 }

@@ -1,6 +1,6 @@
 package com.cpms.api.auth.dto.res;
 
-import com.cpms.common.util.YesNo;
+import com.cpms.common.helper.YesNo;
 import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.*;

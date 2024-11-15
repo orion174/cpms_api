@@ -7,7 +7,11 @@ import java.util.List;
 
 import jakarta.persistence.*;
 
-import com.cpms.common.util.YesNo;
+import com.cpms.api.auth.model.CpmsUser;
+import com.cpms.api.code.model.ComCodeDetail;
+import com.cpms.api.user.model.CpmsCompany;
+import com.cpms.api.user.model.CpmsProject;
+import com.cpms.common.helper.BaseEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,26 +21,47 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(name = "suport_req")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SuportReq {
+public class SuportReq extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer suportReqId;
 
-    @Column(nullable = false)
-    private Integer reqCompanyId;
+    /* 요청 회사 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "req_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CpmsCompany reqCompany;
 
-    @Column(nullable = false)
-    private Integer userCompanyId;
+    /* 문의 회사 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CpmsCompany userCompany;
 
-    @Column(nullable = false)
-    private Integer reqProjectId;
+    /* 프로젝트 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "req_project_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CpmsProject reqProject;
 
-    private Integer resUserId;
+    /* 처리 담당자 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "res_user_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CpmsUser resUser;
 
-    private String requestCd;
+    /* 요청 유형 코드 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "request_cd",
+            referencedColumnName = "code_id",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private ComCodeDetail requestCdDetail;
 
-    private String statusCd;
+    /* 처리 상태 코드 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "status_cd",
+            referencedColumnName = "code_id",
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private ComCodeDetail statusCdDetail;
 
     private LocalDate reqDate;
 
@@ -46,51 +71,42 @@ public class SuportReq {
 
     private String suportEditor;
 
-    @Column(nullable = false)
-    private Integer regId;
+    /* 등록자 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reg_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CpmsUser regUser;
 
-    @Column(nullable = false, columnDefinition = "datetime default current_timestamp()")
-    private LocalDateTime regDt;
+    @Column(columnDefinition = "int(10) unsigned")
+    protected Integer udtId;
 
-    private Integer udtId;
+    @Column(columnDefinition = "int(10) unsigned")
+    protected Integer delId;
 
-    private LocalDateTime udtDt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum('Y','N')", nullable = false)
-    private YesNo delYn = YesNo.N;
-
-    private Integer delId;
-
-    private LocalDateTime delDt;
-
+    /* 첨부파일 */
     @OneToMany(mappedBy = "suportReq", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SuportFile> files = new ArrayList<>();
 
     public SuportReq(
-            Integer reqCompanyId,
-            Integer userCompanyId,
-            Integer reqProjectId,
-            Integer resUserId,
-            String requestCd,
-            String statusCd,
+            CpmsCompany reqCompany,
+            CpmsCompany userCompany,
+            CpmsProject reqProject,
+            ComCodeDetail requestCdDetail,
+            ComCodeDetail statusCdDetail,
             String reqDate,
             String suportTitle,
             String suportEditor,
-            Integer regId) {
-        this.reqCompanyId = reqCompanyId;
-        this.userCompanyId = userCompanyId;
-        this.reqProjectId = reqProjectId;
-        this.resUserId = resUserId;
-        this.requestCd = requestCd;
-        this.statusCd = statusCd;
+            CpmsUser regUser) {
+        this.reqCompany = reqCompany;
+        this.userCompany = userCompany;
+        this.reqProject = reqProject;
+        this.requestCdDetail = requestCdDetail;
+        this.statusCdDetail = statusCdDetail;
         this.reqDate = LocalDate.parse(reqDate);
         this.suportTitle = suportTitle;
         this.suportEditor = suportEditor;
-        this.regId = regId;
+        this.regUser = regUser;
     }
 
-    // 파일 추가 메서드
     public void addFile(SuportFile file) {
         if (file != null) {
             files.add(file);
@@ -98,7 +114,6 @@ public class SuportReq {
         }
     }
 
-    // INSERT
     @PrePersist
     protected void onCreate() {
         this.regDt = LocalDateTime.now();

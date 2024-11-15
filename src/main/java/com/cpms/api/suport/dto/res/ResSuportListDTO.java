@@ -1,0 +1,40 @@
+package com.cpms.api.suport.dto.res;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import lombok.*;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class ResSuportListDTO {
+
+    private int suportCnt;
+
+    private List<SuportList> suportList;
+
+    @Getter
+    @Setter
+    public static class SuportList {
+
+        private int suportReqId;
+
+        private String userCompanyNm; // 요청자 회사 명
+
+        private String reqProjectNm; // 요청 프로젝트 명
+
+        private String requestCdNm; // 요청 유형
+
+        private String statusCdNm; // 처리상태
+
+        private String regUserNm; // 요청자
+
+        private String regDt; // 등록일
+
+        private String reqDate; // 처리기한
+    }
+}

@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 
-import com.cpms.common.util.YesNo;
+import com.cpms.api.auth.model.CpmsUser;
+import com.cpms.common.helper.BaseEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,17 +17,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "suport_file")
-public class SuportFile {
+public class SuportFile extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer suportFileId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "suport_req_id")
+    @JoinColumn(name = "suport_req_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private SuportReq suportReq;
-
-    private String fileCategory;
 
     private String filePath;
 
@@ -38,40 +37,32 @@ public class SuportFile {
 
     private Long fileSize;
 
-    @Column(nullable = false)
-    private Integer regId;
+    /* 등록자 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reg_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CpmsUser regUser;
 
-    @Column(nullable = false, columnDefinition = "datetime default current_timestamp()")
-    private LocalDateTime regDt;
+    @Column(columnDefinition = "int(10) unsigned")
+    protected Integer udtId;
 
-    private Integer udtId;
-
-    private LocalDateTime udtDt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum('Y','N')", nullable = false)
-    private YesNo delYn = YesNo.N;
-
-    private Integer delId;
-
-    private LocalDateTime delDt;
+    @Column(columnDefinition = "int(10) unsigned")
+    protected Integer delId;
 
     public SuportFile(
+            SuportReq suportReq,
             String filePath,
             String fileNm,
             String fileOgNm,
             String fileExt,
             Long fileSize,
-            Integer regId,
-            SuportReq suportReq) {
+            CpmsUser regUser) {
+        this.suportReq = suportReq;
         this.filePath = filePath;
         this.fileNm = fileNm;
         this.fileOgNm = fileOgNm;
         this.fileExt = fileExt;
         this.fileSize = fileSize;
-        this.regId = regId;
-        this.regDt = LocalDateTime.now();
-        this.suportReq = suportReq;
+        this.regUser = regUser;
     }
 
     public void setSuportReq(SuportReq suportReq) {

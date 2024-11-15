@@ -32,7 +32,6 @@ ext {
     JJWT_VERSION = "0.11.5"
 }
 
-
 dependencies {
     // Spring Boot Web
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -65,10 +64,9 @@ dependencies {
 
     // QueryDSL
     implementation "com.querydsl:querydsl-jpa:5.0.0:jakarta"
-    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "com.querydsl:querydsl-apt:5.0.0:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-
     // sms
     implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.1'
@@ -88,10 +86,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-/*
-    compileJava 태스크가 실행되기 전에 spotlessApply 태스크가 먼저 실행되도록 구성
-    개발자가 별도로 코드 포맷팅을 신경 쓸 필요 없이, 코드가 항상 일관된 스타일을 유지하도록 설정
- */
 tasks.named('compileJava') {
     dependsOn spotlessApply
 }

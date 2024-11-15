@@ -1,4 +1,4 @@
-package com.cpms.api.com.dto.req;
+package com.cpms.api.code.dto.req;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

@@ -1,10 +1,9 @@
 package com.cpms.api.auth.model;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 
-import com.cpms.common.util.YesNo;
+import com.cpms.common.helper.BaseEntity;
+import com.cpms.common.helper.YesNo;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "cpms_user")
-public class CpmsUser {
+public class CpmsUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,24 +50,16 @@ public class CpmsUser {
     @Column(columnDefinition = "enum('Y','N')", nullable = false)
     private YesNo useYn = YesNo.Y;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum('Y','N')", nullable = false)
-    private YesNo delYn = YesNo.N;
+    /* 등록자 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reg_id")
+    private CpmsUser regUser;
 
     @Column(columnDefinition = "int(10) unsigned")
-    private Integer regId;
-
-    @Column private LocalDateTime regDt;
+    protected Integer udtId;
 
     @Column(columnDefinition = "int(10) unsigned")
-    private Integer udtId;
-
-    @Column private LocalDateTime udtDt;
-
-    @Column(columnDefinition = "int(10) unsigned")
-    private Integer delId;
-
-    @Column private LocalDateTime delDt;
+    protected Integer delId;
 
     public CpmsUser(
             Long userId,

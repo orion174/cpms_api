@@ -13,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cpms.common.helper.FileDTO;
+
 public class FileUtil {
 
     public static FileDTO fileUpload(MultipartFile multipartFile, String filePath)

@@ -1,4 +1,4 @@
-package com.cpms.common.util;
+package com.cpms.common.helper;
 
 public enum YesNo {
     Y,

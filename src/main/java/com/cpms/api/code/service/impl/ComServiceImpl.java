@@ -1,12 +1,12 @@
-package com.cpms.api.com.service.impl;
+package com.cpms.api.code.service.impl;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.cpms.api.com.dto.req.*;
-import com.cpms.api.com.repository.CustomComCodeRepository;
-import com.cpms.api.com.service.ComSerivce;
+import com.cpms.api.code.dto.req.ReqComCodeDTO;
+import com.cpms.api.code.repository.ComCodeRepository;
+import com.cpms.api.code.service.ComSerivce;
 import com.cpms.common.res.ApiRes;
 
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ComServiceImpl implements ComSerivce {
 
-    private final CustomComCodeRepository customComCodeRepository;
+    private final ComCodeRepository comCodeRepository;
 
     @Override
     public ResponseEntity<?> selectComCodeList(ReqComCodeDTO reqComCodeDTO) {
         return new ResponseEntity<>(
-                new ApiRes(customComCodeRepository.selectComCodeList(reqComCodeDTO)),
-                HttpStatus.OK);
+                new ApiRes(comCodeRepository.selectComCodeList(reqComCodeDTO)), HttpStatus.OK);
     }
 }

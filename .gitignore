@@ -1,4 +1,5 @@
-.gradle
+### Gradle ###
+.gradle/
 build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
@@ -40,3 +41,11 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+### Ignore Q classes ###
+/src/main/generated/
+/src/main/generated/**
+
+### Ignore uploaded files ###
+resources/upload/
+/resources/upload/**

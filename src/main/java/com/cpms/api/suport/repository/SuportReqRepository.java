@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.cpms.api.suport.model.SuportReq;
 
 @Repository
-public interface SuportReqRepository extends JpaRepository<SuportReq, Integer> {}
+public interface SuportReqRepository
+        extends JpaRepository<SuportReq, Integer>, CustomSuportReqRepository {}

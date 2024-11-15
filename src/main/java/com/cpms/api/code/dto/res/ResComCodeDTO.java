@@ -1,4 +1,4 @@
-package com.cpms.api.com.dto.res;
+package com.cpms.api.code.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;

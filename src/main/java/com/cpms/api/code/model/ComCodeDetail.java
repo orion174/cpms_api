@@ -1,10 +1,8 @@
-package com.cpms.api.com.model;
-
-import java.time.LocalDateTime;
+package com.cpms.api.code.model;
 
 import jakarta.persistence.*;
 
-import com.cpms.common.util.YesNo;
+import com.cpms.common.helper.YesNo;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,26 +40,4 @@ public class ComCodeDetail {
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum('Y','N')", nullable = false)
     private YesNo useYn = YesNo.Y;
-
-    @Column(columnDefinition = "int(10) unsigned")
-    private Integer regId;
-
-    @Column(name = "reg_dt", columnDefinition = "datetime default current_timestamp()")
-    private LocalDateTime regDt;
-
-    @Column(columnDefinition = "int(10) unsigned")
-    private Integer udtId;
-
-    @Column(name = "udt_dt")
-    private LocalDateTime udtDt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum('Y','N')", nullable = false)
-    private YesNo delYn = YesNo.N;
-
-    @Column(columnDefinition = "int(10) unsigned")
-    private Integer delId;
-
-    @Column(name = "del_dt")
-    private LocalDateTime delDt;
 }

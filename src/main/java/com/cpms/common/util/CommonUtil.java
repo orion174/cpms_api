@@ -1,7 +1,6 @@
 package com.cpms.common.util;
 
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -80,7 +79,20 @@ public class CommonUtil {
         return authCode.toString();
     }
 
+    /*
+     * 파일 공백체크
+     * @param file
+     * @return
+     */
     public static boolean hasFiles(MultipartFile[] file) {
         return Optional.ofNullable(file).map(files -> files.length > 0).orElse(false);
+    }
+
+    public static Integer parseToIntSafely(String value) {
+        try {
+            return (int) Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("변환실패: " + value, e);
+        }
     }
 }

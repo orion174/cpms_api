@@ -110,3 +110,31 @@ CREATE TABLE `suport_file` (
   CONSTRAINT `FK8l7bdyjr5h4rbcpai6rmu6n3r` FOREIGN KEY (`suport_req_id`) REFERENCES `suport_req` (`suport_req_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='유지보수 첨부 파일';
 
+CREATE TABLE `cpms_project` (
+  `project_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_id` int(10) unsigned NOT NULL COMMENT '회사 키',
+  `project_nm` varchar(255) DEFAULT NULL COMMENT '프로젝트 명',
+  `reg_id` int(11) unsigned DEFAULT NULL COMMENT '생성자',
+  `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `udt_id` int(11) unsigned DEFAULT NULL COMMENT '수정자',
+  `udt_dt` datetime DEFAULT NULL COMMENT '수정일',
+  `del_yn` enum('N','Y') NOT NULL DEFAULT 'N' COMMENT '삭제 여부',
+  `del_id` int(11) unsigned DEFAULT NULL COMMENT '삭제자',
+  `del_dt` datetime DEFAULT NULL COMMENT '삭제일',
+  PRIMARY KEY (`project_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='프로젝트 정보';
+
+CREATE TABLE `cpms_company` (
+  `company_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `company_nm` varchar(255) DEFAULT NULL COMMENT '회사 명',
+  `reg_id` int(11) unsigned DEFAULT NULL COMMENT '생성자',
+  `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `udt_id` int(11) unsigned DEFAULT NULL COMMENT '수정자',
+  `udt_dt` datetime DEFAULT NULL COMMENT '수정일',
+  `del_yn` enum('N','Y') NOT NULL DEFAULT 'N' COMMENT '삭제 여부',
+  `del_id` int(11) unsigned DEFAULT NULL COMMENT '삭제자',
+  `del_dt` datetime DEFAULT NULL COMMENT '삭제일',
+  PRIMARY KEY (`company_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='회사 정보';
+
+

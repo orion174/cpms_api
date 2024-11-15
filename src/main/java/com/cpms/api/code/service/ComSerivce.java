@@ -1,8 +1,8 @@
-package com.cpms.api.com.service;
+package com.cpms.api.code.service;
 
 import org.springframework.http.ResponseEntity;
 
-import com.cpms.api.com.dto.req.ReqComCodeDTO;
+import com.cpms.api.code.dto.req.ReqComCodeDTO;
 
 public interface ComSerivce {
 
