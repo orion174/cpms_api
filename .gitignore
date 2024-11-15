@@ -47,5 +47,5 @@ bin/
 /src/main/generated/**
 
 ### Ignore uploaded files ###
-/src/resources/upload/
-/src/resources/upload/**
+/src/main/resources/upload/
+/src/main/resources/upload/**
