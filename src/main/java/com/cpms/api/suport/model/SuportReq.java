@@ -86,25 +86,33 @@ public class SuportReq extends BaseEntity {
     @OneToMany(mappedBy = "suportReq", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SuportFile> files = new ArrayList<>();
 
+    /* 유지보수 응답 */
+    @OneToOne(mappedBy = "suport_req_id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private SuportRes suportRes;
+
     public SuportReq(
             CpmsCompany reqCompany,
             CpmsCompany userCompany,
             CpmsProject reqProject,
+            CpmsUser resUser,
             ComCodeDetail requestCdDetail,
             ComCodeDetail statusCdDetail,
             String reqDate,
             String suportTitle,
             String suportEditor,
-            CpmsUser regUser) {
+            CpmsUser regUser,
+            SuportRes suportRes) {
         this.reqCompany = reqCompany;
         this.userCompany = userCompany;
         this.reqProject = reqProject;
+        this.resUser = resUser;
         this.requestCdDetail = requestCdDetail;
         this.statusCdDetail = statusCdDetail;
         this.reqDate = LocalDate.parse(reqDate);
         this.suportTitle = suportTitle;
         this.suportEditor = suportEditor;
         this.regUser = regUser;
+        this.suportRes = suportRes;
     }
 
     public void addFile(SuportFile file) {

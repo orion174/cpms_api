@@ -33,4 +33,9 @@ public class SuportController {
     public ResponseEntity<?> selectSuportList(@RequestBody ReqSuportListDTO reqSuportListDTO) {
         return suportService.selectSuportList(reqSuportListDTO);
     }
+
+    @PostMapping("/detail")
+    public ResponseEntity<?> selectSuportDetail(@RequestBody ReqSuportDTO reqSuportDTO) {
+        return suportService.selectSuportDetail(reqSuportDTO);
+    }
 }

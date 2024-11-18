@@ -23,6 +23,8 @@ public class SuportFile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer suportFileId;
 
+    private String fileType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "suport_req_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private SuportReq suportReq;
@@ -50,6 +52,7 @@ public class SuportFile extends BaseEntity {
 
     public SuportFile(
             SuportReq suportReq,
+            String fileType,
             String filePath,
             String fileNm,
             String fileOgNm,
@@ -57,6 +60,7 @@ public class SuportFile extends BaseEntity {
             Long fileSize,
             CpmsUser regUser) {
         this.suportReq = suportReq;
+        this.fileType = fileType;
         this.filePath = filePath;
         this.fileNm = fileNm;
         this.fileOgNm = fileOgNm;

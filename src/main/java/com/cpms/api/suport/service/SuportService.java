@@ -10,4 +10,6 @@ public interface SuportService {
     ResponseEntity<?> insertReqSuport(ReqSuportDTO reqSuportDTO) throws Exception;
 
     ResponseEntity<?> selectSuportList(ReqSuportListDTO reqSuportListDTO);
+
+    ResponseEntity<?> selectSuportDetail(ReqSuportDTO reqSuportDTO);
 }

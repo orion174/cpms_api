@@ -122,19 +122,23 @@ public class SuportServiceImpl implements SuportService {
                         reqCompany,
                         userCompany,
                         reqProject,
+                        null,
                         requestCdDetail,
                         statusCdDetail,
                         reqSuportDTO.getReqDate(),
                         reqSuportDTO.getSuportTitle(),
                         reqSuportDTO.getSuportEditor(),
-                        regUser);
+                        regUser,
+                        null);
 
         // 유지보수 요청 저장
         suportReqRepository.save(suportReq);
 
         // 파일 업로드 처리
         if (hasFiles(reqSuportDTO.getSuportFile())) {
-            boolean fileResult = suportFileUpload(reqSuportDTO.getSuportFile(), suportReq, regUser);
+            String fileType = "RES";
+            boolean fileResult =
+                    suportFileUpload(reqSuportDTO.getSuportFile(), suportReq, regUser, fileType);
 
             if (!fileResult) {
                 result = false;
@@ -153,6 +157,14 @@ public class SuportServiceImpl implements SuportService {
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<?> selectSuportList(ReqSuportListDTO reqSuportListDTO) {
+        // 날짜형 데이터 NULL 처리
+        if (reqSuportListDTO.getSchStartDt() == null) {
+            reqSuportListDTO.setSchStartDt("");
+        }
+        if (reqSuportListDTO.getSchEndDt() == null) {
+            reqSuportListDTO.setSchEndDt("");
+        }
+
         Pageable pageable =
                 PageUtil.createPageable(
                         reqSuportListDTO.getPageNo(), reqSuportListDTO.getPageSize());
@@ -169,6 +181,18 @@ public class SuportServiceImpl implements SuportService {
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<?> selectSuportDetail(ReqSuportDTO reqSuportDTO) {
+        boolean result = true;
+
+        Integer suportReqId = reqSuportDTO.getSuportReqId();
+
+        if (suportReqId != 0 && suportReqId != null) {}
+
+        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+    }
+
     /**
      * 유지보수 요청문의 첨부파일을 저장한다.
      *
@@ -177,7 +201,8 @@ public class SuportServiceImpl implements SuportService {
      * @return
      * @throws Exception
      */
-    private boolean suportFileUpload(MultipartFile[] files, SuportReq suportReq, CpmsUser regUser)
+    private boolean suportFileUpload(
+            MultipartFile[] files, SuportReq suportReq, CpmsUser regUser, String fileType)
             throws Exception {
         // 첨부파일 개수 만큼 반복
         for (MultipartFile file : files) {
@@ -191,6 +216,7 @@ public class SuportServiceImpl implements SuportService {
             SuportFile suportFile =
                     new SuportFile(
                             suportReq,
+                            fileType,
                             fileDTO.getFilePath(),
                             fileDTO.getFileNm(),
                             fileDTO.getFileOgNm(),

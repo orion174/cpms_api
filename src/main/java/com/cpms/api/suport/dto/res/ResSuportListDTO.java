@@ -27,14 +27,20 @@ public class ResSuportListDTO {
 
         private String reqProjectNm; // 요청 프로젝트 명
 
+        private String requestCd; // 요청 유형
+
         private String requestCdNm; // 요청 유형
 
         private String statusCdNm; // 처리상태
 
-        private String regUserNm; // 요청자
+        private String statusCd; // 처리상태
+
+        private String resUserNm; // 담당자
 
         private String regDt; // 등록일
 
         private String reqDate; // 처리기한
+
+        private String suportTitle;
     }
 }
