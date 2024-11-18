@@ -87,7 +87,7 @@ public class SuportReq extends BaseEntity {
     private List<SuportFile> files = new ArrayList<>();
 
     /* 유지보수 응답 */
-    @OneToOne(mappedBy = "suport_req_id", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "suportReq", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private SuportRes suportRes;
 
     public SuportReq(

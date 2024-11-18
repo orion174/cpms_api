@@ -5,8 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import com.cpms.api.suport.model.SuportReq;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +25,7 @@ import com.cpms.api.user.model.QCpmsCompany;
 import com.cpms.api.user.model.QCpmsProject;
 import com.cpms.common.helper.YesNo;
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
@@ -209,46 +210,53 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
     @Override
     public ResSuportDetailDTO findSuportDetail(Integer suportReqId) {
         ResSuportDetailDTO resSuportDetailDTO =
-                jpaQueryFactory
-                        .select(
-                                Projections.constructor(
-                                        ResSuportDetailDTO.class,
-                                        suportReq.suportReqId,
-                                        suportReq.reqCompany.companyId,
-                                        suportReq.userCompany.companyId,
-                                        suportReq.reqProject.projectId,
-                                        suportReq.resUser.userId,
-                                        suportReq.requestCdDetail.codeId,
-                                        suportReq.statusCdDetail.codeId,
-                                        suportReq.reqDate.stringValue(),
-                                        suportReq.resDate.stringValue(),
-                                        suportReq.suportTitle,
-                                        suportReq.suportEditor,
-                                        suportRes.resEditor))
-                        .from(suportReq)
-                        .leftJoin(suportReq.suportRes, suportRes)
-                        .where(suportReq.suportReqId.eq(suportReqId))
-                        .fetchOne();
+                Optional.ofNullable(
+                                jpaQueryFactory
+                                        .select(
+                                                Projections.fields(
+                                                        ResSuportDetailDTO.class,
+                                                        suportReq.suportReqId,
+                                                        suportReq.reqCompany.companyId,
+                                                        suportReq.userCompany.companyId,
+                                                        suportReq.reqProject.projectId,
+                                                        suportReq.resUser.userId,
+                                                        suportReq.requestCdDetail.codeId,
+                                                        suportReq.statusCdDetail.codeId,
+                                                        ExpressionUtils.as(
+                                                                suportReq.reqDate.stringValue(),
+                                                                "reqDate"),
+                                                        ExpressionUtils.as(
+                                                                suportReq.resDate.stringValue(),
+                                                                "resDate"),
+                                                        suportReq.suportTitle,
+                                                        suportReq.suportEditor,
+                                                        suportRes.suportResId,
+                                                        suportRes.resEditor))
+                                        .from(suportReq)
+                                        .leftJoin(suportReq.suportRes, suportRes)
+                                        .where(suportReq.suportReqId.eq(suportReqId))
+                                        .fetchOne())
+                        .orElse(new ResSuportDetailDTO());
 
-        // 첨부파일 쿼리
         List<ResSuportDetailDTO.FileList> files =
-                jpaQueryFactory
-                        .select(Projections.constructor(
-                                ResSuportDetailDTO.FileList.class,
-                                suportFile.suportFileId,
-                                suportFile.suportReq.suportReqId,
-                                suportFile.fileType,
-                                suportFile.filePath,
-                                suportFile.fileNm,
-                                suportFile.fileOgNm,
-                                suportFile.fileExt,
-                                suportFile.fileSize.intValue()
-                        ))
-                        .from(suportFile)
-                        .where(suportFile.suportReq.suportReqId.eq(suportReqId))
-                        .fetch();
+                Optional.ofNullable(
+                                jpaQueryFactory
+                                        .select(
+                                                Projections.fields(
+                                                        ResSuportDetailDTO.FileList.class,
+                                                        suportFile.suportFileId,
+                                                        suportFile.suportReq.suportReqId,
+                                                        suportFile.fileType,
+                                                        suportFile.filePath,
+                                                        suportFile.fileNm,
+                                                        suportFile.fileOgNm,
+                                                        suportFile.fileExt,
+                                                        suportFile.fileSize))
+                                        .from(suportFile)
+                                        .where(suportFile.suportReq.suportReqId.eq(suportReqId))
+                                        .fetch())
+                        .orElse(new ArrayList<>());
 
-        // 파일 리스트 추가
         resSuportDetailDTO.setFileList(files);
 
         return resSuportDetailDTO;

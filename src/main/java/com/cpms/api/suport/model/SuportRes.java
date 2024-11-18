@@ -20,7 +20,7 @@ public class SuportRes extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer suportResId;
 
-    /* 요청 문의글 */
+    /* 요청 문의 */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "suport_req_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private SuportReq suportReq;

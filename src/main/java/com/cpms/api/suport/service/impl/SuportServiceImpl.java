@@ -21,6 +21,7 @@ import com.cpms.api.code.model.ComCodeDetail;
 import com.cpms.api.code.repository.ComCodeRepository;
 import com.cpms.api.suport.dto.req.ReqSuportDTO;
 import com.cpms.api.suport.dto.req.ReqSuportListDTO;
+import com.cpms.api.suport.dto.res.ResSuportDetailDTO;
 import com.cpms.api.suport.dto.res.ResSuportListDTO;
 import com.cpms.api.suport.model.SuportFile;
 import com.cpms.api.suport.model.SuportReq;
@@ -184,11 +185,15 @@ public class SuportServiceImpl implements SuportService {
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<?> selectSuportDetail(ReqSuportDTO reqSuportDTO) {
-        boolean result = true;
-
+        ResSuportDetailDTO result = new ResSuportDetailDTO();
+        // 유지보수 요청 글 키
         Integer suportReqId = reqSuportDTO.getSuportReqId();
-
-        if (suportReqId != 0 && suportReqId != null) {}
+        // 공백 체크
+        if (suportReqId != 0 && suportReqId != null) {
+            result = suportReqRepository.findSuportDetail(suportReqId);
+        } else {
+            result = null;
+        }
 
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
     }
@@ -201,6 +206,7 @@ public class SuportServiceImpl implements SuportService {
      * @return
      * @throws Exception
      */
+    @Transactional
     private boolean suportFileUpload(
             MultipartFile[] files, SuportReq suportReq, CpmsUser regUser, String fileType)
             throws Exception {

@@ -21,7 +21,7 @@ public class ResSuportDetailDTO {
 
     private Integer reqProjectId;
 
-    private Integer resUserId;
+    private Long resUserId;
 
     private String requestCd;
 
@@ -49,6 +49,8 @@ public class ResSuportDetailDTO {
 
         private Integer suportReqId;
 
+        private String fileType;
+
         private String filePath;
 
         private String fileNm;
@@ -57,6 +59,6 @@ public class ResSuportDetailDTO {
 
         private String fileExt;
 
-        private Integer fileSize;
+        private Long fileSize;
     }
 }
