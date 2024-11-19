@@ -1,20 +1,5 @@
 package com.cpms.api.suport.service.impl;
 
-import static com.cpms.common.util.CommonUtil.hasFiles;
-import static com.cpms.common.util.CommonUtil.parseToIntSafely;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
 import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.api.auth.repository.CpmsUserRepository;
 import com.cpms.api.code.model.ComCodeDetail;
@@ -37,8 +22,22 @@ import com.cpms.common.jwt.JwtTokenProvider;
 import com.cpms.common.res.ApiRes;
 import com.cpms.common.util.FileUtil;
 import com.cpms.common.util.PageUtil;
-
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import static com.cpms.common.util.CommonUtil.hasFiles;
+import static com.cpms.common.util.CommonUtil.parseToIntSafely;
 
 @Service
 @RequiredArgsConstructor
@@ -137,7 +136,7 @@ public class SuportServiceImpl implements SuportService {
 
         // 파일 업로드 처리
         if (hasFiles(reqSuportDTO.getSuportFile())) {
-            String fileType = "RES";
+            String fileType = "REQ"; // 문의 첨부파일은 REQ
             boolean fileResult =
                     suportFileUpload(reqSuportDTO.getSuportFile(), suportReq, regUser, fileType);
 
@@ -234,5 +233,18 @@ public class SuportServiceImpl implements SuportService {
         }
 
         return true;
+    }
+
+    /**
+     * 첨부파일 다운로드
+     * @param suportFileId
+     * @return
+     */
+    @Override
+    public ResponseEntity<?> fileDownload(int suportFileId) {
+        SuportFile file = suportFileRepository.findById(suportFileId)
+                .orElseThrow(() -> new EntityNotFoundException("파일 정보를 찾을 수 없습니다."));
+
+        return FileUtil.fileDownload(file.getFilePath(), file.getFileNm());
     }
 }

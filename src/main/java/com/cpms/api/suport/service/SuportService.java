@@ -12,4 +12,6 @@ public interface SuportService {
     ResponseEntity<?> selectSuportList(ReqSuportListDTO reqSuportListDTO);
 
     ResponseEntity<?> selectSuportDetail(ReqSuportDTO reqSuportDTO);
+
+    ResponseEntity<?> fileDownload(int suportFileId);
 }

@@ -15,17 +15,25 @@ public class ResSuportDetailDTO {
 
     private Integer suportReqId;
 
-    private Integer reqCompanyId;
+    private String reqCompanyNm;
 
-    private Integer userCompanyId;
+    private String userCompanyNm;
 
-    private Integer reqProjectId;
-
-    private Long resUserId;
+    private String reqProjectNm;
 
     private String requestCd;
 
+    private String requestCdNm;
+
     private String statusCd;
+
+    private String statusCdNm;
+
+    private Long resUserId;
+
+    private String resUserNm;
+
+    private String reqUserNm;
 
     private String reqDate;
 

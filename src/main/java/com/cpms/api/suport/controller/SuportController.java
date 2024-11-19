@@ -38,4 +38,9 @@ public class SuportController {
     public ResponseEntity<?> selectSuportDetail(@RequestBody ReqSuportDTO reqSuportDTO) {
         return suportService.selectSuportDetail(reqSuportDTO);
     }
+
+    @GetMapping("/fileDownload/{suportFileId}")
+    public ResponseEntity<?> fileDownload(@PathVariable int suportFileId) {
+        return suportService.fileDownload(suportFileId);
+    }
 }
