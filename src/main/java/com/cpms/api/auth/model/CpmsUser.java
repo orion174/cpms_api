@@ -17,13 +17,13 @@ public class CpmsUser extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Integer userId;
 
     @Column(length = 30, nullable = false)
     private String authType;
 
     @Column(columnDefinition = "int(10) unsigned", nullable = false)
-    private int companyId;
+    private Integer companyId;
 
     @Column(length = 30)
     private String loginId;
@@ -62,9 +62,9 @@ public class CpmsUser extends BaseEntity {
     protected Integer delId;
 
     public CpmsUser(
-            Long userId,
+            Integer userId,
             String authType,
-            int companyId,
+            Integer companyId,
             String loginId,
             String userNm,
             String userPhone,

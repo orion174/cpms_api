@@ -29,7 +29,7 @@ public class ResSuportDetailDTO {
 
     private String statusCdNm;
 
-    private Long resUserId;
+    private Integer resUserId;
 
     private String resUserNm;
 

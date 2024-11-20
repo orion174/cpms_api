@@ -43,4 +43,14 @@ public class SuportController {
     public ResponseEntity<?> fileDownload(@PathVariable int suportFileId) {
         return suportService.fileDownload(suportFileId);
     }
+
+    @PostMapping("/updateStatus")
+    public ResponseEntity<?> updateStatus(@RequestBody ReqSuportDTO reqSuportDTO) {
+        return suportService.updateStatus(reqSuportDTO);
+    }
+
+    @PostMapping("/updateUser")
+    public ResponseEntity<?> updateUser(@RequestBody ReqSuportDTO reqSuportDTO) {
+        return suportService.updateUser(reqSuportDTO);
+    }
 }

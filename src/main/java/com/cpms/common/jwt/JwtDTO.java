@@ -21,7 +21,7 @@ public class JwtDTO {
 
     private int refreshTokenExpiration;
 
-    private Long userId;
+    private Integer userId;
 
     private String authType;
 
@@ -31,5 +31,5 @@ public class JwtDTO {
 
     private String loginPw;
 
-    private Long loginHistoryId;
+    private Integer loginHistoryId;
 }

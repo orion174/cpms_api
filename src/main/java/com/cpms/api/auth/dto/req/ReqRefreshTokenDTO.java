@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReqRefreshTokenDTO {
 
-    private Long loginHistoryId;
+    private Integer loginHistoryId;
 
     private String nm;
 

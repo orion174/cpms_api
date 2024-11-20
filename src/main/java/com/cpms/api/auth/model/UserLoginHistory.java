@@ -16,9 +16,9 @@ public class UserLoginHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long loginHistoryId;
+    private Integer loginHistoryId;
 
-    @Column private Long userId;
+    @Column private Integer userId;
 
     @Column private String loginId;
 
@@ -28,7 +28,7 @@ public class UserLoginHistory {
 
     @Column private LocalDateTime regDt;
 
-    public UserLoginHistory(Long userId, String loginId, String accessIp) {
+    public UserLoginHistory(Integer userId, String loginId, String accessIp) {
         this.userId = userId;
         this.loginId = loginId;
         this.accessIp = accessIp;

@@ -3,9 +3,8 @@ package com.cpms.api.suport.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.cpms.api.suport.dto.req.ReqSuportListDTO;
-import com.cpms.api.suport.dto.res.ResSuportDetailDTO;
-import com.cpms.api.suport.dto.res.ResSuportListDTO;
+import com.cpms.api.suport.dto.req.*;
+import com.cpms.api.suport.dto.res.*;
 
 public interface CustomSuportReqRepository {
 
@@ -13,4 +12,8 @@ public interface CustomSuportReqRepository {
             ReqSuportListDTO reqSuportListDTO, Pageable pageable);
 
     ResSuportDetailDTO findSuportDetail(Integer suportReqId);
+
+    int updateStatus(ReqSuportDTO reqSuportDTO);
+
+    int updateUser(ReqSuportDTO reqSuportDTO);
 }

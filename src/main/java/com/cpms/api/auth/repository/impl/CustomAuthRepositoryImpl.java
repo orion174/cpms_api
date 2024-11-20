@@ -45,7 +45,7 @@ public class CustomAuthRepositoryImpl implements CustomAuthRepository {
 
     @Override
     public JwtDTO getUserInfoByLoginHistoryId(ReqRefreshTokenDTO reqRefreshTokenDTO) {
-        Long loginHistoryId = reqRefreshTokenDTO.getLoginHistoryId();
+        Integer loginHistoryId = reqRefreshTokenDTO.getLoginHistoryId();
         String refreshToken = reqRefreshTokenDTO.getRefreshToken();
 
         JwtDTO result =

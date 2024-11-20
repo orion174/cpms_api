@@ -1,5 +1,22 @@
 package com.cpms.api.suport.service.impl;
 
+import static com.cpms.common.util.CommonUtil.hasFiles;
+import static com.cpms.common.util.CommonUtil.parseToIntSafely;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import jakarta.persistence.EntityNotFoundException;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.api.auth.repository.CpmsUserRepository;
 import com.cpms.api.code.model.ComCodeDetail;
@@ -22,22 +39,8 @@ import com.cpms.common.jwt.JwtTokenProvider;
 import com.cpms.common.res.ApiRes;
 import com.cpms.common.util.FileUtil;
 import com.cpms.common.util.PageUtil;
-import jakarta.persistence.EntityNotFoundException;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import static com.cpms.common.util.CommonUtil.hasFiles;
-import static com.cpms.common.util.CommonUtil.parseToIntSafely;
 
 @Service
 @RequiredArgsConstructor
@@ -181,20 +184,57 @@ public class SuportServiceImpl implements SuportService {
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
     }
 
+    /**
+     * 유지보수 문의 상세 조회
+     *
+     * @param reqSuportDTO
+     * @return
+     */
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<?> selectSuportDetail(ReqSuportDTO reqSuportDTO) {
         ResSuportDetailDTO result = new ResSuportDetailDTO();
+
         // 유지보수 요청 글 키
         Integer suportReqId = reqSuportDTO.getSuportReqId();
-        // 공백 체크
+
         if (suportReqId != 0 && suportReqId != null) {
             result = suportReqRepository.findSuportDetail(suportReqId);
-        } else {
-            result = null;
         }
 
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> updateStatus(ReqSuportDTO reqSuportDTO) {
+        boolean result = true;
+
+        reqSuportDTO.setUserId(getUserId());
+
+        int udtResult = suportReqRepository.updateStatus(reqSuportDTO);
+
+        if (udtResult <= 0) {
+            result = false;
+        }
+
+        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> updateUser(ReqSuportDTO reqSuportDTO) {
+        boolean result = true;
+
+        reqSuportDTO.setUserId(getUserId());
+
+        int udtResult = suportReqRepository.updateUser(reqSuportDTO);
+
+        if (udtResult <= 0) {
+            result = false;
+        }
+
+        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
     }
 
     /**
@@ -237,13 +277,16 @@ public class SuportServiceImpl implements SuportService {
 
     /**
      * 첨부파일 다운로드
+     *
      * @param suportFileId
      * @return
      */
     @Override
     public ResponseEntity<?> fileDownload(int suportFileId) {
-        SuportFile file = suportFileRepository.findById(suportFileId)
-                .orElseThrow(() -> new EntityNotFoundException("파일 정보를 찾을 수 없습니다."));
+        SuportFile file =
+                suportFileRepository
+                        .findById(suportFileId)
+                        .orElseThrow(() -> new EntityNotFoundException("파일 정보를 찾을 수 없습니다."));
 
         return FileUtil.fileDownload(file.getFilePath(), file.getFileNm());
     }

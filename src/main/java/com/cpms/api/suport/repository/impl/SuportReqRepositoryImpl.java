@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 
 import com.cpms.api.auth.model.QCpmsUser;
 import com.cpms.api.code.model.QComCodeDetail;
+import com.cpms.api.suport.dto.req.ReqSuportDTO;
 import com.cpms.api.suport.dto.req.ReqSuportListDTO;
 import com.cpms.api.suport.dto.res.ResSuportDetailDTO;
 import com.cpms.api.suport.dto.res.ResSuportListDTO;
@@ -356,5 +357,29 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
         resSuportDetailDTO.setFileList(files);
 
         return resSuportDetailDTO;
+    }
+
+    @Override
+    public int updateStatus(ReqSuportDTO reqSuportDTO) {
+        return (int)
+                jpaQueryFactory
+                        .update(suportReq.suportReq)
+                        .set(suportReq.suportReq.statusCdDetail.codeId, reqSuportDTO.getStatusCd())
+                        .set(suportReq.suportReq.udtId, reqSuportDTO.getUserId())
+                        .set(suportReq.suportReq.udtDt, LocalDateTime.now())
+                        .where(suportReq.suportReq.suportReqId.eq(reqSuportDTO.getSuportReqId()))
+                        .execute();
+    }
+
+    @Override
+    public int updateUser(ReqSuportDTO reqSuportDTO) {
+        return (int)
+                jpaQueryFactory
+                        .update(suportReq.suportReq)
+                        .set(suportReq.suportReq.resUser.userId, reqSuportDTO.getUserId())
+                        .set(suportReq.suportReq.udtId, reqSuportDTO.getUserId())
+                        .set(suportReq.suportReq.udtDt, LocalDateTime.now())
+                        .where(suportReq.suportReq.suportReqId.eq(reqSuportDTO.getSuportReqId()))
+                        .execute();
     }
 }

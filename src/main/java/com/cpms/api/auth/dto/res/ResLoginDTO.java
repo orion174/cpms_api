@@ -11,11 +11,11 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResLoginDTO {
 
-    private Long userId;
+    private Integer userId;
 
     private String authType;
 
-    private int companyId;
+    private Integer companyId;
 
     private String loginId;
 
@@ -23,7 +23,7 @@ public class ResLoginDTO {
 
     private YesNo useYn;
 
-    private Long loginHistoryId;
+    private Integer loginHistoryId;
 
     private String accessToken;
 
@@ -37,9 +37,9 @@ public class ResLoginDTO {
 
     @QueryProjection
     public ResLoginDTO(
-            Long userId,
+            Integer userId,
             String authType,
-            int companyId,
+            Integer companyId,
             String loginId,
             String loginPw,
             YesNo useYn) {

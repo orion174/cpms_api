@@ -9,8 +9,11 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiRes {
+
     private boolean status = true;
+
     private Object result;
+
     private String message;
 
     public ApiRes(Object result) {

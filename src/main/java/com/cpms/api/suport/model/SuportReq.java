@@ -115,6 +115,11 @@ public class SuportReq extends BaseEntity {
         this.suportRes = suportRes;
     }
 
+    public void update(ComCodeDetail statusCdDetail, Integer udtId) {
+        this.statusCdDetail = statusCdDetail;
+        this.udtId = udtId;
+    }
+
     public void addFile(SuportFile file) {
         if (file != null) {
             files.add(file);
@@ -125,5 +130,10 @@ public class SuportReq extends BaseEntity {
     @PrePersist
     protected void onCreate() {
         this.regDt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.udtDt = LocalDateTime.now();
     }
 }
