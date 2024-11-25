@@ -6,6 +6,7 @@ import static com.cpms.common.util.CommonUtil.parseToIntSafely;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import com.cpms.api.suport.dto.req.ReqSuportResDTO;
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -234,6 +235,13 @@ public class SuportServiceImpl implements SuportService {
             result = false;
         }
 
+        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> insertResSuport(ReqSuportResDTO reqSuportResDTO) {
+        boolean result = true;
         return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
     }
 

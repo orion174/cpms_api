@@ -21,7 +21,6 @@ public class SuportController {
             @RequestPart(value = "suportFile", required = false) MultipartFile[] suportFile,
             @ModelAttribute ReqSuportDTO reqSuportDTO)
             throws Exception {
-
         if (suportFile != null) {
             reqSuportDTO.setSuportFile(suportFile);
         }
@@ -52,5 +51,13 @@ public class SuportController {
     @PostMapping("/updateUser")
     public ResponseEntity<?> updateUser(@RequestBody ReqSuportDTO reqSuportDTO) {
         return suportService.updateUser(reqSuportDTO);
+    }
+
+    @PostMapping("/resInsert")
+    public ResponseEntity<?> insertResSuport(
+        @RequestPart(value = "resFile", required = false) MultipartFile[] resFile,
+        @ModelAttribute ReqSuportResDTO reqSuportResDTO
+    ) throws Exception {
+        return suportService.insertResSuport(reqSuportResDTO);
     }
 }

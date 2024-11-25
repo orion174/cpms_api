@@ -1,5 +1,6 @@
 package com.cpms.api.suport.service;
 
+import com.cpms.api.suport.dto.req.ReqSuportResDTO;
 import org.springframework.http.ResponseEntity;
 
 import com.cpms.api.suport.dto.req.ReqSuportDTO;
@@ -18,4 +19,6 @@ public interface SuportService {
     ResponseEntity<?> updateStatus(ReqSuportDTO reqSuportDTO);
 
     ResponseEntity<?> updateUser(ReqSuportDTO reqSuportDTO);
+
+    ResponseEntity<?> insertResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception;
 }
