@@ -12,12 +12,13 @@ import lombok.NoArgsConstructor;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResComCodeDTO {
 
-    private String codeId;
-
+    // 공통 코드
+    private Integer codeId;
+    // 공통 코드 명
     private String codeNm;
 
     @QueryProjection
-    public ResComCodeDTO(String codeId, String codeNm) {
+    public ResComCodeDTO(Integer codeId, String codeNm) {
         this.codeId = codeId;
         this.codeNm = codeNm;
     }

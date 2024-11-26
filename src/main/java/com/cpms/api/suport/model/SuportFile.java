@@ -21,6 +21,7 @@ public class SuportFile extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "suport_file_id")
     private Integer suportFileId;
 
     private String fileType;

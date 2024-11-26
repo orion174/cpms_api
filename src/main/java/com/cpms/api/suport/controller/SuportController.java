@@ -55,9 +55,9 @@ public class SuportController {
 
     @PostMapping("/resInsert")
     public ResponseEntity<?> insertResSuport(
-        @RequestPart(value = "resFile", required = false) MultipartFile[] resFile,
-        @ModelAttribute ReqSuportResDTO reqSuportResDTO
-    ) throws Exception {
+            @RequestPart(value = "resFile", required = false) MultipartFile[] resFile,
+            @ModelAttribute ReqSuportResDTO reqSuportResDTO)
+            throws Exception {
         return suportService.insertResSuport(reqSuportResDTO);
     }
 }

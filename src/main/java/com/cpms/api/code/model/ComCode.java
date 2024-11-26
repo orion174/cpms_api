@@ -11,19 +11,13 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "com_code_detail")
-public class ComCodeDetail {
+@Table(name = "com_code")
+public class ComCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "com_code_id", nullable = false)
-    private Integer comCodeId;
-
-    @Column(name = "master_code_id", length = 10, nullable = false)
-    private String masterCodeId;
-
-    @Column(name = "code_id", length = 10, nullable = false)
-    private String codeId;
+    @Column(name = "code_id")
+    private Integer codeId;
 
     @Column(name = "group_id", length = 10)
     private String groupId;

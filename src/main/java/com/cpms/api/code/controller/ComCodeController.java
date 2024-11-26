@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cpms.api.code.dto.req.ReqComCodeDTO;
-import com.cpms.api.code.service.ComSerivce;
+import com.cpms.api.code.service.ComCodeSerivce;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/com/code")
 public class ComCodeController {
 
-    private final ComSerivce comSerivce;
+    private final ComCodeSerivce comSerivce;
 
     @PostMapping("/list")
     public ResponseEntity<?> selectComCodeList(@RequestBody ReqComCodeDTO reqComCodeDTO) {

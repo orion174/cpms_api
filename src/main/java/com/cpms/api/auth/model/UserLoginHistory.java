@@ -16,6 +16,7 @@ public class UserLoginHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "login_history_id")
     private Integer loginHistoryId;
 
     @Column private Integer userId;

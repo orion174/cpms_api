@@ -16,6 +16,7 @@ public class CpmsProject extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "project_id")
     private Integer projectId;
 
     @Column(length = 255)

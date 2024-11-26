@@ -1,10 +1,10 @@
 package com.cpms.api.suport.service;
 
-import com.cpms.api.suport.dto.req.ReqSuportResDTO;
 import org.springframework.http.ResponseEntity;
 
 import com.cpms.api.suport.dto.req.ReqSuportDTO;
 import com.cpms.api.suport.dto.req.ReqSuportListDTO;
+import com.cpms.api.suport.dto.req.ReqSuportResDTO;
 
 public interface SuportService {
 

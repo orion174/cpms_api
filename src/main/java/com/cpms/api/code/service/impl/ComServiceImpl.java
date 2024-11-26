@@ -6,14 +6,14 @@ import org.springframework.stereotype.Service;
 
 import com.cpms.api.code.dto.req.ReqComCodeDTO;
 import com.cpms.api.code.repository.ComCodeRepository;
-import com.cpms.api.code.service.ComSerivce;
+import com.cpms.api.code.service.ComCodeSerivce;
 import com.cpms.common.res.ApiRes;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ComServiceImpl implements ComSerivce {
+public class ComServiceImpl implements ComCodeSerivce {
 
     private final ComCodeRepository comCodeRepository;
 

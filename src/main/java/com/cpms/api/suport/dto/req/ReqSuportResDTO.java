@@ -1,10 +1,12 @@
 package com.cpms.api.suport.dto.req;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @AllArgsConstructor
@@ -14,7 +16,9 @@ public class ReqSuportResDTO {
 
     private Integer suportReqId;
 
-    private String resStatusCd;
+    private Integer resStatusCd;
+
+    private String resTitle;
 
     private String resEditor;
 

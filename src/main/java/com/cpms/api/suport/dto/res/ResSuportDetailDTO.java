@@ -21,11 +21,11 @@ public class ResSuportDetailDTO {
 
     private String reqProjectNm;
 
-    private String requestCd;
+    private Integer requestCd;
 
     private String requestCdNm;
 
-    private String statusCd;
+    private Integer statusCd;
 
     private String statusCdNm;
 
@@ -43,19 +43,26 @@ public class ResSuportDetailDTO {
 
     private String suportEditor;
 
-    private Integer suportResId;
-
-    private String resEditor;
+    private SuportRes suportRes;
 
     private List<FileList> fileList;
+
+    @Getter
+    @Setter
+    public static class SuportRes {
+
+        private Integer suportResId;
+
+        private String resTitle;
+
+        private String resEditor;
+    }
 
     @Getter
     @Setter
     public static class FileList {
 
         private Integer suportFileId;
-
-        private Integer suportReqId;
 
         private String fileType;
 
@@ -64,9 +71,5 @@ public class ResSuportDetailDTO {
         private String fileNm;
 
         private String fileOgNm;
-
-        private String fileExt;
-
-        private Long fileSize;
     }
 }

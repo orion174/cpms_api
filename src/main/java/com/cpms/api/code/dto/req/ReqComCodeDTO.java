@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReqComCodeDTO {
-
-    private String masterCodeId;
+    // 공통코드 그룹
+    private String groupId;
 }

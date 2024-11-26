@@ -24,9 +24,9 @@ public class ReqSuportDTO {
 
     private Integer resUserId;
 
-    private String requestCd;
+    private Integer requestCd;
 
-    private String statusCd;
+    private Integer statusCd;
 
     private String reqDate;
 

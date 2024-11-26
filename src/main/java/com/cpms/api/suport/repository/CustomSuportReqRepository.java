@@ -12,8 +12,4 @@ public interface CustomSuportReqRepository {
             ReqSuportListDTO reqSuportListDTO, Pageable pageable);
 
     ResSuportDetailDTO findSuportDetail(Integer suportReqId);
-
-    int updateStatus(ReqSuportDTO reqSuportDTO);
-
-    int updateUser(ReqSuportDTO reqSuportDTO);
 }
