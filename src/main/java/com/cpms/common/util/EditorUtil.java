@@ -1,6 +1,13 @@
 package com.cpms.common.util;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.text.SimpleDateFormat;
 import java.util.UUID;
 
@@ -14,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class EditorUtil {
 
-    @Value("${file.upload.path}")
+    @Value("${editor.file.upload.path}")
     private String fileUploadPath;
 
     @Value("${my-url}")
@@ -24,56 +31,35 @@ public class EditorUtil {
     @PostMapping("/util/Editor/smartEditorUploadURL")
     public void smarteditorMultiImageUpload(
             HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
-            String sFileInfo = "";
-            String filename = request.getHeader("file-name");
-            String filenameExt = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+        String sFileInfo = "";
+        String filename = request.getHeader("file-name");
+        String filenameExt = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
 
-            // 오늘 날짜 폴더 생성
-            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyyMMdd");
-            String todayFolder = dateFormatter.format(new java.util.Date());
+        // 오늘 날짜 폴더 생성
+        String todayFolder = new SimpleDateFormat("yyyyMMdd").format(new java.util.Date());
 
-            // 파일 저장 경로 설정 (editor/{오늘 날짜}/)
-            String filePath =
-                    fileUploadPath
-                            + File.separator
-                            + "editor"
-                            + File.separator
-                            + todayFolder
-                            + File.separator;
-            File folder = new File(filePath);
-            if (!folder.exists()) {
-                folder.mkdirs();
-            }
+        // 파일 저장 경로 설정 (editor/{오늘 날짜}/)
+        Path folderPath = Paths.get(fileUploadPath, todayFolder);
+        Files.createDirectories(folderPath); // 경로가 없으면 생성
 
-            // 파일명을 UUID로 저장
-            String uniqueFileName =
-                    UUID.randomUUID().toString() + filename.substring(filename.lastIndexOf("."));
-            String rlFileNm = filePath + uniqueFileName;
+        // 파일명을 UUID로 저장
+        String uniqueFileName = UUID.randomUUID() + "." + filenameExt;
+        Path filePath = folderPath.resolve(uniqueFileName);
 
-            // 서버에 파일 저장
-            try (InputStream is = request.getInputStream();
-                    OutputStream os = new FileOutputStream(rlFileNm)) {
-                byte[] buffer = new byte[Integer.parseInt(request.getHeader("file-size"))];
-                int bytesRead;
-                while ((bytesRead = is.read(buffer)) != -1) {
-                    os.write(buffer, 0, bytesRead);
-                }
-            }
+        // 서버에 파일 저장
+        try (InputStream is = request.getInputStream();
+                OutputStream os = Files.newOutputStream(filePath, StandardOpenOption.CREATE)) {
+            is.transferTo(os); // InputStream을 OutputStream으로 직접 전송
+        }
 
-            // 클라이언트로 반환할 이미지 경로 생성
-            String fileURL =
-                    serverUrl + "/resource/upload/editor/" + todayFolder + "/" + uniqueFileName;
-            sFileInfo += "&bNewLine=true";
-            sFileInfo += "&sFileName=" + filename;
-            sFileInfo += "&sFileURL=" + fileURL;
+        // 클라이언트로 반환할 이미지 경로 생성
+        String fileURL =
+                serverUrl + "/resource/upload/editor/" + todayFolder + "/" + uniqueFileName;
+        sFileInfo = String.format("&bNewLine=true&sFileName=%s&sFileURL=%s", filename, fileURL);
 
-            // 클라이언트로 파일 정보 전송
-            PrintWriter print = response.getWriter();
+        // 클라이언트로 파일 정보 전송
+        try (PrintWriter print = response.getWriter()) {
             print.print(sFileInfo);
-            print.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 }

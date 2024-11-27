@@ -1,12 +1,16 @@
 package com.cpms.common.util;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.Random;
 
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseCookie;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class CommonUtil {
 
     /*
@@ -88,11 +92,24 @@ public class CommonUtil {
         return Optional.ofNullable(file).map(files -> files.length > 0).orElse(false);
     }
 
+    /**
+     * String을 안전하게 Integer로 변환
+     *
+     * @param value
+     * @return
+     */
     public static Integer parseToIntSafely(String value) {
-        try {
-            return (int) Double.parseDouble(value);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException("변환실패: " + value, e);
-        }
+        return Optional.ofNullable(value)
+                .map(
+                        v -> {
+                            try {
+                                return (int) Double.parseDouble(v);
+
+                            } catch (NumberFormatException e) {
+                                log.warn("String -> Integer 변환 실패", value, e);
+                                return null;
+                            }
+                        })
+                .orElse(null);
     }
 }

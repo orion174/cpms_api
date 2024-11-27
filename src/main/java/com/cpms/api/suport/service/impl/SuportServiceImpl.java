@@ -5,6 +5,8 @@ import static com.cpms.common.util.CommonUtil.parseToIntSafely;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Optional;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -38,6 +40,7 @@ import com.cpms.api.user.model.CpmsProject;
 import com.cpms.api.user.repository.CpmsCompanyRepository;
 import com.cpms.api.user.repository.CpmsProjectRepository;
 import com.cpms.common.helper.FileDTO;
+import com.cpms.common.helper.YesNo;
 import com.cpms.common.jwt.JwtTokenProvider;
 import com.cpms.common.res.ApiRes;
 import com.cpms.common.util.FileUtil;
@@ -49,7 +52,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SuportServiceImpl implements SuportService {
 
-    @Value("${file.upload.path}")
+    @Value("${suport.file.upload.path}")
     private String uploadPath;
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -214,6 +217,13 @@ public class SuportServiceImpl implements SuportService {
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
     }
 
+    /**
+     * 문의의 대한 답변을 저장한다.
+     *
+     * @param reqSuportResDTO
+     * @return
+     * @throws Exception
+     */
     @Override
     @Transactional
     public ResponseEntity<?> insertResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception {
@@ -261,6 +271,40 @@ public class SuportServiceImpl implements SuportService {
         }
 
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+    }
+
+    /**
+     * 처리내역 답변을 삭제한다.
+     *
+     * @param reqSuportDTO
+     * @return
+     */
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteResSuport(ReqSuportDTO reqSuportDTO) {
+        Integer suportReqId = reqSuportDTO.getSuportReqId();
+        Integer userId = getUserId();
+
+        Optional<SuportRes> suportResOpt =
+                suportResRepository.findBySuportReq_SuportReqIdAndDelYn(suportReqId, YesNo.N);
+
+        suportResOpt.ifPresentOrElse(
+                suportRes -> {
+                    // 답변 삭제
+                    suportRes.deleteRes(YesNo.Y, userId);
+                    suportResRepository.save(suportRes);
+
+                    // 답변 첨부파일 삭제
+                    List<SuportFile> fileList =
+                            suportFileRepository.findBySuportReq_SuportReqIdAndFileTypeAndDelYn(
+                                    suportReqId, FILE_TYPE_RES, YesNo.N);
+                    fileList.forEach(file -> file.deleteFile(YesNo.Y, userId));
+                },
+                () -> {
+                    throw new EntityNotFoundException("Suport Res ID의 데이터가 존재하지않습니다.");
+                });
+
+        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
     }
 
     @Override

@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 
 import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.common.helper.BaseEntity;
+import com.cpms.common.helper.YesNo;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,6 +25,7 @@ public class SuportFile extends BaseEntity {
     @Column(name = "suport_file_id")
     private Integer suportFileId;
 
+    @Column(name = "file_type")
     private String fileType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -74,8 +76,24 @@ public class SuportFile extends BaseEntity {
         this.suportReq = suportReq;
     }
 
+    // 파일 삭제
+    public void deleteFile(YesNo delYn, Integer delId) {
+        this.delYn = delYn;
+        this.delId = delId;
+    }
+
     @PrePersist
     protected void onCreate() {
         this.regDt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        if (YesNo.Y.equals(this.delYn)) {
+            this.delDt = LocalDateTime.now();
+
+        } else {
+            this.udtDt = LocalDateTime.now();
+        }
     }
 }

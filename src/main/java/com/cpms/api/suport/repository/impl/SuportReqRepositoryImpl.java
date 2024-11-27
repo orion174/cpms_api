@@ -184,7 +184,12 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
                                         suportRes.resTitle,
                                         suportRes.resEditor))
                         .from(suportRes)
-                        .where(suportRes.suportReq.suportReqId.eq(suportReqId))
+                        .where(
+                                suportRes
+                                        .suportReq
+                                        .suportReqId
+                                        .eq(suportReqId)
+                                        .and(suportRes.delYn.eq(YesNo.N)))
                         .fetchOne();
 
         detail.setSuportRes(resDetail != null ? resDetail : new ResSuportDetailDTO.SuportRes());

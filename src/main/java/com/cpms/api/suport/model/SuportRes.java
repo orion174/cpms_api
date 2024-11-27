@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 
 import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.common.helper.BaseEntity;
+import com.cpms.common.helper.YesNo;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,8 +50,24 @@ public class SuportRes extends BaseEntity {
         this.regUser = regUser;
     }
 
+    // 답변 삭제
+    public void deleteRes(YesNo delYn, Integer delId) {
+        this.delYn = delYn;
+        this.delId = delId;
+    }
+
     @PrePersist
     protected void onCreate() {
         this.regDt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        if (YesNo.Y.equals(this.delYn)) {
+            this.delDt = LocalDateTime.now();
+
+        } else {
+            this.udtDt = LocalDateTime.now();
+        }
     }
 }

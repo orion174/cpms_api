@@ -60,4 +60,9 @@ public class SuportController {
             throws Exception {
         return suportService.insertResSuport(reqSuportResDTO);
     }
+
+    @PostMapping("/resDelete")
+    public ResponseEntity<?> deleteResSuport(@RequestBody ReqSuportDTO reqSuportDTO) {
+        return suportService.deleteResSuport(reqSuportDTO);
+    }
 }
