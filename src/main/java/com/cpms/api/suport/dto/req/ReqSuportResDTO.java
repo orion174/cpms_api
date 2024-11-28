@@ -16,6 +16,8 @@ public class ReqSuportResDTO {
 
     private Integer suportReqId;
 
+    private Integer suportResId;
+
     private Integer resStatusCd;
 
     private String resTitle;

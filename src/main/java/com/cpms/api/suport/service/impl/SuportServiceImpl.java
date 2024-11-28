@@ -273,6 +273,60 @@ public class SuportServiceImpl implements SuportService {
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
     }
 
+    @Override
+    @Transactional
+    public ResponseEntity<?> updateResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception {
+        Integer userId = getUserId();
+
+        CpmsUser user =
+                cpmsUserRepository
+                        .findById(getUserId())
+                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID"));
+
+        ComCode statusCd =
+                comCodeRepository
+                        .findById(reqSuportResDTO.getResStatusCd())
+                        .orElseThrow(() -> new Exception("유효하지 않는 코드"));
+
+        SuportReq suportReq =
+                suportReqRepository
+                        .findById(reqSuportResDTO.getSuportReqId())
+                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
+
+        suportReq.updateStatusCd(statusCd, userId);
+
+        // 처리내역 확인 및 수정
+        suportResRepository
+                .findById(reqSuportResDTO.getSuportResId())
+                .ifPresentOrElse(
+                        suportRes -> {
+                            suportRes.updateRes(
+                                    reqSuportResDTO.getResTitle(),
+                                    reqSuportResDTO.getResEditor(),
+                                    userId);
+                            // 파일이 있는 경우 업로드 처리
+                            if (hasFiles(reqSuportResDTO.getResFile())) {
+                                String fileType = FILE_TYPE_RES;
+
+                                try {
+                                    boolean fileResult =
+                                            suportFileUpload(
+                                                    reqSuportResDTO.getResFile(),
+                                                    suportReq,
+                                                    user,
+                                                    fileType);
+                                } catch (Exception e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        },
+                        () -> {
+                            throw new IllegalArgumentException("유효하지 않은 Suport Res ID");
+                        });
+
+        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
+    }
+
     /**
      * 처리내역 답변을 삭제한다.
      *
@@ -292,12 +346,12 @@ public class SuportServiceImpl implements SuportService {
                 suportRes -> {
                     // 답변 삭제
                     suportRes.deleteRes(YesNo.Y, userId);
-                    suportResRepository.save(suportRes);
 
                     // 답변 첨부파일 삭제
                     List<SuportFile> fileList =
                             suportFileRepository.findBySuportReq_SuportReqIdAndFileTypeAndDelYn(
                                     suportReqId, FILE_TYPE_RES, YesNo.N);
+
                     fileList.forEach(file -> file.deleteFile(YesNo.Y, userId));
                 },
                 () -> {
@@ -397,6 +451,22 @@ public class SuportServiceImpl implements SuportService {
         }
 
         return true;
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> fileDelete(int suportFileId) {
+        Optional<SuportFile> suportFileOpt = suportFileRepository.findById(suportFileId);
+
+        suportFileOpt.ifPresentOrElse(
+                suportFile -> {
+                    suportFile.deleteFile(YesNo.Y, getUserId());
+                },
+                () -> {
+                    throw new EntityNotFoundException("해당 ID의 Suport File 데이터가 존재하지않습니다.");
+                });
+
+        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
     }
 
     /**

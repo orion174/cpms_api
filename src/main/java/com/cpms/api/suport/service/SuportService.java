@@ -16,11 +16,15 @@ public interface SuportService {
 
     ResponseEntity<?> fileDownload(int suportFileId);
 
+    ResponseEntity<?> fileDelete(int suportFileId);
+
     ResponseEntity<?> updateStatus(ReqSuportDTO reqSuportDTO);
 
     ResponseEntity<?> updateUser(ReqSuportDTO reqSuportDTO);
 
     ResponseEntity<?> insertResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception;
+
+    ResponseEntity<?> updateResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception;
 
     ResponseEntity<?> deleteResSuport(ReqSuportDTO reqSuportDTO);
 }

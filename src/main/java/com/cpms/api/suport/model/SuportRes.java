@@ -50,6 +50,13 @@ public class SuportRes extends BaseEntity {
         this.regUser = regUser;
     }
 
+    // 답변 수정
+    public void updateRes(String resTitle, String resEditor, Integer udtId) {
+        this.resTitle = resTitle;
+        this.resEditor = resEditor;
+        this.udtId = udtId;
+    }
+
     // 답변 삭제
     public void deleteRes(YesNo delYn, Integer delId) {
         this.delYn = delYn;

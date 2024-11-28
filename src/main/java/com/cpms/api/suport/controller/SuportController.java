@@ -43,6 +43,11 @@ public class SuportController {
         return suportService.fileDownload(suportFileId);
     }
 
+    @PostMapping("/fileDelete/{suportFileId}")
+    public ResponseEntity<?> fileDelete(@PathVariable int suportFileId) {
+        return suportService.fileDelete(suportFileId);
+    }
+
     @PostMapping("/updateStatus")
     public ResponseEntity<?> updateStatus(@RequestBody ReqSuportDTO reqSuportDTO) {
         return suportService.updateStatus(reqSuportDTO);
@@ -59,6 +64,14 @@ public class SuportController {
             @ModelAttribute ReqSuportResDTO reqSuportResDTO)
             throws Exception {
         return suportService.insertResSuport(reqSuportResDTO);
+    }
+
+    @PostMapping("/resUpdate")
+    public ResponseEntity<?> updateResSuport(
+            @RequestPart(value = "resFile", required = false) MultipartFile[] resFile,
+            @ModelAttribute ReqSuportResDTO reqSuportResDTO)
+            throws Exception {
+        return suportService.updateResSuport(reqSuportResDTO);
     }
 
     @PostMapping("/resDelete")
