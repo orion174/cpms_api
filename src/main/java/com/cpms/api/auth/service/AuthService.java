@@ -11,9 +11,9 @@ import com.cpms.api.auth.dto.res.*;
 
 public interface AuthService {
 
-    ResLoginDTO userLogin(HttpServletRequest request, ReqLoginDTO reqLoginDTO);
+    ResponseEntity<?> userLogin(HttpServletRequest req, ReqLoginDTO reqLoginDTO);
 
     UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException;
 
-    ResponseEntity<?> refreshToken(ReqRefreshTokenDTO reqRefreshTokenDTO);
+    ResponseEntity<?> refreshToken(HttpServletRequest req, ReqRefreshTokenDTO reqRefreshTokenDTO);
 }

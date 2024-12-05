@@ -11,9 +11,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${editor.file.upload.path}")
     private String fileUploadPath;
 
-    /* 네이버 스마트 에디터 파일 첨부 미리 보기 */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+
         registry.addResourceHandler("/resource/upload/editor/**")
                 .addResourceLocations("file:" + fileUploadPath + "/");
     }

@@ -1,6 +1,7 @@
 package com.cpms.common.jwt;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,7 +9,6 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
@@ -20,41 +20,36 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    /*
-     * Spring Security에서 필터를 사용하여 HTTP 요청의 헤더에서 JWT 토큰을 추출하고, 이를 검중한 후 인증정보를 설정한다.
-     * @param request
-     * @param response
-     * @param chain
-     * @throws IOException
-     * @throws ServletException
-     */
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+    public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-        /* Request Header 에서 JWT 토큰 추출 */
-        String token = resolveToken(httpRequest);
+        HttpServletRequest httpRequest = (HttpServletRequest) req;
 
-        /* validateToken 으로 토큰 유효성 검사 */
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            // 토큰이 유효할 경우 토큰에서 Authentication 객체를 가지고 와서 SecurityContext 에 저장
-            Authentication authentication = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+        // Request Header에서 토큰 추출 및 유효성 검사 후 SecurityContext 설정
+        Optional.ofNullable(resolveToken(httpRequest))
+                .filter(jwtTokenProvider::validateToken)
+                .map(jwtTokenProvider::getAuthentication)
+                .ifPresent(
+                        authentication ->
+                                SecurityContextHolder.getContext()
+                                        .setAuthentication(authentication));
 
-        chain.doFilter(request, response);
+        chain.doFilter(req, res);
     }
 
-    /* Request Header 에서 토큰 정보 추출 */
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
+    /**
+     * 요청헤더에서 인증값을 가져온다.
+     *
+     * @param req
+     * @return
+     */
+    private String resolveToken(HttpServletRequest req) {
 
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
-            // 'Bearer ' 이후의 실제 토큰 부분을 추출
-            return bearerToken.substring(7);
-        }
-
-        return null;
+        return Optional.ofNullable(req.getHeader("Authorization"))
+                .filter(StringUtils::hasText)
+                .filter(token -> token.startsWith("Bearer"))
+                .map(token -> token.substring(7))
+                .orElse(null);
     }
 }

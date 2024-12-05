@@ -1,11 +1,11 @@
-package com.cpms.common.jwt;
+package com.cpms.common.helper;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.*;
 
-@Builder
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -15,21 +15,21 @@ public class JwtDTO {
 
     private String accessToken;
 
-    private int accessTokenExpiration;
-
     private String refreshToken;
 
-    private int refreshTokenExpiration;
+    private Integer accessTokenExpiration;
 
-    private Integer userId;
+    private Integer refreshTokenExpiration;
 
     private String authType;
 
-    private int companyId;
+    private Integer loginHistoryId;
+
+    private Integer userId;
+
+    private Integer companyId;
 
     private String loginId;
 
     private String loginPw;
-
-    private Integer loginHistoryId;
 }

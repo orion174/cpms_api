@@ -11,13 +11,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
     @Override
     public void commence(
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException authException)
             throws IOException {
-        // 유효한 자격증명을 제공하지 않고 접근하려 할때 401
+        // Api Url 접근시, 인증정보가 없으면 401 에러 반환
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write("TOKEN_ERROR");
     }

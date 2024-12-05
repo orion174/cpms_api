@@ -5,15 +5,25 @@ import com.querydsl.core.annotations.QueryProjection;
 
 import lombok.*;
 
-@Getter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResLoginDTO {
 
-    private Integer userId;
+    private String accessToken;
+
+    private String refreshToken;
+
+    private Integer accessTokenExpiration;
+
+    private Integer refreshTokenExpiration;
 
     private String authType;
+
+    private Integer loginHistoryId;
+
+    private Integer userId;
 
     private Integer companyId;
 
@@ -23,28 +33,18 @@ public class ResLoginDTO {
 
     private YesNo useYn;
 
-    private Integer loginHistoryId;
-
-    private String accessToken;
-
-    private int accessTokenExpiration;
-
-    private String refreshToken;
-
-    private int refreshTokenExpiration;
-
     private String option;
 
     @QueryProjection
     public ResLoginDTO(
-            Integer userId,
             String authType,
+            Integer userId,
             Integer companyId,
             String loginId,
             String loginPw,
             YesNo useYn) {
-        this.userId = userId;
         this.authType = authType;
+        this.userId = userId;
         this.companyId = companyId;
         this.loginId = loginId;
         this.loginPw = loginPw;

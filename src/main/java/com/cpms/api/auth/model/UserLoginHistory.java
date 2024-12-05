@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import jakarta.persistence.*;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +30,7 @@ public class UserLoginHistory {
 
     @Column private LocalDateTime regDt;
 
+    @Builder
     public UserLoginHistory(Integer userId, String loginId, String accessIp) {
         this.userId = userId;
         this.loginId = loginId;

@@ -26,7 +26,20 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+
     private final JwtTokenProvider jwtTokenProvider;
+
+    private static final List<String> PUBLIC_URLS =
+            List.of(
+                    "/auth/login",
+                    "/auth/refreshToken",
+                    "/cookie/saveCookie",
+                    "/cookie/getCookie",
+                    "/cookie/deleteCookie",
+                    "/util/Editor/smartEditorUploadURL",
+                    "/resource/upload/**");
+
+    private static final List<String> ALLOWED_ORIGINS = List.of("http://localhost:5173");
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -46,14 +59,7 @@ public class SecurityConfig {
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .authorizeHttpRequests()
-                .requestMatchers(
-                        "/auth/refreshToken",
-                        "/auth/login",
-                        "/auth/saveCookie",
-                        "/auth/getCookie",
-                        "/auth/deleteCookie",
-                        "/util/Editor/smartEditorUploadURL",
-                        "/resource/upload/**")
+                .requestMatchers(PUBLIC_URLS.toArray(String[]::new))
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -67,17 +73,19 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:5173", "운영서버"));
+        config.setAllowedOrigins(ALLOWED_ORIGINS);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.addAllowedHeader("*");
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
     }
 }

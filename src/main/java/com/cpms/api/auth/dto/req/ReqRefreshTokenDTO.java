@@ -1,17 +1,16 @@
 package com.cpms.api.auth.dto.req;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReqRefreshTokenDTO {
 
     private Integer loginHistoryId;
-
-    private String nm;
 
     private String refreshToken;
 }

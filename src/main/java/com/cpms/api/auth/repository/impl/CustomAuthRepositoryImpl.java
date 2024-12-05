@@ -10,7 +10,7 @@ import com.cpms.api.auth.dto.res.ResLoginDTO;
 import com.cpms.api.auth.model.QCpmsUser;
 import com.cpms.api.auth.model.QUserLoginHistory;
 import com.cpms.api.auth.repository.CustomAuthRepository;
-import com.cpms.common.jwt.JwtDTO;
+import com.cpms.common.helper.JwtDTO;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -21,17 +21,20 @@ import lombok.RequiredArgsConstructor;
 public class CustomAuthRepositoryImpl implements CustomAuthRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
+
     private final QCpmsUser cpmsUser = QCpmsUser.cpmsUser;
-    QUserLoginHistory userLoginHistory = QUserLoginHistory.userLoginHistory;
+
+    private final QUserLoginHistory userLoginHistory = QUserLoginHistory.userLoginHistory;
 
     @Override
     public Optional<ResLoginDTO> findUserByLoginId(String loginId) {
+
         ResLoginDTO result =
                 jpaQueryFactory
                         .select(
                                 new QResLoginDTO(
-                                        cpmsUser.userId,
                                         cpmsUser.authType,
+                                        cpmsUser.userId,
                                         cpmsUser.companyId,
                                         cpmsUser.loginId,
                                         cpmsUser.loginPw,
@@ -45,6 +48,7 @@ public class CustomAuthRepositoryImpl implements CustomAuthRepository {
 
     @Override
     public JwtDTO getUserInfoByLoginHistoryId(ReqRefreshTokenDTO reqRefreshTokenDTO) {
+
         Integer loginHistoryId = reqRefreshTokenDTO.getLoginHistoryId();
         String refreshToken = reqRefreshTokenDTO.getRefreshToken();
 
