@@ -49,3 +49,4 @@ bin/
 ### Ignore uploaded files ###
 /src/main/resources/upload/
 /src/main/resources/upload/**
+/src/main/resources/application-local.properties
