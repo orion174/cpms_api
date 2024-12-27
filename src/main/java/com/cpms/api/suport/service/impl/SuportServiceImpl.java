@@ -173,12 +173,16 @@ public class SuportServiceImpl implements SuportService {
     @Transactional(readOnly = true)
     public ResponseEntity<?> selectSuportList(ReqSuportListDTO reqSuportListDTO) {
         // 날짜형 데이터 NULL 처리
-        if (reqSuportListDTO.getSchStartDt() == null) {
-            reqSuportListDTO.setSchStartDt("");
-        }
-        if (reqSuportListDTO.getSchEndDt() == null) {
-            reqSuportListDTO.setSchEndDt("");
-        }
+        reqSuportListDTO.setSchStartDt(
+                Optional.ofNullable(reqSuportListDTO.getSchStartDt()).orElse(""));
+        reqSuportListDTO.setSchEndDt(
+                Optional.ofNullable(reqSuportListDTO.getSchEndDt()).orElse(""));
+
+        // 권한 처리
+        // USER 권한은 자신이 속한 업체의 유지보수 데이터만 조회가 가능하다.
+        Optional.ofNullable(getAuthType())
+                .filter(authType -> "USER".equals(authType))
+                .ifPresent(authType -> reqSuportListDTO.setSchCompanyId(getCompanyId()));
 
         Pageable pageable =
                 PageUtil.createPageable(
@@ -191,6 +195,7 @@ public class SuportServiceImpl implements SuportService {
                 ResSuportListDTO.builder()
                         .suportCnt((int) suportListPage.getTotalElements())
                         .suportList(suportListPage.getContent())
+                        .authType(getAuthType())
                         .build();
 
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
@@ -205,13 +210,25 @@ public class SuportServiceImpl implements SuportService {
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<?> selectSuportDetail(ReqSuportDTO reqSuportDTO) {
-        ResSuportDetailDTO result = new ResSuportDetailDTO();
-
-        // 유지보수 요청 글 키
+        // 유지보수 요청 글 키 검증
         Integer suportReqId = reqSuportDTO.getSuportReqId();
 
-        if (suportReqId != 0 && suportReqId != null) {
-            result = suportReqRepository.findSuportDetail(suportReqId);
+        if (suportReqId == null || suportReqId == 0) {
+            throw new IllegalArgumentException("유효하지 않은 유지보수 요청 ID입니다.");
+        }
+
+        // 유지보수 상세 조회
+        ResSuportDetailDTO result = suportReqRepository.findSuportDetail(suportReqId);
+        result.setAuthType(getAuthType());
+
+        // 권한 처리: USER 권한은 자신이 속한 업체 데이터만 조회 가능
+        if ("USER".equals(getAuthType())) {
+            Integer companyId = getCompanyId();
+            Integer userCompanyId = result.getUserCompanyId();
+
+            if (!companyId.equals(userCompanyId)) {
+                throw new IllegalArgumentException("권한이 없습니다.");
+            }
         }
 
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
@@ -273,9 +290,20 @@ public class SuportServiceImpl implements SuportService {
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
     }
 
+    /**
+     * 처리내역 답변을 수정한다.
+     *
+     * @param reqSuportResDTO
+     * @return
+     * @throws Exception
+     */
     @Override
     @Transactional
     public ResponseEntity<?> updateResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception {
+        if ("USER".equals(getAuthType())) {
+            throw new IllegalAccessException("권한이 없습니다.");
+        }
+
         Integer userId = getUserId();
 
         CpmsUser user =
@@ -315,6 +343,7 @@ public class SuportServiceImpl implements SuportService {
                                                     suportReq,
                                                     user,
                                                     fileType);
+
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);
                                 }
@@ -335,7 +364,11 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> deleteResSuport(ReqSuportDTO reqSuportDTO) {
+    public ResponseEntity<?> deleteResSuport(ReqSuportDTO reqSuportDTO) throws Exception {
+        if ("USER".equals(getAuthType())) {
+            throw new IllegalAccessException("권한이 없습니다.");
+        }
+
         Integer suportReqId = reqSuportDTO.getSuportReqId();
         Integer userId = getUserId();
 
@@ -366,21 +399,27 @@ public class SuportServiceImpl implements SuportService {
     public ResponseEntity<?> updateStatus(ReqSuportDTO reqSuportDTO) {
         boolean result = false;
 
-        SuportReq suportReq =
-                suportReqRepository
-                        .findById(reqSuportDTO.getSuportReqId())
-                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
+        // ADMIN 권한일때만 상태코드를 변경한다.
+        if ("ADMIN".equals(getAuthType())) {
+            SuportReq suportReq =
+                    suportReqRepository
+                            .findById(reqSuportDTO.getSuportReqId())
+                            .orElseThrow(
+                                    () -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
 
-        ComCode statusCd =
-                comCodeRepository
-                        .findById(reqSuportDTO.getStatusCd())
-                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 코드"));
+            ComCode statusCd =
+                    comCodeRepository
+                            .findById(reqSuportDTO.getStatusCd())
+                            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 코드"));
 
-        suportReq.updateStatusCd(statusCd, getUserId());
+            suportReq.updateStatusCd(statusCd, getUserId());
+            suportReqRepository.save(suportReq);
 
-        suportReqRepository.save(suportReq);
+            result = true;
 
-        result = true;
+        } else if ("USER".equals(getAuthType())) {
+            result = true;
+        }
 
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
     }

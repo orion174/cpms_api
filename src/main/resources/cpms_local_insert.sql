@@ -91,4 +91,4 @@ VALUES
 INSERT INTO cpms_local.cpms_user
 (user_id, auth_type, company_id, del_yn, login_id, login_pw, use_yn, user_dept, user_info, user_nm, user_phone, user_pos, del_dt, del_id, reg_dt, reg_id, udt_dt, udt_id)
 VALUES
-    (3, 'USER', 2, 'N', 'orion175', '$2a$10$0Cqt17WWRQFnM2HEI01Q.O2UoxxAsHo6z.tXUl6D42jjEu0ASZXxe', 'Y', '마켓헤머', '개발 테스트', '박범진', '01062588390', '팀원', NULL, NULL, '2024-11-14', 1, NULL, NULL);
+    (3, 'USER', 3, 'N', 'orion175', '$2a$10$0Cqt17WWRQFnM2HEI01Q.O2UoxxAsHo6z.tXUl6D42jjEu0ASZXxe', 'Y', '마켓헤머', '개발 테스트', '박범진', '01062588390', '팀원', NULL, NULL, '2024-11-14', 1, NULL, NULL);

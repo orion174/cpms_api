@@ -26,5 +26,5 @@ public interface SuportService {
 
     ResponseEntity<?> updateResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception;
 
-    ResponseEntity<?> deleteResSuport(ReqSuportDTO reqSuportDTO);
+    ResponseEntity<?> deleteResSuport(ReqSuportDTO reqSuportDTO) throws Exception;
 }

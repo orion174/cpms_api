@@ -75,7 +75,8 @@ public class SuportController {
     }
 
     @PostMapping("/resDelete")
-    public ResponseEntity<?> deleteResSuport(@RequestBody ReqSuportDTO reqSuportDTO) {
+    public ResponseEntity<?> deleteResSuport(@RequestBody ReqSuportDTO reqSuportDTO)
+            throws Exception {
         return suportService.deleteResSuport(reqSuportDTO);
     }
 }

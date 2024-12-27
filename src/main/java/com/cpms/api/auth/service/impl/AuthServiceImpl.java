@@ -184,6 +184,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                 .map(
                         user ->
                                 JwtDTO.builder()
+                                        .authType(user.getAuthType())
                                         .userId(user.getUserId())
                                         .companyId(user.getCompanyId())
                                         .build())

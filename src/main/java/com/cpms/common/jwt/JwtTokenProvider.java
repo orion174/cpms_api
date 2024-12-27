@@ -240,7 +240,7 @@ public class JwtTokenProvider {
             claims.put("auth", authorities);
         }
 
-        claims.put("authType", "ROLE_" + jwtDTO.getAuthType());
+        claims.put("authType", jwtDTO.getAuthType());
         claims.put("userId", jwtDTO.getUserId());
         claims.put("companyId", jwtDTO.getCompanyId());
 

@@ -13,9 +13,13 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ResSuportDetailDTO {
 
+    private String authType;
+
     private Integer suportReqId;
 
     private String reqCompanyNm;
+
+    private Integer userCompanyId;
 
     private String userCompanyNm;
 

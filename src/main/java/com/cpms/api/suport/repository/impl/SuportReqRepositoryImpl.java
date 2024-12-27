@@ -148,6 +148,7 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
                                         ResSuportDetailDTO.class,
                                         suportReq.suportReqId,
                                         suportReq.reqCompany.companyNm.as("reqCompanyNm"),
+                                        suportReq.userCompany.companyId.as("userCompanyId"),
                                         suportReq.userCompany.companyNm.as("userCompanyNm"),
                                         suportReq.reqProject.projectNm.as("reqProjectNm"),
                                         suportReq.requestCd.codeId.as("requestCd"),

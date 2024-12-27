@@ -17,6 +17,8 @@ public class ResSuportListDTO {
 
     private List<SuportList> suportList;
 
+    private String authType;
+
     @Getter
     @Setter
     public static class SuportList {
