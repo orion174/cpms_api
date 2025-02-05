@@ -1,4 +1,4 @@
-package com.cpms.api.suport.model;
+package com.cpms.api.support.model;
 
 import java.time.LocalDateTime;
 
@@ -17,29 +17,34 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "suport_file")
-public class SuportFile extends BaseEntity {
+@Table(name = "support_file")
+public class SupportFile extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "suport_file_id")
-    private Integer suportFileId;
+    @Column(name = "support_file_id")
+    private Integer supportFileId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "support_request_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private SupportRequest supportRequest;
 
     @Column(name = "file_type")
     private String fileType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "suport_req_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private SuportReq suportReq;
-
+    @Column(name = "file_path")
     private String filePath;
 
+    @Column(name = "file_nm")
     private String fileNm;
 
+    @Column(name = "file_og_nm")
     private String fileOgNm;
 
+    @Column(name = "file_ext")
     private String fileExt;
 
+    @Column(name = "file_size")
     private Long fileSize;
 
     /* 등록자 */
@@ -47,14 +52,14 @@ public class SuportFile extends BaseEntity {
     @JoinColumn(name = "reg_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private CpmsUser regUser;
 
-    @Column(columnDefinition = "int(10) unsigned")
+    @Column(name = "udt_id", columnDefinition = "int(10) unsigned")
     protected Integer udtId;
 
-    @Column(columnDefinition = "int(10) unsigned")
+    @Column(name = "del_id", columnDefinition = "int(10) unsigned")
     protected Integer delId;
 
-    public SuportFile(
-            SuportReq suportReq,
+    public SupportFile(
+            SupportRequest supportRequest,
             String fileType,
             String filePath,
             String fileNm,
@@ -62,7 +67,7 @@ public class SuportFile extends BaseEntity {
             String fileExt,
             Long fileSize,
             CpmsUser regUser) {
-        this.suportReq = suportReq;
+        this.supportRequest = supportRequest;
         this.fileType = fileType;
         this.filePath = filePath;
         this.fileNm = fileNm;
@@ -72,8 +77,8 @@ public class SuportFile extends BaseEntity {
         this.regUser = regUser;
     }
 
-    public void setSuportReq(SuportReq suportReq) {
-        this.suportReq = suportReq;
+    public void setSupportRequest(SupportRequest supportRequest) {
+        this.supportRequest = supportRequest;
     }
 
     // 파일 삭제

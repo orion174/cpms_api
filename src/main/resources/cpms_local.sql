@@ -57,9 +57,56 @@ CREATE TABLE `cpms_user` (
   PRIMARY KEY (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='사용자 정보';
 
-CREATE TABLE `suport_file` (
-  `suport_file_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '기본키',
-  `suport_req_id` int(10) unsigned DEFAULT NULL COMMENT '유지보수 요청 키',
+CREATE TABLE `user_login_history` (
+  `login_history_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `access_ip` varchar(255) DEFAULT NULL,
+  `login_id` varchar(255) DEFAULT NULL,
+  `refresh_token` varchar(255) DEFAULT NULL,
+  `reg_dt` datetime(6) DEFAULT NULL,
+  PRIMARY KEY (`login_history_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='사용자 로그인 이력';
+
+CREATE TABLE `support_request` (
+  `support_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `request_company_id` int(10) unsigned NOT NULL COMMENT '요청 회사 키',
+  `user_company_id` int(10) unsigned NOT NULL COMMENT '사용자 회사 키',
+  `request_project_id` int(10) unsigned NOT NULL COMMENT '프로젝트 키',
+  `response_user_id` int(10) unsigned DEFAULT 0,
+  `request_cd` int(10) unsigned DEFAULT NULL COMMENT '요청 유형 코드',
+  `status_cd` int(10) unsigned DEFAULT NULL COMMENT '처리 상태 코드',
+  `request_date` date DEFAULT NULL,
+  `response_date` date DEFAULT NULL,
+  `support_title` varchar(255) DEFAULT NULL COMMENT '문의 제목',
+  `support_editor` text CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci DEFAULT NULL COMMENT '문의 상세',
+  `reg_id` int(10) unsigned DEFAULT NULL,
+  `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `udt_id` int(11) unsigned DEFAULT NULL COMMENT '수정자',
+  `udt_dt` datetime DEFAULT NULL COMMENT '수정일',
+  `del_yn` enum('N','Y') CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci NOT NULL DEFAULT 'N' COMMENT '삭제 여부',
+  `del_id` int(11) unsigned DEFAULT NULL COMMENT '삭제자',
+  `del_dt` datetime DEFAULT NULL COMMENT '삭제일',
+  PRIMARY KEY (`support_request_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='유지보수 문의 정보';
+
+CREATE TABLE `support_response` (
+  `support_response_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `support_request_id` int(10) unsigned NOT NULL COMMENT '유지보수 문의 정보 키',
+  `response_title` varchar(255) DEFAULT NULL COMMENT '답변 제목',
+  `response_editor` text CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci DEFAULT NULL COMMENT '응답 상세',
+  `reg_id` int(10) unsigned DEFAULT NULL,
+  `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `udt_id` int(11) unsigned DEFAULT NULL COMMENT '수정자',
+  `udt_dt` datetime DEFAULT NULL COMMENT '수정일',
+  `del_yn` enum('N','Y') CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci NOT NULL DEFAULT 'N' COMMENT '삭제 여부',
+  `del_id` int(11) unsigned DEFAULT NULL COMMENT '삭제자',
+  `del_dt` datetime DEFAULT NULL COMMENT '삭제일',
+  PRIMARY KEY (`support_response_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='유지보수 응답 정보';
+
+CREATE TABLE `support_file` (
+  `support_file_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '기본키',
+  `support_request_id` int(10) unsigned DEFAULT NULL COMMENT '유지보수 요청 키',
   `file_type` varchar(10) DEFAULT NULL COMMENT '파일 구분',
   `file_path` varchar(100) DEFAULT NULL COMMENT '파일 경로',
   `file_nm` varchar(100) DEFAULT NULL COMMENT '파일 변환 명',
@@ -74,53 +121,6 @@ CREATE TABLE `suport_file` (
   `del_id` int(10) unsigned DEFAULT NULL,
   `del_dt` datetime DEFAULT NULL COMMENT '삭제일',
   `reg_dt` datetime NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`suport_file_id`)
+  PRIMARY KEY (`support_file_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='유지보수 첨부 파일';
-
-CREATE TABLE `suport_req` (
-  `suport_req_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `req_company_id` int(10) unsigned NOT NULL COMMENT '요청 회사 키',
-  `user_company_id` int(10) unsigned NOT NULL COMMENT '사용자 회사 키',
-  `req_project_id` int(10) unsigned NOT NULL COMMENT '프로젝트 키',
-  `res_user_id` int(10) unsigned DEFAULT 0,
-  `request_cd` int(10) unsigned DEFAULT NULL COMMENT '요청 유형 코드',
-  `status_cd` int(10) unsigned DEFAULT NULL COMMENT '처리 상태 코드',
-  `req_date` date DEFAULT NULL,
-  `res_date` date DEFAULT NULL,
-  `suport_title` varchar(255) DEFAULT NULL COMMENT '문의 제목',
-  `suport_editor` text CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '문의 상세',
-  `reg_id` int(10) unsigned DEFAULT NULL,
-  `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
-  `udt_id` int(11) unsigned DEFAULT NULL COMMENT '수정자',
-  `udt_dt` datetime DEFAULT NULL COMMENT '수정일',
-  `del_yn` enum('N','Y') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'N' COMMENT '삭제 여부',
-  `del_id` int(11) unsigned DEFAULT NULL COMMENT '삭제자',
-  `del_dt` datetime DEFAULT NULL COMMENT '삭제일',
-  PRIMARY KEY (`suport_req_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='유지보수 문의 정보';
-
-CREATE TABLE `suport_res` (
-  `suport_res_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `suport_req_id` int(10) unsigned NOT NULL COMMENT '유지보수 문의 정보 키',
-  `res_title` varchar(255) DEFAULT NULL COMMENT '답변 제목',
-  `res_editor` text CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '응답 상세',
-  `reg_id` int(10) unsigned DEFAULT NULL,
-  `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
-  `udt_id` int(11) unsigned DEFAULT NULL COMMENT '수정자',
-  `udt_dt` datetime DEFAULT NULL COMMENT '수정일',
-  `del_yn` enum('N','Y') CHARACTER SET utf8mb4 NOT NULL DEFAULT 'N' COMMENT '삭제 여부',
-  `del_id` int(11) unsigned DEFAULT NULL COMMENT '삭제자',
-  `del_dt` datetime DEFAULT NULL COMMENT '삭제일',
-  PRIMARY KEY (`suport_res_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='유지보수 응답 정보';
-
-CREATE TABLE `user_login_history` (
-  `login_history_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `access_ip` varchar(255) DEFAULT NULL,
-  `login_id` varchar(255) DEFAULT NULL,
-  `refresh_token` varchar(255) DEFAULT NULL,
-  `reg_dt` datetime(6) DEFAULT NULL,
-  PRIMARY KEY (`login_history_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='사용자 로그인 이력';
 

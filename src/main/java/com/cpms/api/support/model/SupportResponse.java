@@ -1,4 +1,4 @@
-package com.cpms.api.suport.model;
+package com.cpms.api.support.model;
 
 import java.time.LocalDateTime;
 
@@ -14,51 +14,53 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "suport_res")
+@Table(name = "support_response")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SuportRes extends BaseEntity {
+public class SupportResponse extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "suport_res_id")
-    private Integer suportResId;
+    @Column(name = "support_response_id")
+    private Integer supportResponseId;
 
     /* 요청 문의 */
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "suport_req_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private SuportReq suportReq;
+    @JoinColumn(name = "support_request_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private SupportRequest supportRequest;
 
-    private String resTitle;
+    @Column(name = "response_title")
+    private String responseTitle;
 
-    private String resEditor;
+    @Column(name = "response_editor")
+    private String responseEditor;
 
     /* 등록자 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reg_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private CpmsUser regUser;
 
-    @Column(columnDefinition = "int(10) unsigned")
+    @Column(name = "udt_id", columnDefinition = "int(10) unsigned")
     protected Integer udtId;
 
-    @Column(columnDefinition = "int(10) unsigned")
+    @Column(name = "del_id", columnDefinition = "int(10) unsigned")
     protected Integer delId;
 
-    public SuportRes(SuportReq suportReq, String resTitle, String resEditor, CpmsUser regUser) {
-        this.suportReq = suportReq;
-        this.resTitle = resTitle;
-        this.resEditor = resEditor;
+    public SupportResponse(SupportRequest supportRequest, String responseTitle, String responseEditor, CpmsUser regUser) {
+        this.supportRequest = supportRequest;
+        this.responseTitle = responseTitle;
+        this.responseEditor = responseEditor;
         this.regUser = regUser;
     }
 
     // 답변 수정
-    public void updateRes(String resTitle, String resEditor, Integer udtId) {
-        this.resTitle = resTitle;
-        this.resEditor = resEditor;
+    public void updateResponse(String responseTitle, String responseEditor, Integer udtId) {
+        this.responseTitle = responseTitle;
+        this.responseEditor = responseEditor;
         this.udtId = udtId;
     }
 
     // 답변 삭제
-    public void deleteRes(YesNo delYn, Integer delId) {
+    public void deleteResponse(YesNo delYn, Integer delId) {
         this.delYn = delYn;
         this.delId = delId;
     }

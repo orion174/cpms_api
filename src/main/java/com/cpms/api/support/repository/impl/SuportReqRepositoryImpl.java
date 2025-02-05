@@ -1,4 +1,4 @@
-package com.cpms.api.suport.repository.impl;
+package com.cpms.api.support.repository.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,13 +13,13 @@ import org.springframework.util.StringUtils;
 
 import com.cpms.api.auth.model.QCpmsUser;
 import com.cpms.api.code.model.QComCode;
-import com.cpms.api.suport.dto.req.ReqSuportListDTO;
-import com.cpms.api.suport.dto.res.ResSuportDetailDTO;
-import com.cpms.api.suport.dto.res.ResSuportListDTO;
-import com.cpms.api.suport.model.QSuportFile;
-import com.cpms.api.suport.model.QSuportReq;
-import com.cpms.api.suport.model.QSuportRes;
-import com.cpms.api.suport.repository.CustomSuportReqRepository;
+import com.cpms.api.support.dto.req.ReqSupportListDTO;
+import com.cpms.api.support.dto.res.ResSupportDetailDTO;
+import com.cpms.api.support.dto.res.ResSupportListDTO;
+import com.cpms.api.support.model.QSuportFile;
+import com.cpms.api.support.model.QSuportReq;
+import com.cpms.api.support.model.QSuportRes;
+import com.cpms.api.support.repository.CustomSuportReqRepository;
 import com.cpms.api.user.model.QCpmsCompany;
 import com.cpms.api.user.model.QCpmsProject;
 import com.cpms.common.helper.YesNo;
@@ -61,8 +61,8 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
      * @return
      */
     @Override
-    public Page<ResSuportListDTO.SuportList> findSuportList(
-            ReqSuportListDTO reqSuportListDTO, Pageable pageable) {
+    public Page<ResSupportListDTO.SuportList> findSuportList(
+            ReqSupportListDTO reqSuportListDTO, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
         builder.and(suportReq.delYn.eq(YesNo.valueOf("N")));
@@ -95,11 +95,11 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
         }
 
         // 조회 쿼리
-        List<ResSuportListDTO.SuportList> result =
+        List<ResSupportListDTO.SuportList> result =
                 jpaQueryFactory
                         .select(
                                 Projections.fields(
-                                        ResSuportListDTO.SuportList.class,
+                                        ResSupportListDTO.SuportList.class,
                                         suportReq.suportReqId,
                                         suportReq.userCompany.companyNm.as("userCompanyNm"),
                                         suportReq.reqProject.projectNm.as("reqProjectNm"),
@@ -140,12 +140,12 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
     }
 
     @Override
-    public ResSuportDetailDTO findSuportDetail(Integer suportReqId) {
-        ResSuportDetailDTO detail =
+    public ResSupportDetailDTO findSuportDetail(Integer suportReqId) {
+        ResSupportDetailDTO detail =
                 jpaQueryFactory
                         .select(
                                 Projections.fields(
-                                        ResSuportDetailDTO.class,
+                                        ResSupportDetailDTO.class,
                                         suportReq.suportReqId,
                                         suportReq.reqCompany.companyNm.as("reqCompanyNm"),
                                         suportReq.userCompany.companyId.as("userCompanyId"),
@@ -173,14 +173,14 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
                         .fetchOne();
 
         if (detail == null) {
-            return new ResSuportDetailDTO();
+            return new ResSupportDetailDTO();
         }
 
-        ResSuportDetailDTO.SuportRes resDetail =
+        ResSupportDetailDTO.SuportRes resDetail =
                 jpaQueryFactory
                         .select(
                                 Projections.fields(
-                                        ResSuportDetailDTO.SuportRes.class,
+                                        ResSupportDetailDTO.SuportRes.class,
                                         suportRes.suportResId,
                                         suportRes.resTitle,
                                         suportRes.resEditor))
@@ -193,13 +193,13 @@ public class SuportReqRepositoryImpl implements CustomSuportReqRepository {
                                         .and(suportRes.delYn.eq(YesNo.N)))
                         .fetchOne();
 
-        detail.setSuportRes(resDetail != null ? resDetail : new ResSuportDetailDTO.SuportRes());
+        detail.setSuportRes(resDetail != null ? resDetail : new ResSupportDetailDTO.SuportRes());
 
-        List<ResSuportDetailDTO.FileList> files =
+        List<ResSupportDetailDTO.FileList> files =
                 jpaQueryFactory
                         .select(
                                 Projections.fields(
-                                        ResSuportDetailDTO.FileList.class,
+                                        ResSupportDetailDTO.FileList.class,
                                         suportFile.suportFileId,
                                         suportFile.fileType,
                                         suportFile.filePath,

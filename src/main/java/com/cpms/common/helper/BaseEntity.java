@@ -13,13 +13,16 @@ import lombok.Getter;
 @MappedSuperclass
 public abstract class BaseEntity {
 
+    @Column(name = "reg_dt")
+    protected LocalDateTime regDt;
+
+    @Column(name = "udt_dt")
+    protected LocalDateTime udtDt;
+
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum('Y','N')", nullable = false)
+    @Column(name = "del_yn", columnDefinition = "enum('Y','N')", nullable = false)
     protected YesNo delYn = YesNo.N;
 
-    @Column protected LocalDateTime regDt;
-
-    @Column protected LocalDateTime udtDt;
-
-    @Column protected LocalDateTime delDt;
+    @Column(name = "del_dt")
+    protected LocalDateTime delDt;
 }

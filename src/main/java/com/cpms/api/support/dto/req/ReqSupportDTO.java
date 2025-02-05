@@ -1,45 +1,44 @@
-package com.cpms.api.suport.dto.req;
+package com.cpms.api.support.dto.req;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReqSuportDTO {
+public class ReqSupportDTO {
 
-    private Integer suportReqId;
+    private Integer supportRequestId;
 
-    private Integer reqCompanyId;
+    private Integer requestCompanyId;
 
     private Integer userCompanyId;
 
-    private Integer reqProjectId;
+    private Integer requestProjectId;
 
-    private Integer resUserId;
+    private Integer responseUserId;
 
     private Integer requestCd;
 
     private Integer statusCd;
 
-    private String reqDate;
+    private String requestDate;
 
-    private String resDate;
+    private String responseDate;
 
-    private String suportTitle;
+    private String supportTitle;
 
-    private String suportEditor;
+    private String supportEditor;
 
-    // 파일 데이터
-    private MultipartFile[] suportFile;
+    private MultipartFile[] supportFile;
 
-    private Integer suportFileId;
+    private Integer supportFileId;
 
     private String fileCategory;
 
@@ -53,6 +52,5 @@ public class ReqSuportDTO {
 
     private Long fileSize;
 
-    // 메타 데이터
     private Integer userId;
 }

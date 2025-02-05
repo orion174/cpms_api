@@ -1,4 +1,4 @@
-package com.cpms.api.suport.service.impl;
+package com.cpms.api.support.service.impl;
 
 import static com.cpms.common.util.CommonUtil.hasFiles;
 import static com.cpms.common.util.CommonUtil.parseToIntSafely;
@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
+import com.cpms.api.support.model.SupportResponse;
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -23,18 +24,17 @@ import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.api.auth.repository.CpmsUserRepository;
 import com.cpms.api.code.model.ComCode;
 import com.cpms.api.code.repository.ComCodeRepository;
-import com.cpms.api.suport.dto.req.ReqSuportDTO;
-import com.cpms.api.suport.dto.req.ReqSuportListDTO;
-import com.cpms.api.suport.dto.req.ReqSuportResDTO;
-import com.cpms.api.suport.dto.res.ResSuportDetailDTO;
-import com.cpms.api.suport.dto.res.ResSuportListDTO;
-import com.cpms.api.suport.model.SuportFile;
-import com.cpms.api.suport.model.SuportReq;
-import com.cpms.api.suport.model.SuportRes;
-import com.cpms.api.suport.repository.SuportFileRepository;
-import com.cpms.api.suport.repository.SuportReqRepository;
-import com.cpms.api.suport.repository.SuportResRepository;
-import com.cpms.api.suport.service.SuportService;
+import com.cpms.api.support.dto.req.ReqSupportDTO;
+import com.cpms.api.support.dto.req.ReqSupportListDTO;
+import com.cpms.api.support.dto.req.ReqSupportResponseDTO;
+import com.cpms.api.support.dto.res.ResSupportDetailDTO;
+import com.cpms.api.support.dto.res.ResSupportListDTO;
+import com.cpms.api.support.model.SupportFile;
+import com.cpms.api.support.model.SupportRequest;
+import com.cpms.api.support.repository.SuportFileRepository;
+import com.cpms.api.support.repository.SuportReqRepository;
+import com.cpms.api.support.repository.SuportResRepository;
+import com.cpms.api.support.service.SuportService;
 import com.cpms.api.user.model.CpmsCompany;
 import com.cpms.api.user.model.CpmsProject;
 import com.cpms.api.user.repository.CpmsCompanyRepository;
@@ -99,7 +99,7 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> insertReqSuport(ReqSuportDTO reqSuportDTO) throws Exception {
+    public ResponseEntity<?> insertReqSuport(ReqSupportDTO reqSuportDTO) throws Exception {
         boolean result = true;
 
         CpmsCompany reqCompany =
@@ -132,8 +132,8 @@ public class SuportServiceImpl implements SuportService {
                         .findById(getUserId())
                         .orElseThrow(() -> new Exception("유효하지 않는 사용자 ID"));
 
-        SuportReq suportReq =
-                new SuportReq(
+        SupportRequest suportReq =
+                new SupportRequest(
                         reqCompany,
                         userCompany,
                         reqProject,
@@ -171,7 +171,7 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<?> selectSuportList(ReqSuportListDTO reqSuportListDTO) {
+    public ResponseEntity<?> selectSuportList(ReqSupportListDTO reqSuportListDTO) {
         // 날짜형 데이터 NULL 처리
         reqSuportListDTO.setSchStartDt(
                 Optional.ofNullable(reqSuportListDTO.getSchStartDt()).orElse(""));
@@ -188,11 +188,11 @@ public class SuportServiceImpl implements SuportService {
                 PageUtil.createPageable(
                         reqSuportListDTO.getPageNo(), reqSuportListDTO.getPageSize());
 
-        Page<ResSuportListDTO.SuportList> suportListPage =
+        Page<ResSupportListDTO.SuportList> suportListPage =
                 suportReqRepository.findSuportList(reqSuportListDTO, pageable);
 
-        ResSuportListDTO result =
-                ResSuportListDTO.builder()
+        ResSupportListDTO result =
+                ResSupportListDTO.builder()
                         .suportCnt((int) suportListPage.getTotalElements())
                         .suportList(suportListPage.getContent())
                         .authType(getAuthType())
@@ -209,7 +209,7 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<?> selectSuportDetail(ReqSuportDTO reqSuportDTO) {
+    public ResponseEntity<?> selectSuportDetail(ReqSupportDTO reqSuportDTO) {
         // 유지보수 요청 글 키 검증
         Integer suportReqId = reqSuportDTO.getSuportReqId();
 
@@ -218,7 +218,7 @@ public class SuportServiceImpl implements SuportService {
         }
 
         // 유지보수 상세 조회
-        ResSuportDetailDTO result = suportReqRepository.findSuportDetail(suportReqId);
+        ResSupportDetailDTO result = suportReqRepository.findSuportDetail(suportReqId);
         result.setAuthType(getAuthType());
 
         // 권한 처리: USER 권한은 자신이 속한 업체 데이터만 조회 가능
@@ -243,10 +243,10 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> insertResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception {
+    public ResponseEntity<?> insertResSuport(ReqSupportResponseDTO reqSuportResDTO) throws Exception {
         boolean result = true;
 
-        SuportReq suportReq =
+        SupportRequest suportReq =
                 suportReqRepository
                         .findById(reqSuportResDTO.getSuportReqId())
                         .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
@@ -265,8 +265,8 @@ public class SuportServiceImpl implements SuportService {
         suportReq.updateStatusCd(statusCd, getUserId());
         suportReq.updateResUser(userId, getUserId());
 
-        SuportRes suportRes =
-                new SuportRes(
+        SupportResponse suportRes =
+                new SupportResponse(
                         suportReq,
                         reqSuportResDTO.getResTitle(),
                         reqSuportResDTO.getResEditor(),
@@ -299,7 +299,7 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> updateResSuport(ReqSuportResDTO reqSuportResDTO) throws Exception {
+    public ResponseEntity<?> updateResSuport(ReqSupportResponseDTO reqSuportResDTO) throws Exception {
         if ("USER".equals(getAuthType())) {
             throw new IllegalAccessException("권한이 없습니다.");
         }
@@ -316,7 +316,7 @@ public class SuportServiceImpl implements SuportService {
                         .findById(reqSuportResDTO.getResStatusCd())
                         .orElseThrow(() -> new Exception("유효하지 않는 코드"));
 
-        SuportReq suportReq =
+        SupportRequest suportReq =
                 suportReqRepository
                         .findById(reqSuportResDTO.getSuportReqId())
                         .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
@@ -364,7 +364,7 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> deleteResSuport(ReqSuportDTO reqSuportDTO) throws Exception {
+    public ResponseEntity<?> deleteResSuport(ReqSupportDTO reqSuportDTO) throws Exception {
         if ("USER".equals(getAuthType())) {
             throw new IllegalAccessException("권한이 없습니다.");
         }
@@ -372,7 +372,7 @@ public class SuportServiceImpl implements SuportService {
         Integer suportReqId = reqSuportDTO.getSuportReqId();
         Integer userId = getUserId();
 
-        Optional<SuportRes> suportResOpt =
+        Optional<SupportResponse> suportResOpt =
                 suportResRepository.findBySuportReq_SuportReqIdAndDelYn(suportReqId, YesNo.N);
 
         suportResOpt.ifPresentOrElse(
@@ -381,7 +381,7 @@ public class SuportServiceImpl implements SuportService {
                     suportRes.deleteRes(YesNo.Y, userId);
 
                     // 답변 첨부파일 삭제
-                    List<SuportFile> fileList =
+                    List<SupportFile> fileList =
                             suportFileRepository.findBySuportReq_SuportReqIdAndFileTypeAndDelYn(
                                     suportReqId, FILE_TYPE_RES, YesNo.N);
 
@@ -396,12 +396,12 @@ public class SuportServiceImpl implements SuportService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> updateStatus(ReqSuportDTO reqSuportDTO) {
+    public ResponseEntity<?> updateStatus(ReqSupportDTO reqSuportDTO) {
         boolean result = false;
 
         // ADMIN 권한일때만 상태코드를 변경한다.
         if ("ADMIN".equals(getAuthType())) {
-            SuportReq suportReq =
+            SupportRequest suportReq =
                     suportReqRepository
                             .findById(reqSuportDTO.getSuportReqId())
                             .orElseThrow(
@@ -432,10 +432,10 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> updateUser(ReqSuportDTO reqSuportDTO) {
+    public ResponseEntity<?> updateUser(ReqSupportDTO reqSuportDTO) {
         boolean result = false;
 
-        SuportReq suportReq =
+        SupportRequest suportReq =
                 suportReqRepository
                         .findById(reqSuportDTO.getSuportReqId())
                         .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
@@ -464,7 +464,7 @@ public class SuportServiceImpl implements SuportService {
      */
     @Transactional
     private boolean suportFileUpload(
-            MultipartFile[] files, SuportReq suportReq, CpmsUser regUser, String fileType)
+            MultipartFile[] files, SupportRequest suportReq, CpmsUser regUser, String fileType)
             throws Exception {
         // 첨부파일 개수 만큼 반복
         for (MultipartFile file : files) {
@@ -475,8 +475,8 @@ public class SuportServiceImpl implements SuportService {
             // 경로에 파일을 저장한다.
             FileDTO fileDTO = FileUtil.fileUpload(file, uploadPath + "/" + today);
 
-            SuportFile suportFile =
-                    new SuportFile(
+            SupportFile suportFile =
+                    new SupportFile(
                             suportReq,
                             fileType,
                             fileDTO.getFilePath(),
@@ -495,7 +495,7 @@ public class SuportServiceImpl implements SuportService {
     @Override
     @Transactional
     public ResponseEntity<?> fileDelete(int suportFileId) {
-        Optional<SuportFile> suportFileOpt = suportFileRepository.findById(suportFileId);
+        Optional<SupportFile> suportFileOpt = suportFileRepository.findById(suportFileId);
 
         suportFileOpt.ifPresentOrElse(
                 suportFile -> {
@@ -516,7 +516,7 @@ public class SuportServiceImpl implements SuportService {
      */
     @Override
     public ResponseEntity<?> fileDownload(int suportFileId) {
-        SuportFile file =
+        SupportFile file =
                 suportFileRepository
                         .findById(suportFileId)
                         .orElseThrow(() -> new EntityNotFoundException("유효하지 않는 파일 ID"));

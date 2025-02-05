@@ -1,40 +1,40 @@
-package com.cpms.api.suport.controller;
+package com.cpms.api.support.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cpms.api.suport.dto.req.*;
-import com.cpms.api.suport.service.SuportService;
+import com.cpms.api.support.dto.req.*;
+import com.cpms.api.support.service.SuportService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/suport")
 @RequiredArgsConstructor
-public class SuportController {
+@RequestMapping("/api/support")
+public class SupportController {
 
     private final SuportService suportService;
 
     @PostMapping("/insert")
-    public ResponseEntity<?> insertReqSuport(
-            @RequestPart(value = "suportFile", required = false) MultipartFile[] suportFile,
-            @ModelAttribute ReqSuportDTO reqSuportDTO)
+    public ResponseEntity<?> insertSupportRequest(
+            @RequestPart(value = "supportFile", required = false) MultipartFile[] supportFile,
+            @ModelAttribute ReqSupportDTO reqSupportDTO)
             throws Exception {
-        if (suportFile != null) {
-            reqSuportDTO.setSuportFile(suportFile);
+        if (supportFile != null) {
+            reqSupportDTO.setSupportFile(supportFile);
         }
 
-        return suportService.insertReqSuport(reqSuportDTO);
+        return suportService.insertSupportRequest(reqSupportDTO);
     }
 
     @PostMapping("/list")
-    public ResponseEntity<?> selectSuportList(@RequestBody ReqSuportListDTO reqSuportListDTO) {
+    public ResponseEntity<?> selectSuportList(@RequestBody ReqSupportListDTO reqSuportListDTO) {
         return suportService.selectSuportList(reqSuportListDTO);
     }
 
     @PostMapping("/detail")
-    public ResponseEntity<?> selectSuportDetail(@RequestBody ReqSuportDTO reqSuportDTO) {
+    public ResponseEntity<?> selectSuportDetail(@RequestBody ReqSupportDTO reqSuportDTO) {
         return suportService.selectSuportDetail(reqSuportDTO);
     }
 
@@ -49,19 +49,19 @@ public class SuportController {
     }
 
     @PostMapping("/updateStatus")
-    public ResponseEntity<?> updateStatus(@RequestBody ReqSuportDTO reqSuportDTO) {
+    public ResponseEntity<?> updateStatus(@RequestBody ReqSupportDTO reqSuportDTO) {
         return suportService.updateStatus(reqSuportDTO);
     }
 
     @PostMapping("/updateUser")
-    public ResponseEntity<?> updateUser(@RequestBody ReqSuportDTO reqSuportDTO) {
+    public ResponseEntity<?> updateUser(@RequestBody ReqSupportDTO reqSuportDTO) {
         return suportService.updateUser(reqSuportDTO);
     }
 
     @PostMapping("/resInsert")
     public ResponseEntity<?> insertResSuport(
             @RequestPart(value = "resFile", required = false) MultipartFile[] resFile,
-            @ModelAttribute ReqSuportResDTO reqSuportResDTO)
+            @ModelAttribute ReqSupportResponseDTO reqSuportResDTO)
             throws Exception {
         return suportService.insertResSuport(reqSuportResDTO);
     }
@@ -69,13 +69,13 @@ public class SuportController {
     @PostMapping("/resUpdate")
     public ResponseEntity<?> updateResSuport(
             @RequestPart(value = "resFile", required = false) MultipartFile[] resFile,
-            @ModelAttribute ReqSuportResDTO reqSuportResDTO)
+            @ModelAttribute ReqSupportResponseDTO reqSuportResDTO)
             throws Exception {
         return suportService.updateResSuport(reqSuportResDTO);
     }
 
     @PostMapping("/resDelete")
-    public ResponseEntity<?> deleteResSuport(@RequestBody ReqSuportDTO reqSuportDTO)
+    public ResponseEntity<?> deleteResSuport(@RequestBody ReqSupportDTO reqSuportDTO)
             throws Exception {
         return suportService.deleteResSuport(reqSuportDTO);
     }

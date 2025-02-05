@@ -1,4 +1,4 @@
-package com.cpms.api.suport.model;
+package com.cpms.api.support.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,21 +19,21 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "suport_req")
+@Table(name = "support_request")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SuportReq extends BaseEntity {
+public class SupportRequest extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "suport_req_id")
-    private Integer suportReqId;
+    @Column(name = "support_request_id")
+    private Integer supportRequestId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "req_company_id",
+            name = "request_company_id",
             referencedColumnName = "company_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private CpmsCompany reqCompany;
+    private CpmsCompany requestCompany;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -44,17 +44,17 @@ public class SuportReq extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "req_project_id",
+            name = "request_project_id",
             referencedColumnName = "project_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private CpmsProject reqProject;
+    private CpmsProject requestProject;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
-            name = "res_user_id",
+            name = "response_user_id",
             referencedColumnName = "user_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private CpmsUser resUser;
+    private CpmsUser responseUser;
 
     /* 요청 유형 코드 */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -72,13 +72,17 @@ public class SuportReq extends BaseEntity {
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private ComCode statusCd;
 
-    private LocalDate reqDate;
+    @Column(name = "request_date")
+    private LocalDate requestDate;
 
-    private LocalDate resDate;
+    @Column(name = "response_date")
+    private LocalDate responseDate;
 
-    private String suportTitle;
+    @Column(name = "support_title")
+    private String supportTitle;
 
-    private String suportEditor;
+    @Column(name = "support_editor")
+    private String supportEditor;
 
     /* 등록자 */
     @ManyToOne(fetch = FetchType.LAZY)
@@ -88,36 +92,36 @@ public class SuportReq extends BaseEntity {
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private CpmsUser regUser;
 
-    @Column(columnDefinition = "int(10) unsigned")
+    @Column(name = "udt_id", columnDefinition = "int(10) unsigned")
     protected Integer udtId;
 
-    @Column(columnDefinition = "int(10) unsigned")
+    @Column(name = "del_id", columnDefinition = "int(10) unsigned")
     protected Integer delId;
 
     /* 첨부파일 */
-    @OneToMany(mappedBy = "suportReq", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SuportFile> files = new ArrayList<>();
+    @OneToMany(mappedBy = "supportRequest", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SupportFile> files = new ArrayList<>();
 
-    public SuportReq(
-            CpmsCompany reqCompany,
+    public SupportRequest(
+            CpmsCompany requestCompany,
             CpmsCompany userCompany,
-            CpmsProject reqProject,
-            CpmsUser resUser,
+            CpmsProject requestProject,
+            CpmsUser responseUser,
             ComCode requestCd,
             ComCode statusCd,
-            String reqDate,
-            String suportTitle,
-            String suportEditor,
+            String requestDate,
+            String supportTitle,
+            String supportEditor,
             CpmsUser regUser) {
-        this.reqCompany = reqCompany;
+        this.requestCompany = requestCompany;
         this.userCompany = userCompany;
-        this.reqProject = reqProject;
-        this.resUser = resUser;
+        this.requestProject = requestProject;
+        this.responseUser = responseUser;
         this.requestCd = requestCd;
         this.statusCd = statusCd;
-        this.reqDate = LocalDate.parse(reqDate);
-        this.suportTitle = suportTitle;
-        this.suportEditor = suportEditor;
+        this.requestDate = LocalDate.parse(requestDate);
+        this.supportTitle = supportTitle;
+        this.supportEditor = supportEditor;
         this.regUser = regUser;
     }
 
@@ -128,15 +132,15 @@ public class SuportReq extends BaseEntity {
     }
 
     // 처리 담당자 업데이트
-    public void updateResUser(CpmsUser resUser, Integer udtId) {
-        this.resUser = resUser;
+    public void updateResponseUser(CpmsUser responseUser, Integer udtId) {
+        this.responseUser = responseUser;
         this.udtId = udtId;
     }
 
-    public void addFile(SuportFile file) {
+    public void addFile(SupportFile file) {
         if (file != null) {
             files.add(file);
-            file.setSuportReq(this);
+            file.setSupportRequest(this);
         }
     }
 
