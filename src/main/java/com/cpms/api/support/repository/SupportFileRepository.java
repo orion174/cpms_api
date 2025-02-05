@@ -9,8 +9,8 @@ import org.springframework.stereotype.Repository;
 import com.cpms.common.helper.YesNo;
 
 @Repository
-public interface SuportFileRepository extends JpaRepository<SupportFile, Integer> {
+public interface SupportFileRepository extends JpaRepository<SupportFile, Integer> {
 
-    List<SupportFile> findBySuportReq_SuportReqIdAndFileTypeAndDelYn(
-            Integer suportReqId, String fileType, YesNo delYn);
+    List<SupportFile> findBySupportRequest_SupportRequestIdAndFileTypeAndDelYn(
+            Integer supportRequestId, String fileType, YesNo delYn);
 }

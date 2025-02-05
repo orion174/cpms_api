@@ -1,18 +1,16 @@
 package com.cpms.api.support.service;
 
+import com.cpms.api.support.dto.req.*;
+import com.cpms.api.support.dto.res.*;
 import org.springframework.http.ResponseEntity;
 
-import com.cpms.api.support.dto.req.ReqSupportDTO;
-import com.cpms.api.support.dto.req.ReqSupportListDTO;
-import com.cpms.api.support.dto.req.ReqSupportResponseDTO;
+public interface SupportService {
 
-public interface SuportService {
+    boolean insertSupportRequest(ReqSupportDTO reqSuportDTO) throws Exception;
 
-    ResponseEntity<?> insertReqSuport(ReqSupportDTO reqSuportDTO) throws Exception;
+    ResSupportListDTO selectSupportList(ReqSupportListDTO reqSupportListDTO);
 
-    ResponseEntity<?> selectSuportList(ReqSupportListDTO reqSuportListDTO);
-
-    ResponseEntity<?> selectSuportDetail(ReqSupportDTO reqSuportDTO);
+    ResSupportDetailDTO selectSupportDetail(ReqSupportDTO reqSupportDTO);
 
     ResponseEntity<?> fileDownload(int suportFileId);
 

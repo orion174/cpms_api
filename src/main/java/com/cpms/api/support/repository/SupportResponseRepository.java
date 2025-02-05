@@ -9,7 +9,7 @@ import com.cpms.api.support.model.SupportResponse;
 import com.cpms.common.helper.YesNo;
 
 @Repository
-public interface SuportResRepository extends JpaRepository<SupportResponse, Integer> {
+public interface SupportResponseRepository extends JpaRepository<SupportResponse, Integer> {
 
-    Optional<SupportResponse> findBySuportReq_SuportReqIdAndDelYn(Integer suportReqId, YesNo delYn);
+    Optional<SupportResponse> findBySupportRequest_SupportRequestIdAndDelYn(Integer supportRequestId, YesNo delYn);
 }

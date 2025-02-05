@@ -31,10 +31,10 @@ import com.cpms.api.support.dto.res.ResSupportDetailDTO;
 import com.cpms.api.support.dto.res.ResSupportListDTO;
 import com.cpms.api.support.model.SupportFile;
 import com.cpms.api.support.model.SupportRequest;
-import com.cpms.api.support.repository.SuportFileRepository;
-import com.cpms.api.support.repository.SuportReqRepository;
-import com.cpms.api.support.repository.SuportResRepository;
-import com.cpms.api.support.service.SuportService;
+import com.cpms.api.support.repository.SupportFileRepository;
+import com.cpms.api.support.repository.SupportRequestRepository;
+import com.cpms.api.support.repository.SupportResponseRepository;
+import com.cpms.api.support.service.SupportService;
 import com.cpms.api.user.model.CpmsCompany;
 import com.cpms.api.user.model.CpmsProject;
 import com.cpms.api.user.repository.CpmsCompanyRepository;
@@ -50,18 +50,18 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class SuportServiceImpl implements SuportService {
+public class SuportServiceImpl implements SupportService {
 
-    @Value("${suport.file.upload.path}")
+    @Value("${support.file.upload.path}")
     private String uploadPath;
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    private final SuportReqRepository suportReqRepository;
+    private final SupportRequestRepository supportRequestRepository;
 
-    private final SuportResRepository suportResRepository;
+    private final SupportResponseRepository supportResponseRepository;
 
-    private final SuportFileRepository suportFileRepository;
+    private final SupportFileRepository supportFileRepository;
 
     private final ComCodeRepository comCodeRepository;
 
@@ -75,7 +75,6 @@ public class SuportServiceImpl implements SuportService {
 
     private static final String FILE_TYPE_RES = "RES"; // 문의 첨부파일은 'RES'
 
-    /* jwt token으로 사용자 정보를 반환한다. */
     private Integer getUserId() {
         String userIdStr = jwtTokenProvider.getClaim("userId");
         return parseToIntSafely(userIdStr);
@@ -91,20 +90,19 @@ public class SuportServiceImpl implements SuportService {
     }
 
     /**
-     * 유지보수 요청문의를 저장한다.
-     *
-     * @param reqSuportDTO
+     * 유지보수 요청을 등록한다.
+     * @param reqSupportDTO
      * @return
      * @throws Exception
      */
     @Override
     @Transactional
-    public ResponseEntity<?> insertReqSuport(ReqSupportDTO reqSuportDTO) throws Exception {
+    public boolean insertSupportRequest(ReqSupportDTO reqSupportDTO) throws Exception {
         boolean result = true;
 
-        CpmsCompany reqCompany =
+        CpmsCompany requestCompany =
                 cpmsCompanyRepository
-                        .findById(reqSuportDTO.getReqCompanyId())
+                        .findById(reqSupportDTO.getRequestCompanyId())
                         .orElseThrow(() -> new Exception("유효하지 않는 회사 ID"));
 
         CpmsCompany userCompany =
@@ -112,19 +110,19 @@ public class SuportServiceImpl implements SuportService {
                         .findById(getCompanyId())
                         .orElseThrow(() -> new Exception("유효하지 않는 회사 ID"));
 
-        CpmsProject reqProject =
+        CpmsProject requestProject =
                 cpmsProjectRepository
-                        .findById(reqSuportDTO.getReqProjectId())
+                        .findById(reqSupportDTO.getRequestProjectId())
                         .orElseThrow(() -> new Exception("유효하지 않는 프로젝트 ID"));
 
         ComCode requestCd =
                 comCodeRepository
-                        .findById(reqSuportDTO.getRequestCd())
+                        .findById(reqSupportDTO.getRequestCd())
                         .orElseThrow(() -> new Exception("유효하지 않는 코드"));
 
         ComCode statusCd =
                 comCodeRepository
-                        .findById(reqSuportDTO.getStatusCd())
+                        .findById(reqSupportDTO.getStatusCd())
                         .orElseThrow(() -> new Exception("유효하지 않는 코드"));
 
         CpmsUser regUser =
@@ -132,96 +130,94 @@ public class SuportServiceImpl implements SuportService {
                         .findById(getUserId())
                         .orElseThrow(() -> new Exception("유효하지 않는 사용자 ID"));
 
-        SupportRequest suportReq =
+        SupportRequest supportRequest =
                 new SupportRequest(
-                        reqCompany,
+                        requestCompany,
                         userCompany,
-                        reqProject,
+                        requestProject,
                         null,
                         requestCd,
                         statusCd,
-                        reqSuportDTO.getReqDate(),
-                        reqSuportDTO.getSuportTitle(),
-                        reqSuportDTO.getSuportEditor(),
+                        reqSupportDTO.getRequestDate(),
+                        reqSupportDTO.getSupportTitle(),
+                        reqSupportDTO.getSupportEditor(),
                         regUser);
 
         // 유지보수 요청 저장
-        suportReqRepository.save(suportReq);
+        supportRequestRepository.save(supportRequest);
 
         // 파일 업로드 처리
-        if (hasFiles(reqSuportDTO.getSuportFile())) {
+        if (hasFiles(reqSupportDTO.getSupportFile())) {
             String fileType = FILE_TYPE_REQ;
 
             boolean fileResult =
-                    suportFileUpload(reqSuportDTO.getSuportFile(), suportReq, regUser, fileType);
+                supportFileUpload(reqSupportDTO.getSupportFile(), supportRequest, regUser, fileType);
 
             if (!fileResult) {
                 result = false;
             }
         }
 
-        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+        return result;
     }
 
     /**
-     * 유지보수 리스트를 조회한다.
-     *
-     * @param reqSuportListDTO
+     * 유지보수 요청글 목록을 조회한다.
+     * @param reqSupportListDTO
      * @return
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<?> selectSuportList(ReqSupportListDTO reqSuportListDTO) {
+    public ResSupportListDTO selectSupportList(ReqSupportListDTO reqSupportListDTO) {
         // 날짜형 데이터 NULL 처리
-        reqSuportListDTO.setSchStartDt(
-                Optional.ofNullable(reqSuportListDTO.getSchStartDt()).orElse(""));
-        reqSuportListDTO.setSchEndDt(
-                Optional.ofNullable(reqSuportListDTO.getSchEndDt()).orElse(""));
+        reqSupportListDTO.setSearchStartDt(
+                Optional.ofNullable(reqSupportListDTO.getSearchStartDt()).orElse(""));
 
-        // 권한 처리
-        // USER 권한은 자신이 속한 업체의 유지보수 데이터만 조회가 가능하다.
+        reqSupportListDTO.setSearchEndDt(
+                Optional.ofNullable(reqSupportListDTO.getSearchEndDt()).orElse(""));
+
+        // USER 권한은 자신이 속한 업체의 요청 데이터만 조회가 가능하다.
         Optional.ofNullable(getAuthType())
                 .filter(authType -> "USER".equals(authType))
-                .ifPresent(authType -> reqSuportListDTO.setSchCompanyId(getCompanyId()));
+                .ifPresent(authType -> reqSupportListDTO.setSearchCompanyId(getCompanyId()));
 
         Pageable pageable =
                 PageUtil.createPageable(
-                        reqSuportListDTO.getPageNo(), reqSuportListDTO.getPageSize());
+                        reqSupportListDTO.getPageNo(), reqSupportListDTO.getPageSize());
 
-        Page<ResSupportListDTO.SuportList> suportListPage =
-                suportReqRepository.findSuportList(reqSuportListDTO, pageable);
+        Page<ResSupportListDTO.SupportList> supportListPage =
+                supportRequestRepository.findSupportList(reqSupportListDTO, pageable);
 
         ResSupportListDTO result =
                 ResSupportListDTO.builder()
-                        .suportCnt((int) suportListPage.getTotalElements())
-                        .suportList(suportListPage.getContent())
+                        .totalCnt((int) supportListPage.getTotalElements())
+                        .supportList(supportListPage.getContent())
                         .authType(getAuthType())
                         .build();
 
-        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+        return result;
     }
 
     /**
-     * 유지보수 문의 상세 조회
-     *
+     * 유지보수 요청글 상세 조회
      * @param reqSuportDTO
      * @return
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<?> selectSuportDetail(ReqSupportDTO reqSuportDTO) {
+    public ResSupportDetailDTO selectSupportDetail(ReqSupportDTO reqSupportDTO) {
         // 유지보수 요청 글 키 검증
-        Integer suportReqId = reqSuportDTO.getSuportReqId();
+        Integer supportRequestId = reqSupportDTO.getSupportRequestId();
 
-        if (suportReqId == null || suportReqId == 0) {
-            throw new IllegalArgumentException("유효하지 않은 유지보수 요청 ID입니다.");
+        if (supportRequestId == null || supportRequestId == 0) {
+            throw new IllegalArgumentException("유효하지 않은 요청 ID입니다.");
         }
 
         // 유지보수 상세 조회
-        ResSupportDetailDTO result = suportReqRepository.findSuportDetail(suportReqId);
+        ResSupportDetailDTO result = supportRequestRepository.findSupportDetail(supportRequestId);
         result.setAuthType(getAuthType());
 
-        // 권한 처리: USER 권한은 자신이 속한 업체 데이터만 조회 가능
+        // USER 권한은 자신이 속한 업체 데이터만 조회 가능
         if ("USER".equals(getAuthType())) {
             Integer companyId = getCompanyId();
             Integer userCompanyId = result.getUserCompanyId();
@@ -231,7 +227,17 @@ public class SuportServiceImpl implements SuportService {
             }
         }
 
-        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+        return result;
+    }
+
+    @Override
+    public ResponseEntity<?> fileDownload(int suportFileId) {
+        SupportFile file =
+            suportFileRepository
+                .findById(suportFileId)
+                .orElseThrow(() -> new EntityNotFoundException("유효하지 않는 파일 ID"));
+
+        return FileUtil.fileDownload(file.getFilePath(), file.getFileNm());
     }
 
     /**
@@ -454,17 +460,9 @@ public class SuportServiceImpl implements SuportService {
         return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
     }
 
-    /**
-     * 유지보수 요청문의 첨부파일을 저장한다.
-     *
-     * @param files
-     * @param suportReq
-     * @return
-     * @throws Exception
-     */
     @Transactional
-    private boolean suportFileUpload(
-            MultipartFile[] files, SupportRequest suportReq, CpmsUser regUser, String fileType)
+    private boolean supportFileUpload(
+            MultipartFile[] files, SupportRequest supportRequest, CpmsUser regUser, String fileType)
             throws Exception {
         // 첨부파일 개수 만큼 반복
         for (MultipartFile file : files) {
@@ -475,9 +473,9 @@ public class SuportServiceImpl implements SuportService {
             // 경로에 파일을 저장한다.
             FileDTO fileDTO = FileUtil.fileUpload(file, uploadPath + "/" + today);
 
-            SupportFile suportFile =
+            SupportFile supportFile =
                     new SupportFile(
-                            suportReq,
+                            supportRequest,
                             fileType,
                             fileDTO.getFilePath(),
                             fileDTO.getFileNm(),
@@ -486,7 +484,7 @@ public class SuportServiceImpl implements SuportService {
                             fileDTO.getFileSize(),
                             regUser);
 
-            suportFileRepository.save(suportFile);
+            supportFileRepository.save(supportFile);
         }
 
         return true;
@@ -506,21 +504,5 @@ public class SuportServiceImpl implements SuportService {
                 });
 
         return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
-    }
-
-    /**
-     * 첨부파일 다운로드
-     *
-     * @param suportFileId
-     * @return
-     */
-    @Override
-    public ResponseEntity<?> fileDownload(int suportFileId) {
-        SupportFile file =
-                suportFileRepository
-                        .findById(suportFileId)
-                        .orElseThrow(() -> new EntityNotFoundException("유효하지 않는 파일 ID"));
-
-        return FileUtil.fileDownload(file.getFilePath(), file.getFileNm());
     }
 }
