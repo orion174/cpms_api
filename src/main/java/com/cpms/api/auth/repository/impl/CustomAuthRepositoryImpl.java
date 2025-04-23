@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Repository;
 
-import com.cpms.api.auth.dto.req.ReqRefreshTokenDTO;
-import com.cpms.api.auth.dto.res.QResLoginDTO;
-import com.cpms.api.auth.dto.res.ResLoginDTO;
+import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
+import com.cpms.api.auth.dto.response.QResLoginDTO;
+import com.cpms.api.auth.dto.response.ResLoginDTO;
 import com.cpms.api.auth.model.QCpmsUser;
 import com.cpms.api.auth.model.QUserLoginHistory;
 import com.cpms.api.auth.repository.CustomAuthRepository;

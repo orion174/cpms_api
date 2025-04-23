@@ -8,41 +8,39 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
-import com.cpms.api.support.model.SupportResponse;
-import jakarta.persistence.EntityNotFoundException;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.api.auth.repository.CpmsUserRepository;
-import com.cpms.api.code.model.ComCode;
-import com.cpms.api.code.repository.ComCodeRepository;
-import com.cpms.api.support.dto.req.ReqSupportDTO;
-import com.cpms.api.support.dto.req.ReqSupportListDTO;
-import com.cpms.api.support.dto.req.ReqSupportResponseDTO;
-import com.cpms.api.support.dto.res.ResSupportDetailDTO;
-import com.cpms.api.support.dto.res.ResSupportListDTO;
+import com.cpms.api.code.model.CommonCode;
+import com.cpms.api.code.repository.CommonCodeRepository;
+import com.cpms.api.setting.model.CpmsCompany;
+import com.cpms.api.setting.model.CpmsProject;
+import com.cpms.api.setting.repository.CpmsCompanyRepository;
+import com.cpms.api.setting.repository.CpmsProjectRepository;
+import com.cpms.api.support.dto.request.ReqSupportDTO;
+import com.cpms.api.support.dto.request.ReqSupportListDTO;
+import com.cpms.api.support.dto.request.ReqSupportResponseDTO;
+import com.cpms.api.support.dto.response.ResSupportDetailDTO;
+import com.cpms.api.support.dto.response.ResSupportFileDTO;
+import com.cpms.api.support.dto.response.ResSupportListDTO;
 import com.cpms.api.support.model.SupportFile;
 import com.cpms.api.support.model.SupportRequest;
+import com.cpms.api.support.model.SupportResponse;
 import com.cpms.api.support.repository.SupportFileRepository;
 import com.cpms.api.support.repository.SupportRequestRepository;
 import com.cpms.api.support.repository.SupportResponseRepository;
 import com.cpms.api.support.service.SupportService;
-import com.cpms.api.user.model.CpmsCompany;
-import com.cpms.api.user.model.CpmsProject;
-import com.cpms.api.user.repository.CpmsCompanyRepository;
-import com.cpms.api.user.repository.CpmsProjectRepository;
+import com.cpms.common.exception.CustomException;
 import com.cpms.common.helper.FileDTO;
 import com.cpms.common.helper.YesNo;
 import com.cpms.common.jwt.JwtTokenProvider;
-import com.cpms.common.res.ApiRes;
+import com.cpms.common.response.ErrorCode;
 import com.cpms.common.util.FileUtil;
 import com.cpms.common.util.PageUtil;
 
@@ -63,7 +61,7 @@ public class SuportServiceImpl implements SupportService {
 
     private final SupportFileRepository supportFileRepository;
 
-    private final ComCodeRepository comCodeRepository;
+    private final CommonCodeRepository commonCodeRepository;
 
     private final CpmsUserRepository cpmsUserRepository;
 
@@ -71,64 +69,78 @@ public class SuportServiceImpl implements SupportService {
 
     private final CpmsProjectRepository cpmsProjectRepository;
 
-    private static final String FILE_TYPE_REQ = "REQ"; // 문의 첨부파일은 'REQ'
+    /** TODO 해당 부분 공통 코드로 관리되게 이관 (임시) 문의 첨부파일은 'REQ' 문의 첨부파일은 'RES' */
+    private static final String FILE_TYPE_REQ = "REQ";
 
-    private static final String FILE_TYPE_RES = "RES"; // 문의 첨부파일은 'RES'
+    private static final String FILE_TYPE_RES = "RES";
 
+    /**
+     * 현재 로그인한 사용자 ID를 가져온다.
+     *
+     * @return
+     */
     private Integer getUserId() {
         String userIdStr = jwtTokenProvider.getClaim("userId");
         return parseToIntSafely(userIdStr);
     }
 
+    /**
+     * 현재 로그인한 사용자의 회사 ID를 가져온다.
+     *
+     * @return
+     */
     private Integer getCompanyId() {
         String companyIdStr = jwtTokenProvider.getClaim("companyId");
         return parseToIntSafely(companyIdStr);
     }
 
+    /**
+     * 현재 로그인한 사용자의 권한 등급을 가져온다.
+     *
+     * @return
+     */
     private String getAuthType() {
         return jwtTokenProvider.getClaim("authType");
     }
 
     /**
-     * 유지보수 요청을 등록한다.
+     * 유지보수 요청을 신규로 등록한다.
+     *
      * @param reqSupportDTO
      * @return
-     * @throws Exception
      */
     @Override
     @Transactional
-    public boolean insertSupportRequest(ReqSupportDTO reqSupportDTO) throws Exception {
-        boolean result = true;
-
+    public boolean insertSupportRequest(ReqSupportDTO reqSupportDTO) {
         CpmsCompany requestCompany =
                 cpmsCompanyRepository
                         .findById(reqSupportDTO.getRequestCompanyId())
-                        .orElseThrow(() -> new Exception("유효하지 않는 회사 ID"));
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         CpmsCompany userCompany =
                 cpmsCompanyRepository
                         .findById(getCompanyId())
-                        .orElseThrow(() -> new Exception("유효하지 않는 회사 ID"));
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         CpmsProject requestProject =
                 cpmsProjectRepository
                         .findById(reqSupportDTO.getRequestProjectId())
-                        .orElseThrow(() -> new Exception("유효하지 않는 프로젝트 ID"));
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        ComCode requestCd =
-                comCodeRepository
+        CommonCode requestCd =
+                commonCodeRepository
                         .findById(reqSupportDTO.getRequestCd())
-                        .orElseThrow(() -> new Exception("유효하지 않는 코드"));
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        ComCode statusCd =
-                comCodeRepository
+        CommonCode statusCd =
+                commonCodeRepository
                         .findById(reqSupportDTO.getStatusCd())
-                        .orElseThrow(() -> new Exception("유효하지 않는 코드"));
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         CpmsUser regUser =
                 cpmsUserRepository
                         .findById(getUserId())
-                        .orElseThrow(() -> new Exception("유효하지 않는 사용자 ID"));
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         SupportRequest supportRequest =
                 new SupportRequest(
@@ -149,20 +161,15 @@ public class SuportServiceImpl implements SupportService {
         // 파일 업로드 처리
         if (hasFiles(reqSupportDTO.getSupportFile())) {
             String fileType = FILE_TYPE_REQ;
-
-            boolean fileResult =
-                supportFileUpload(reqSupportDTO.getSupportFile(), supportRequest, regUser, fileType);
-
-            if (!fileResult) {
-                result = false;
-            }
+            supportFileUpload(reqSupportDTO.getSupportFile(), supportRequest, regUser, fileType);
         }
 
-        return result;
+        return true;
     }
 
     /**
-     * 유지보수 요청글 목록을 조회한다.
+     * 유지보수 요청 목록을 조회한다.
+     *
      * @param reqSupportListDTO
      * @return
      */
@@ -199,115 +206,97 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * 유지보수 요청글 상세 조회
-     * @param reqSuportDTO
+     * 유지보수 요청 상세 조회
+     *
+     * @param reqSupportDTO
      * @return
      */
     @Override
     @Transactional(readOnly = true)
     public ResSupportDetailDTO selectSupportDetail(ReqSupportDTO reqSupportDTO) {
-        // 유지보수 요청 글 키 검증
         Integer supportRequestId = reqSupportDTO.getSupportRequestId();
 
         if (supportRequestId == null || supportRequestId == 0) {
-            throw new IllegalArgumentException("유효하지 않은 요청 ID입니다.");
+            throw new CustomException(ErrorCode.INVALID_REQUEST_ID);
         }
 
-        // 유지보수 상세 조회
         ResSupportDetailDTO result = supportRequestRepository.findSupportDetail(supportRequestId);
+
         result.setAuthType(getAuthType());
 
-        // USER 권한은 자신이 속한 업체 데이터만 조회 가능
+        // USER 권한은 자신이 속한 업체의 요청 데이터만 조회가 가능하다.
         if ("USER".equals(getAuthType())) {
             Integer companyId = getCompanyId();
             Integer userCompanyId = result.getUserCompanyId();
 
             if (!companyId.equals(userCompanyId)) {
-                throw new IllegalArgumentException("권한이 없습니다.");
+                throw new CustomException(ErrorCode.NO_AUTHORITY);
             }
         }
 
         return result;
     }
 
-    @Override
-    public ResponseEntity<?> fileDownload(int suportFileId) {
-        SupportFile file =
-            suportFileRepository
-                .findById(suportFileId)
-                .orElseThrow(() -> new EntityNotFoundException("유효하지 않는 파일 ID"));
-
-        return FileUtil.fileDownload(file.getFilePath(), file.getFileNm());
-    }
-
     /**
      * 문의의 대한 답변을 저장한다.
      *
-     * @param reqSuportResDTO
+     * @param reqSupportResDTO
      * @return
-     * @throws Exception
      */
     @Override
     @Transactional
-    public ResponseEntity<?> insertResSuport(ReqSupportResponseDTO reqSuportResDTO) throws Exception {
-        boolean result = true;
+    public boolean insertSupportResponse(ReqSupportResponseDTO reqSupportResDTO) {
+        SupportRequest supportRequest =
+                supportRequestRepository
+                        .findById(reqSupportResDTO.getSupportRequestId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        SupportRequest suportReq =
-                suportReqRepository
-                        .findById(reqSuportResDTO.getSuportReqId())
-                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
-
-        ComCode statusCd =
-                comCodeRepository
-                        .findById(reqSuportResDTO.getResStatusCd())
-                        .orElseThrow(() -> new Exception("유효하지 않는 코드"));
+        CommonCode statusCd =
+                commonCodeRepository
+                        .findById(reqSupportResDTO.getResponseStatusCd())
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         CpmsUser userId =
                 cpmsUserRepository
                         .findById(getUserId())
-                        .orElseThrow(() -> new Exception("유효하지 않는 사용자 ID"));
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         // 프로젝트 유지보수 문의 본문, 처리상태, 처리담당자 업데이트
-        suportReq.updateStatusCd(statusCd, getUserId());
-        suportReq.updateResUser(userId, getUserId());
+        supportRequest.updateStatusCd(statusCd, getUserId());
 
-        SupportResponse suportRes =
+        supportRequest.updateResponseUser(userId, getUserId());
+
+        SupportResponse supportResponse =
                 new SupportResponse(
-                        suportReq,
-                        reqSuportResDTO.getResTitle(),
-                        reqSuportResDTO.getResEditor(),
+                        supportRequest,
+                        reqSupportResDTO.getResponseTitle(),
+                        reqSupportResDTO.getResponseEditor(),
                         userId);
 
         // 유지보수 요청 저장
-        suportResRepository.save(suportRes);
+        supportResponseRepository.save(supportResponse);
 
         // 답변 첨부파일 저장
-        if (hasFiles(reqSuportResDTO.getResFile())) {
+        if (hasFiles(reqSupportResDTO.getResponseFile())) {
             String fileType = FILE_TYPE_RES;
-
-            boolean fileResult =
-                    suportFileUpload(reqSuportResDTO.getResFile(), suportReq, userId, fileType);
-
-            if (!fileResult) {
-                result = false;
-            }
+            supportFileUpload(reqSupportResDTO.getResponseFile(), supportRequest, userId, fileType);
         }
 
-        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+        return true;
     }
 
     /**
      * 처리내역 답변을 수정한다.
      *
-     * @param reqSuportResDTO
+     * @param reqSupportResponseDTO
      * @return
-     * @throws Exception
      */
     @Override
     @Transactional
-    public ResponseEntity<?> updateResSuport(ReqSupportResponseDTO reqSuportResDTO) throws Exception {
+    public boolean updateSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO) {
+        // 일반 사용자는 답변을 수정 할 수 없다.
         if ("USER".equals(getAuthType())) {
-            throw new IllegalAccessException("권한이 없습니다.");
+            throw new CustomException(ErrorCode.NO_AUTHORITY);
         }
 
         Integer userId = getUserId();
@@ -315,119 +304,117 @@ public class SuportServiceImpl implements SupportService {
         CpmsUser user =
                 cpmsUserRepository
                         .findById(getUserId())
-                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID"));
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        ComCode statusCd =
-                comCodeRepository
-                        .findById(reqSuportResDTO.getResStatusCd())
-                        .orElseThrow(() -> new Exception("유효하지 않는 코드"));
+        CommonCode statusCd =
+                commonCodeRepository
+                        .findById(reqSupportResponseDTO.getResponseStatusCd())
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        SupportRequest suportReq =
-                suportReqRepository
-                        .findById(reqSuportResDTO.getSuportReqId())
-                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
+        SupportRequest supportRequest =
+                supportRequestRepository
+                        .findById(reqSupportResponseDTO.getSupportRequestId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        suportReq.updateStatusCd(statusCd, userId);
+        supportRequest.updateStatusCd(statusCd, userId);
 
         // 처리내역 확인 및 수정
-        suportResRepository
-                .findById(reqSuportResDTO.getSuportResId())
+        supportResponseRepository
+                .findById(reqSupportResponseDTO.getSupportResponseId())
                 .ifPresentOrElse(
-                        suportRes -> {
-                            suportRes.updateRes(
-                                    reqSuportResDTO.getResTitle(),
-                                    reqSuportResDTO.getResEditor(),
+                        supportResponse -> {
+                            supportResponse.updateResponse(
+                                    reqSupportResponseDTO.getResponseTitle(),
+                                    reqSupportResponseDTO.getResponseEditor(),
                                     userId);
+
                             // 파일이 있는 경우 업로드 처리
-                            if (hasFiles(reqSuportResDTO.getResFile())) {
+                            if (hasFiles(reqSupportResponseDTO.getResponseFile())) {
                                 String fileType = FILE_TYPE_RES;
 
-                                try {
-                                    boolean fileResult =
-                                            suportFileUpload(
-                                                    reqSuportResDTO.getResFile(),
-                                                    suportReq,
-                                                    user,
-                                                    fileType);
-
-                                } catch (Exception e) {
-                                    throw new RuntimeException(e);
-                                }
+                                supportFileUpload(
+                                        reqSupportResponseDTO.getResponseFile(),
+                                        supportRequest,
+                                        user,
+                                        fileType);
                             }
                         },
                         () -> {
-                            throw new IllegalArgumentException("유효하지 않은 Suport Res ID");
+                            throw new CustomException(ErrorCode.ENTITY_NOT_FOUND);
                         });
 
-        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
+        return true;
     }
 
     /**
      * 처리내역 답변을 삭제한다.
      *
-     * @param reqSuportDTO
+     * @param reqSupportDTO
      * @return
      */
     @Override
     @Transactional
-    public ResponseEntity<?> deleteResSuport(ReqSupportDTO reqSuportDTO) throws Exception {
+    public boolean deleteSupportResponse(ReqSupportDTO reqSupportDTO) {
+        // 일반 사용자는 답변을 수정 할 수 없다.
         if ("USER".equals(getAuthType())) {
-            throw new IllegalAccessException("권한이 없습니다.");
+            throw new CustomException(ErrorCode.NO_AUTHORITY);
         }
 
-        Integer suportReqId = reqSuportDTO.getSuportReqId();
+        Integer supportRequestId = reqSupportDTO.getSupportRequestId();
+
         Integer userId = getUserId();
 
-        Optional<SupportResponse> suportResOpt =
-                suportResRepository.findBySuportReq_SuportReqIdAndDelYn(suportReqId, YesNo.N);
+        Optional<SupportResponse> supportResponseOpt =
+                supportResponseRepository.findBySupportRequest_SupportRequestIdAndDelYn(
+                        supportRequestId, YesNo.N);
 
-        suportResOpt.ifPresentOrElse(
-                suportRes -> {
+        supportResponseOpt.ifPresentOrElse(
+                supportResponse -> {
                     // 답변 삭제
-                    suportRes.deleteRes(YesNo.Y, userId);
+                    supportResponse.deleteResponse(YesNo.Y, userId);
 
                     // 답변 첨부파일 삭제
                     List<SupportFile> fileList =
-                            suportFileRepository.findBySuportReq_SuportReqIdAndFileTypeAndDelYn(
-                                    suportReqId, FILE_TYPE_RES, YesNo.N);
+                            supportFileRepository
+                                    .findBySupportRequest_SupportRequestIdAndFileTypeAndDelYn(
+                                            supportRequestId, FILE_TYPE_RES, YesNo.N);
 
                     fileList.forEach(file -> file.deleteFile(YesNo.Y, userId));
                 },
                 () -> {
-                    throw new EntityNotFoundException("Suport Res ID의 데이터가 존재하지않습니다.");
+                    throw new CustomException(ErrorCode.ENTITY_NOT_FOUND);
                 });
 
-        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
+        return true;
     }
 
+    /**
+     * ADMIN 권한 사용자가 문의글을 조회하면 자동으로 처리상태가 업데이트 된다.
+     *
+     * @param reqSupportDTO
+     * @return
+     */
     @Override
     @Transactional
-    public ResponseEntity<?> updateStatus(ReqSupportDTO reqSuportDTO) {
-        boolean result = false;
-
+    public boolean updateSupportStatus(ReqSupportDTO reqSupportDTO) {
         // ADMIN 권한일때만 상태코드를 변경한다.
         if ("ADMIN".equals(getAuthType())) {
-            SupportRequest suportReq =
-                    suportReqRepository
-                            .findById(reqSuportDTO.getSuportReqId())
-                            .orElseThrow(
-                                    () -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
+            SupportRequest supportRequest =
+                    supportRequestRepository
+                            .findById(reqSupportDTO.getSupportRequestId())
+                            .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-            ComCode statusCd =
-                    comCodeRepository
-                            .findById(reqSuportDTO.getStatusCd())
-                            .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 코드"));
+            CommonCode statusCd =
+                    commonCodeRepository
+                            .findById(reqSupportDTO.getStatusCd())
+                            .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-            suportReq.updateStatusCd(statusCd, getUserId());
-            suportReqRepository.save(suportReq);
+            supportRequest.updateStatusCd(statusCd, getUserId());
 
-            result = true;
-
-        } else if ("USER".equals(getAuthType())) {
-            result = true;
+            supportRequestRepository.save(supportRequest);
         }
 
-        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+        return true;
     }
 
     /**
@@ -438,71 +425,98 @@ public class SuportServiceImpl implements SupportService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> updateUser(ReqSupportDTO reqSuportDTO) {
-        boolean result = false;
-
-        SupportRequest suportReq =
-                suportReqRepository
-                        .findById(reqSuportDTO.getSuportReqId())
-                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Suport Req ID"));
+    public boolean updateResponseUserInfo(ReqSupportDTO reqSupportDTO) {
+        SupportRequest supportRequest =
+                supportRequestRepository
+                        .findById(reqSupportDTO.getSupportRequestId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         CpmsUser resUser =
                 cpmsUserRepository
-                        .findById(reqSuportDTO.getUserId())
-                        .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자 ID"));
+                        .findById(reqSupportDTO.getUserId())
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        suportReq.updateResUser(resUser, getUserId());
+        supportRequest.updateResponseUser(resUser, getUserId());
 
-        suportReqRepository.save(suportReq);
-
-        result = true;
-
-        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
-    }
-
-    @Transactional
-    private boolean supportFileUpload(
-            MultipartFile[] files, SupportRequest supportRequest, CpmsUser regUser, String fileType)
-            throws Exception {
-        // 첨부파일 개수 만큼 반복
-        for (MultipartFile file : files) {
-            // 오늘 날짜 생성
-            Calendar dateTime = Calendar.getInstance();
-            String today = (new SimpleDateFormat("yyyyMMdd")).format(dateTime.getTime());
-
-            // 경로에 파일을 저장한다.
-            FileDTO fileDTO = FileUtil.fileUpload(file, uploadPath + "/" + today);
-
-            SupportFile supportFile =
-                    new SupportFile(
-                            supportRequest,
-                            fileType,
-                            fileDTO.getFilePath(),
-                            fileDTO.getFileNm(),
-                            fileDTO.getFileOgNm(),
-                            fileDTO.getFileExt(),
-                            fileDTO.getFileSize(),
-                            regUser);
-
-            supportFileRepository.save(supportFile);
-        }
+        supportRequestRepository.save(supportRequest);
 
         return true;
     }
 
+    /**
+     * 첨부파일 다운로드
+     *
+     * @param supportFileId
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ResSupportFileDTO fileDownload(int supportFileId) {
+        SupportFile file =
+                supportFileRepository
+                        .findById(supportFileId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+
+        return new ResSupportFileDTO(file.getFilePath(), file.getFileNm());
+    }
+
+    /**
+     * 첨부파일 삭제
+     *
+     * @param supportFileId
+     */
     @Override
     @Transactional
-    public ResponseEntity<?> fileDelete(int suportFileId) {
-        Optional<SupportFile> suportFileOpt = suportFileRepository.findById(suportFileId);
+    public void fileDelete(int supportFileId) {
+        SupportFile file =
+                supportFileRepository
+                        .findById(supportFileId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        suportFileOpt.ifPresentOrElse(
-                suportFile -> {
-                    suportFile.deleteFile(YesNo.Y, getUserId());
-                },
-                () -> {
-                    throw new EntityNotFoundException("해당 ID의 Suport File 데이터가 존재하지않습니다.");
-                });
+        file.deleteFile(YesNo.Y, getUserId());
+    }
 
-        return new ResponseEntity<>(new ApiRes(true), HttpStatus.OK);
+    /**
+     * 파일 업로드 공통
+     *
+     * @param files
+     * @param supportRequest
+     * @param regUser
+     * @param fileType
+     */
+    @Transactional
+    private void supportFileUpload(
+            MultipartFile[] files,
+            SupportRequest supportRequest,
+            CpmsUser regUser,
+            String fileType) {
+
+        for (MultipartFile file : files) {
+            try {
+                // 오늘 날짜 생성
+                String today =
+                        new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+
+                // 파일 업로드
+                FileDTO fileDTO = FileUtil.fileUpload(file, uploadPath + "/" + today);
+
+                // DB 저장
+                SupportFile supportFile =
+                        new SupportFile(
+                                supportRequest,
+                                fileType,
+                                fileDTO.getFilePath(),
+                                fileDTO.getFileNm(),
+                                fileDTO.getFileOgNm(),
+                                fileDTO.getFileExt(),
+                                fileDTO.getFileSize(),
+                                regUser);
+
+                supportFileRepository.save(supportFile);
+
+            } catch (Exception e) {
+                throw new CustomException(ErrorCode.FILE_UPLOAD_FAILED);
+            }
+        }
     }
 }

@@ -4,8 +4,6 @@ import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -17,18 +15,19 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cpms.api.auth.dto.req.ReqLoginDTO;
-import com.cpms.api.auth.dto.req.ReqRefreshTokenDTO;
-import com.cpms.api.auth.dto.res.ResLoginDTO;
-import com.cpms.api.auth.dto.res.ResRreshTokenDTO;
+import com.cpms.api.auth.dto.request.ReqLoginDTO;
+import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
+import com.cpms.api.auth.dto.response.ResLoginDTO;
+import com.cpms.api.auth.dto.response.ResRreshTokenDTO;
 import com.cpms.api.auth.model.UserLoginHistory;
 import com.cpms.api.auth.repository.AuthRepository;
 import com.cpms.api.auth.repository.CustomAuthRepository;
 import com.cpms.api.auth.repository.UserLoginHistoryRepository;
 import com.cpms.api.auth.service.AuthService;
+import com.cpms.common.exception.CustomException;
 import com.cpms.common.helper.JwtDTO;
 import com.cpms.common.jwt.JwtTokenProvider;
-import com.cpms.common.res.ApiRes;
+import com.cpms.common.response.ErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,12 +56,12 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      */
     @Override
     @Transactional
-    public ResponseEntity<?> userLogin(HttpServletRequest req, ReqLoginDTO reqLoginDTO) {
+    public ResLoginDTO userLogin(HttpServletRequest request, ReqLoginDTO reqLoginDTO) {
         // 로그인 아이디 검증
         ResLoginDTO resLoginDTO =
                 customAuthRepository
                         .findUserByLoginId(reqLoginDTO.getLoginId())
-                        .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 아이디입니다."));
+                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 인증 검증 (비밀번호 체크)
         Authentication authentication = authenticate(reqLoginDTO);
@@ -72,7 +71,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                 UserLoginHistory.builder()
                         .userId(resLoginDTO.getUserId())
                         .loginId(resLoginDTO.getLoginId())
-                        .accessIp(req.getRemoteAddr())
+                        .accessIp(request.getRemoteAddr())
                         .build();
 
         // 생성된 loginHistoryId를 DTO에 반영
@@ -88,7 +87,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         // 응답 DTO 생성
         ResLoginDTO result = buildResLoginDTO(resLoginDTO, jwtDTO);
 
-        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+        return result;
     }
 
     /**
@@ -101,7 +100,6 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
-
         ResLoginDTO resLoginDTO =
                 customAuthRepository
                         .findUserByLoginId(loginId)
@@ -123,32 +121,27 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResponseEntity<?> refreshToken(
-            HttpServletRequest req, ReqRefreshTokenDTO reqRefreshTokenDTO) {
+    public ResRreshTokenDTO refreshToken(
+            HttpServletRequest request, ReqRefreshTokenDTO reqRefreshTokenDTO) {
 
-        String refreshToken = req.getHeader("X-Refresh-Token");
+        String refreshToken = request.getHeader("X-Refresh-Token");
 
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiRes(false, "리프레쉬 토큰이 만료되었습니다."));
+            throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
         JwtDTO user = customAuthRepository.getUserInfoByLoginHistoryId(reqRefreshTokenDTO);
 
         if (user == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(new ApiRes(false, "유효하지 않은 사용자 정보입니다."));
+            throw new CustomException(ErrorCode.INVALID_USER);
         }
 
         JwtDTO newAccessToken = jwtTokenProvider.generateAccessToken(user);
 
-        ResRreshTokenDTO result =
-                ResRreshTokenDTO.builder()
-                        .accessToken(newAccessToken.getAccessToken())
-                        .accessTokenExpiration(newAccessToken.getAccessTokenExpiration())
-                        .build();
-
-        return new ResponseEntity<>(new ApiRes(result), HttpStatus.OK);
+        return ResRreshTokenDTO.builder()
+                .accessToken(newAccessToken.getAccessToken())
+                .accessTokenExpiration(newAccessToken.getAccessTokenExpiration())
+                .build();
     }
 
     /**

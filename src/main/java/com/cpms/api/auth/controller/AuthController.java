@@ -4,32 +4,42 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.cpms.api.auth.dto.req.ReqLoginDTO;
-import com.cpms.api.auth.dto.req.ReqRefreshTokenDTO;
+import com.cpms.api.auth.dto.request.ReqLoginDTO;
+import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
+import com.cpms.api.auth.dto.response.ResRreshTokenDTO;
 import com.cpms.api.auth.service.AuthService;
+import com.cpms.common.response.ApiResponse;
+import com.cpms.common.response.ResponseMessage;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<?> userLogin(
-            HttpServletRequest req, @RequestBody @Valid ReqLoginDTO reqLoginDTO) {
+            HttpServletRequest request, @RequestBody @Valid ReqLoginDTO reqLoginDTO) {
+        Object result = authService.userLogin(request, reqLoginDTO);
 
-        return authService.userLogin(req, reqLoginDTO);
+        return ResponseEntity.ok(
+                ApiResponse.success(result, ResponseMessage.LOGIN_SUCCESS.getMessage()));
     }
 
     @PostMapping("/refreshToken")
     public ResponseEntity<?> refreshToken(
-            HttpServletRequest req, @RequestBody ReqRefreshTokenDTO reqRefreshTokenDTO) {
+            HttpServletRequest request, @RequestBody ReqRefreshTokenDTO reqRefreshTokenDTO) {
+        ResRreshTokenDTO result = authService.refreshToken(request, reqRefreshTokenDTO);
 
-        return authService.refreshToken(req, reqRefreshTokenDTO);
+        return ResponseEntity.ok(
+                ApiResponse.success(result, ResponseMessage.REFRESH_SUCCESS.getMessage()));
     }
 }

@@ -1,38 +1,43 @@
 package com.cpms.api.support.repository.impl;
 
-import com.cpms.api.auth.model.QCpmsUser;
-import com.cpms.api.code.model.QComCode;
-import com.cpms.api.support.dto.req.ReqSupportListDTO;
-import com.cpms.api.support.dto.res.ResSupportDetailDTO;
-import com.cpms.api.support.dto.res.ResSupportListDTO;
-import com.cpms.api.support.repository.CustomSupportRequestRepository;
-import com.cpms.api.user.model.QCpmsCompany;
-import com.cpms.api.user.model.QCpmsProject;
-import com.cpms.common.helper.YesNo;
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.core.types.Projections;
-import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.util.StringUtils;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.util.StringUtils;
+
+import com.cpms.api.auth.model.QCpmsUser;
+import com.cpms.api.code.model.QCommonCode;
+import com.cpms.api.setting.model.QCpmsCompany;
+import com.cpms.api.setting.model.QCpmsProject;
+import com.cpms.api.support.dto.request.ReqSupportListDTO;
+import com.cpms.api.support.dto.response.ResSupportDetailDTO;
+import com.cpms.api.support.dto.response.ResSupportListDTO;
+import com.cpms.api.support.model.QSupportFile;
+import com.cpms.api.support.model.QSupportRequest;
+import com.cpms.api.support.model.QSupportResponse;
+import com.cpms.api.support.repository.CustomSupportRequestRepository;
+import com.cpms.common.helper.YesNo;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import lombok.RequiredArgsConstructor;
+
 @RequiredArgsConstructor
 public class SupportRequestRepositoryImpl implements CustomSupportRequestRepository {
 
     private final JPAQueryFactory jpaQueryFactory;
 
-    private final QComCode requestCd = new QComCode("requestCd");
+    private final QCommonCode requestCd = new QCommonCode("requestCd");
 
-    private final QComCode statusCd = new QComCode("statusCd");
+    private final QCommonCode statusCd = new QCommonCode("statusCd");
 
     private final QCpmsUser cpmsUser = QCpmsUser.cpmsUser;
 
@@ -56,36 +61,43 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
 
         builder.and(supportRequest.delYn.eq(YesNo.valueOf("N")));
 
-        // 검색 조건 설정
-        if (reqSupportListDTO.getSearchCompanyId() != null && reqSupportListDTO.getSearchCompanyId() != 0) {
-            builder.and(supportRequest.userCompany.companyId.eq(reqSupportListDTO.getSearchCompanyId()));
+        if (reqSupportListDTO.getSearchCompanyId() != null
+                && reqSupportListDTO.getSearchCompanyId() != 0) {
+            builder.and(
+                    supportRequest.userCompany.companyId.eq(
+                            reqSupportListDTO.getSearchCompanyId()));
         }
 
-        if (reqSupportListDTO.getSearchRequestCd() != null && reqSupportListDTO.getSearchRequestCd() != 0) {
+        if (reqSupportListDTO.getSearchRequestCd() != null
+                && reqSupportListDTO.getSearchRequestCd() != 0) {
             builder.and(supportRequest.requestCd.codeId.eq(reqSupportListDTO.getSearchRequestCd()));
         }
 
-        if (reqSupportListDTO.getSearchStatusCd() != null && reqSupportListDTO.getSearchStatusCd() != 0) {
+        if (reqSupportListDTO.getSearchStatusCd() != null
+                && reqSupportListDTO.getSearchStatusCd() != 0) {
             builder.and(supportRequest.statusCd.codeId.eq(reqSupportListDTO.getSearchStatusCd()));
-        }
-
-        if (StringUtils.hasText(reqSupportListDTO.getSearchTitle())) {
-            builder.and(supportRequest.supportTitle.containsIgnoreCase(reqSupportListDTO.getSearchTitle()));
         }
 
         if (StringUtils.hasText(reqSupportListDTO.getSearchStartDt())
                 && StringUtils.hasText(reqSupportListDTO.getSearchEndDt())) {
 
             LocalDate startDate =
-                LocalDate.parse(reqSupportListDTO.getSearchStartDt(), DateTimeFormatter.ISO_DATE);
+                    LocalDate.parse(
+                            reqSupportListDTO.getSearchStartDt(), DateTimeFormatter.ISO_DATE);
 
             LocalDate endDate =
-                LocalDate.parse(reqSupportListDTO.getSearchEndDt(), DateTimeFormatter.ISO_DATE);
+                    LocalDate.parse(reqSupportListDTO.getSearchEndDt(), DateTimeFormatter.ISO_DATE);
 
             LocalDateTime startDt = startDate.atStartOfDay();
             LocalDateTime endDt = endDate.atTime(23, 59, 59);
 
             builder.and(supportRequest.regDt.between(startDt, endDt));
+        }
+
+        if (StringUtils.hasText(reqSupportListDTO.getSearchTitle())) {
+            builder.and(
+                    supportRequest.supportTitle.containsIgnoreCase(
+                            reqSupportListDTO.getSearchTitle()));
         }
 
         // 조회 쿼리
@@ -94,9 +106,10 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                         .select(
                                 Projections.fields(
                                         ResSupportListDTO.SupportList.class,
-                                        supportRequest.suportReqId,
+                                        supportRequest.supportRequestId,
                                         supportRequest.userCompany.companyNm.as("userCompanyNm"),
-                                        supportRequest.requestProject.projectNm.as("requestProjectNm"),
+                                        supportRequest.requestProject.projectNm.as(
+                                                "requestProjectNm"),
                                         supportRequest.requestCd.codeId.as("requestCd"),
                                         supportRequest.requestCd.codeNm.as("requestNm"),
                                         supportRequest.statusCd.codeId.as("statusCd"),
@@ -130,21 +143,23 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                         .where(builder)
                         .fetchOne();
 
-        return new PageImpl<> (result, pageable, total);
+        return new PageImpl<>(result, pageable, total);
     }
 
     @Override
     public ResSupportDetailDTO findSupportDetail(Integer supportRequestId) {
-        ResSupportDetailDTO detail =
+        ResSupportDetailDTO requestDetail =
                 jpaQueryFactory
                         .select(
                                 Projections.fields(
                                         ResSupportDetailDTO.class,
                                         supportRequest.supportRequestId,
-                                        supportRequest.requestCompany.companyNm.as("requestCompanyNm"),
+                                        supportRequest.requestCompany.companyNm.as(
+                                                "requestCompanyNm"),
                                         supportRequest.userCompany.companyId.as("userCompanyId"),
                                         supportRequest.userCompany.companyNm.as("userCompanyNm"),
-                                        supportRequest.requestProject.projectNm.as("requestProjectNm"),
+                                        supportRequest.requestProject.projectNm.as(
+                                                "requestProjectNm"),
                                         supportRequest.requestCd.codeId.as("requestCd"),
                                         supportRequest.requestCd.codeNm.as("requestNm"),
                                         supportRequest.statusCd.codeId.as("statusCd"),
@@ -166,7 +181,7 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                         .where(supportRequest.supportRequestId.eq(supportRequestId))
                         .fetchOne();
 
-        if (detail == null) {
+        if (requestDetail == null) {
             return new ResSupportDetailDTO();
         }
 
@@ -175,19 +190,22 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                         .select(
                                 Projections.fields(
                                         ResSupportDetailDTO.SupportResponse.class,
-                                        SupportResponse.supportResponseId,
-                                        SupportResponse.responseTitle,
-                                        SupportResponse.responseEditor))
-                        .from(SupportResponse)
+                                        supportResponse.supportResponseId,
+                                        supportResponse.responseTitle,
+                                        supportResponse.responseEditor))
+                        .from(supportResponse)
                         .where(
-                                SupportResponse
+                                supportResponse
                                         .supportRequest
                                         .supportRequestId
                                         .eq(supportRequestId)
                                         .and(supportResponse.delYn.eq(YesNo.N)))
                         .fetchOne();
 
-        detail.setSupportResponse(responseDetail != null ? responseDetail : new ResSupportDetailDTO.SupportResponse());
+        requestDetail.setSupportResponse(
+                responseDetail != null
+                        ? responseDetail
+                        : new ResSupportDetailDTO.SupportResponse());
 
         List<ResSupportDetailDTO.FileList> files =
                 jpaQueryFactory
@@ -208,8 +226,8 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                                         .and(supportFile.delYn.eq(YesNo.N)))
                         .fetch();
 
-        detail.setFileList(files != null ? files : new ArrayList<>());
+        requestDetail.setFileList(files != null ? files : new ArrayList<>());
 
-        return detail;
+        return requestDetail;
     }
 }

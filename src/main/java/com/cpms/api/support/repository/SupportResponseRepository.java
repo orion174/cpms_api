@@ -11,5 +11,6 @@ import com.cpms.common.helper.YesNo;
 @Repository
 public interface SupportResponseRepository extends JpaRepository<SupportResponse, Integer> {
 
-    Optional<SupportResponse> findBySupportRequest_SupportRequestIdAndDelYn(Integer supportRequestId, YesNo delYn);
+    Optional<SupportResponse> findBySupportRequest_SupportRequestIdAndDelYn(
+            Integer supportRequestId, YesNo delYn);
 }

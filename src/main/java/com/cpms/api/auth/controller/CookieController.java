@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/cookie")
+@RequestMapping("/api/cookie")
 public class CookieController {
 
     /**

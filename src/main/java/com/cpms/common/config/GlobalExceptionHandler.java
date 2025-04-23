@@ -1,24 +1,45 @@
 package com.cpms.common.config;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.cpms.common.res.ErrorRes;
+import com.cpms.common.exception.CustomException;
+import com.cpms.common.response.ErrorCode;
+import com.cpms.common.response.ErrorResponse;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResponse> handleCustomException(
+            CustomException ex, HttpServletRequest request) {
+
+        ErrorCode code = ex.getErrorCode();
+
+        ErrorResponse response =
+                new ErrorResponse(
+                        code.getHttpStatus().value(),
+                        code.getCode(),
+                        code.getMessage(),
+                        request.getRequestURI());
+
+        return ResponseEntity.status(code.getHttpStatus()).body(response);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorRes> handleAllExceptions(Exception e, WebRequest req) {
+    public ResponseEntity<ErrorResponse> handleAll(Exception ex, HttpServletRequest request) {
 
-        ErrorRes errorResponse = new ErrorRes(e.getMessage(), req.getDescription(false));
+        ErrorResponse response =
+                new ErrorResponse(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        ErrorCode.INTERNAL_ERROR.getCode(),
+                        ex.getMessage(),
+                        request.getRequestURI());
 
-        return new ResponseEntity<>(errorResponse, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
 }

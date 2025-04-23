@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 
+import org.hibernate.annotations.Comment;
+
 import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.common.helper.BaseEntity;
 import com.cpms.common.helper.YesNo;
@@ -23,18 +25,18 @@ public class SupportResponse extends BaseEntity {
     @Column(name = "support_response_id")
     private Integer supportResponseId;
 
-    /* 요청 문의 */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "support_request_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private SupportRequest supportRequest;
 
     @Column(name = "response_title")
+    @Comment("문의응답 제목")
     private String responseTitle;
 
     @Column(name = "response_editor")
+    @Comment("문의응답 내용")
     private String responseEditor;
 
-    /* 등록자 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reg_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private CpmsUser regUser;
@@ -45,7 +47,11 @@ public class SupportResponse extends BaseEntity {
     @Column(name = "del_id", columnDefinition = "int(10) unsigned")
     protected Integer delId;
 
-    public SupportResponse(SupportRequest supportRequest, String responseTitle, String responseEditor, CpmsUser regUser) {
+    public SupportResponse(
+            SupportRequest supportRequest,
+            String responseTitle,
+            String responseEditor,
+            CpmsUser regUser) {
         this.supportRequest = supportRequest;
         this.responseTitle = responseTitle;
         this.responseEditor = responseEditor;

@@ -1,7 +1,9 @@
 package com.cpms.common.util;
 
 import java.io.File;
-import java.nio.file.Files;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -9,37 +11,41 @@ import java.util.UUID;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
+import com.cpms.common.exception.CustomException;
 import com.cpms.common.helper.FileDTO;
+import com.cpms.common.response.ErrorCode;
 
 public class FileUtil {
 
-    public static FileDTO fileUpload(MultipartFile multipartFile, String filePath)
-            throws Exception {
+    public static FileDTO fileUpload(MultipartFile multipartFile, String filePath) {
         File fileDir = new File(filePath);
 
-        if (!fileDir.exists()) {
-            if (!fileDir.mkdirs()) {
-                throw new Exception(
-                        "file upload failed : 파일 디렉토리 생성에 실패했습니다.[failed file path : "
-                                + filePath
-                                + "]");
-            }
+        if (!fileDir.exists() && !fileDir.mkdirs()) {
+            throw new CustomException(ErrorCode.FILE_DIRECTORY_CREATE_FAILED);
         }
 
-        // UUID.randomUUID()를 이용해서 고유한 파일 이름을 만들어냄
         String fileOgNm = multipartFile.getOriginalFilename();
+
         String fileExt = FilenameUtils.getExtension(fileOgNm);
+
         String fileNm = UUID.randomUUID() + "." + fileExt;
 
-        // 실제 파일 저장
-        multipartFile.transferTo(new File(filePath + "/" + fileNm));
+        File destFile = new File(fileDir, fileNm);
+
+        try {
+            multipartFile.transferTo(destFile);
+        } catch (IOException e) {
+            throw new CustomException(ErrorCode.FILE_SAVE_FAILED);
+        }
 
         return FileDTO.builder()
-                .filePath(filePath)
+                .filePath(fileDir.getPath())
                 .fileOgNm(fileOgNm)
                 .fileExt(fileExt)
                 .fileNm(fileNm)
@@ -47,21 +53,26 @@ public class FileUtil {
                 .build();
     }
 
-    public static ResponseEntity<?> fileDownload(String filePath, String fileName) {
+    public static ResponseEntity<Resource> fileDownload(String filePath, String fileName) {
         try {
             Path file = Paths.get(filePath).resolve(fileName).normalize();
             Resource resource = new UrlResource(file.toUri());
 
             if (!resource.exists()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                throw new CustomException(ErrorCode.FILE_NOT_FOUND);
             }
 
-            byte[] content = Files.readAllBytes(file);
+            String encodedFileName = UriUtils.encode(fileName, StandardCharsets.UTF_8);
 
-            return ResponseEntity.ok().body(content);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + encodedFileName + "\"")
+                    .body(resource);
 
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        } catch (MalformedURLException e) {
+            throw new CustomException(ErrorCode.FILE_DOWNLOAD_FAILED);
         }
     }
 }

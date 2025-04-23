@@ -1,28 +1,27 @@
 package com.cpms.api.support.service;
 
-import com.cpms.api.support.dto.req.*;
-import com.cpms.api.support.dto.res.*;
-import org.springframework.http.ResponseEntity;
+import com.cpms.api.support.dto.request.*;
+import com.cpms.api.support.dto.response.*;
 
 public interface SupportService {
-
-    boolean insertSupportRequest(ReqSupportDTO reqSuportDTO) throws Exception;
 
     ResSupportListDTO selectSupportList(ReqSupportListDTO reqSupportListDTO);
 
     ResSupportDetailDTO selectSupportDetail(ReqSupportDTO reqSupportDTO);
 
-    ResponseEntity<?> fileDownload(int suportFileId);
+    boolean insertSupportRequest(ReqSupportDTO reqSupportDTO);
 
-    ResponseEntity<?> fileDelete(int suportFileId);
+    boolean insertSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
 
-    ResponseEntity<?> updateStatus(ReqSupportDTO reqSuportDTO);
+    boolean updateSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
 
-    ResponseEntity<?> updateUser(ReqSupportDTO reqSuportDTO);
+    boolean deleteSupportResponse(ReqSupportDTO reqSupportDTO);
 
-    ResponseEntity<?> insertResSuport(ReqSupportResponseDTO reqSuportResDTO) throws Exception;
+    boolean updateSupportStatus(ReqSupportDTO reqSupportDTO);
 
-    ResponseEntity<?> updateResSuport(ReqSupportResponseDTO reqSuportResDTO) throws Exception;
+    boolean updateResponseUserInfo(ReqSupportDTO reqSupportDTO);
 
-    ResponseEntity<?> deleteResSuport(ReqSupportDTO reqSuportDTO) throws Exception;
+    ResSupportFileDTO fileDownload(int supportFileId);
+
+    void fileDelete(int supportFileId);
 }

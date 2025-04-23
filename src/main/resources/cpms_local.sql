@@ -1,11 +1,11 @@
-CREATE TABLE `com_code` (
+CREATE TABLE `common_code` (
   `code_id` int(11) NOT NULL COMMENT '공통 코드 아이디',
-  `group_id` varchar(10) DEFAULT NULL COMMENT '공통 코드 그룹',
+  `group_code` varchar(10) NOT NULL COMMENT '공통 코드 그룹',
   `code_nm` varchar(30) DEFAULT NULL COMMENT '공통 코드 명',
-  `depth` int(10) unsigned NOT NULL COMMENT '레벨',
-  `sort_order` int(10) unsigned NOT NULL COMMENT '정렬 순서',
-  `use_yn` enum('Y','N') DEFAULT 'N' COMMENT '사용 유무',
-  PRIMARY KEY (`code_id`)
+  `depth` int(10) unsigned NOT NULL COMMENT '공콩 코드 계층 분류',
+  `sort_order` int(10) unsigned NOT NULL COMMENT '코드 정렬 순서',
+  `use_yn` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '사용 유무',
+  PRIMARY KEY (`com_code_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='공통 코드';
 
 CREATE TABLE `cpms_company` (
@@ -69,16 +69,16 @@ CREATE TABLE `user_login_history` (
 
 CREATE TABLE `support_request` (
   `support_request_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `request_company_id` int(10) unsigned NOT NULL COMMENT '요청 회사 키',
-  `user_company_id` int(10) unsigned NOT NULL COMMENT '사용자 회사 키',
-  `request_project_id` int(10) unsigned NOT NULL COMMENT '프로젝트 키',
-  `response_user_id` int(10) unsigned DEFAULT 0,
-  `request_cd` int(10) unsigned DEFAULT NULL COMMENT '요청 유형 코드',
-  `status_cd` int(10) unsigned DEFAULT NULL COMMENT '처리 상태 코드',
-  `request_date` date DEFAULT NULL,
-  `response_date` date DEFAULT NULL,
+  `request_company_id` int(10) unsigned NOT NULL COMMENT '해당 회사 ID의 업체에게 문의를 요청',
+  `user_company_id` int(10) unsigned NOT NULL COMMENT '문의를 등록한 사용자의 회사 ID',
+  `request_project_id` int(10) unsigned NOT NULL COMMENT '프로젝트 ID',
+  `response_user_id` int(10) unsigned DEFAULT 0 COMMENT '해당 문의에 응답한 사용자 ID',
+  `request_cd` int(10) unsigned DEFAULT NULL COMMENT '요청 유형 분류 코드',
+  `status_cd` int(10) unsigned DEFAULT NULL COMMENT '처리 상태 분류 코드',
+  `request_date` date DEFAULT NULL COMMENT '요청 일자',
+  `response_date` date DEFAULT NULL COMMENT '응답 일자',
   `support_title` varchar(255) DEFAULT NULL COMMENT '문의 제목',
-  `support_editor` text CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci DEFAULT NULL COMMENT '문의 상세',
+  `support_editor` text CHARACTER SET utf8mb4 COLLATE utf8mb4_uca1400_ai_ci DEFAULT NULL COMMENT '문의 상세 내용',
   `reg_id` int(10) unsigned DEFAULT NULL,
   `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
   `udt_id` int(11) unsigned DEFAULT NULL COMMENT '수정자',
@@ -108,11 +108,11 @@ CREATE TABLE `support_file` (
   `support_file_id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '기본키',
   `support_request_id` int(10) unsigned DEFAULT NULL COMMENT '유지보수 요청 키',
   `file_type` varchar(10) DEFAULT NULL COMMENT '파일 구분',
-  `file_path` varchar(100) DEFAULT NULL COMMENT '파일 경로',
-  `file_nm` varchar(100) DEFAULT NULL COMMENT '파일 변환 명',
-  `file_og_nm` varchar(100) DEFAULT NULL COMMENT '파일 실제 명',
+  `file_path` varchar(100) DEFAULT NULL COMMENT '파일 물리 경로',
+  `file_nm` varchar(100) DEFAULT NULL COMMENT '변환된 파일 명',
+  `file_og_nm` varchar(100) DEFAULT NULL COMMENT '실제 파일 명',
   `file_ext` varchar(20) DEFAULT NULL COMMENT '파일 확장자',
-  `file_size` bigint(20) DEFAULT NULL,
+  `file_size` bigint(20) DEFAULT NULL COMMENT '파일 크기',
   `reg_id` int(10) unsigned DEFAULT NULL,
   `red_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
   `udt_id` int(10) unsigned DEFAULT NULL,
