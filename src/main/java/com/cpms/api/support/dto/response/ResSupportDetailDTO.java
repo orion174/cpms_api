@@ -49,6 +49,8 @@ public class ResSupportDetailDTO {
 
     private SupportResponse supportResponse;
 
+    private List<FileList> fileList;
+
     @Getter
     @Setter
     public static class SupportResponse {
@@ -59,8 +61,6 @@ public class ResSupportDetailDTO {
 
         private String responseEditor;
     }
-
-    private List<FileList> fileList;
 
     @Getter
     @Setter

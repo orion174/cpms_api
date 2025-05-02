@@ -26,7 +26,7 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<?> userLogin(
+    public ResponseEntity<ApiResponse> userLogin(
             HttpServletRequest request, @RequestBody @Valid ReqLoginDTO reqLoginDTO) {
         Object result = authService.userLogin(request, reqLoginDTO);
 
@@ -34,8 +34,8 @@ public class AuthController {
                 ApiResponse.success(result, ResponseMessage.LOGIN_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/refreshToken")
-    public ResponseEntity<?> refreshToken(
+    @PostMapping("/refresh-token")
+    public ResponseEntity<ApiResponse> refreshToken(
             HttpServletRequest request, @RequestBody ReqRefreshTokenDTO reqRefreshTokenDTO) {
         ResRreshTokenDTO result = authService.refreshToken(request, reqRefreshTokenDTO);
 

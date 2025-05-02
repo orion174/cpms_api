@@ -27,11 +27,11 @@ public class CookieController {
     /**
      * 클라이언트에서 전달된 데이터를 기반으로 쿠키를 생성하고 저장한다.
      *
-     * @param res
+     * @param response
      * @param params
      * @return
      */
-    @PostMapping("/saveCookie")
+    @PostMapping("/save")
     public ResponseEntity<?> saveCookie(
             HttpServletResponse response, @RequestBody Map<String, String> params) {
         int refreshTokenExpiration =
@@ -57,7 +57,7 @@ public class CookieController {
      * @param request
      * @return
      */
-    @PostMapping("/getCookie")
+    @PostMapping("/get")
     @ResponseBody
     public ResponseEntity<?> getCookie(HttpServletRequest request) {
 
@@ -72,25 +72,26 @@ public class CookieController {
     /**
      * 쿠키를 삭제한다.
      *
-     * @param req
-     * @param res
+     * @param request
+     * @param response
      * @param params
      */
-    @PostMapping("/deleteCookie")
+    @PostMapping("/delete")
     public void deleteCookie(
-            HttpServletRequest req,
-            HttpServletResponse res,
+            HttpServletRequest request,
+            HttpServletResponse response,
             @RequestBody Map<String, String> params) {
 
         String key = params.get("key");
 
         if (TokenUtil.isValidKey(key)) {
-            CookieUtil.deleteCookieIfAllowed(res, key);
+            CookieUtil.deleteCookieIfAllowed(response, key);
 
         } else {
-            Arrays.stream(Optional.ofNullable(req.getCookies()).orElse(new Cookie[] {}))
+            Arrays.stream(Optional.ofNullable(request.getCookies()).orElse(new Cookie[] {}))
                     .filter(cookie -> !cookie.getName().contains("adm"))
-                    .forEach(cookie -> CookieUtil.deleteCookieIfAllowed(res, cookie.getName()));
+                    .forEach(
+                            cookie -> CookieUtil.deleteCookieIfAllowed(response, cookie.getName()));
         }
     }
 }

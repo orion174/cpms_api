@@ -47,7 +47,7 @@ public class CookieUtil {
     public static void addCookieIfPresent(
             HttpServletResponse response, String name, String value, int maxAge) {
         if (value != null) {
-            new CookieUtil().addCookie(response, name, value, maxAge);
+            addCookie(response, name, value, maxAge);
         }
     }
 
@@ -61,6 +61,9 @@ public class CookieUtil {
         if (TokenUtil.isValidKey(key)) {
             Cookie cookie = new Cookie(key, null);
             cookie.setMaxAge(0);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
 
             response.addCookie(cookie);
         }

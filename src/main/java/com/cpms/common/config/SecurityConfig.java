@@ -32,10 +32,10 @@ public class SecurityConfig {
     private static final List<String> PUBLIC_URLS =
             List.of(
                     "/api/auth/login",
-                    "/api/auth/refreshToken",
-                    "/api/cookie/saveCookie",
-                    "/api/cookie/getCookie",
-                    "/api/cookie/deleteCookie",
+                    "/api/auth/refresh-token",
+                    "/api/cookie/save",
+                    "/api/cookie/get",
+                    "/api/cookie/delete",
                     "/util/Editor/smartEditorUploadURL",
                     "/resource/upload/**");
 

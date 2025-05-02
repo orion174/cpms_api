@@ -56,7 +56,7 @@ public class SupportController {
                 ApiResponse.success(result, ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/resInsert")
+    @PostMapping("/insert-response")
     public ResponseEntity<ApiResponse> insertSupportResponse(
             @RequestPart(value = "responseFile", required = false) MultipartFile[] responseFile,
             @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
@@ -66,7 +66,7 @@ public class SupportController {
                 ApiResponse.success(result, ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/resUpdate")
+    @PostMapping("/update-response")
     public ResponseEntity<ApiResponse> updateSupportResponse(
             @RequestPart(value = "responseFile", required = false) MultipartFile[] responseFile,
             @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
@@ -76,7 +76,7 @@ public class SupportController {
                 ApiResponse.success(result, ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/resDelete")
+    @PostMapping("/delete-response")
     public ResponseEntity<ApiResponse> deleteSupportResponse(
             @RequestBody ReqSupportDTO reqSupportDTO) {
         Object result = supportService.deleteSupportResponse(reqSupportDTO);
@@ -85,7 +85,7 @@ public class SupportController {
                 ApiResponse.success(result, ResponseMessage.DELETE_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/updateStatus")
+    @PostMapping("/update-status")
     public ResponseEntity<ApiResponse> updateSupportStatus(
             @RequestBody ReqSupportDTO reqSupportDTO) {
         Object result = supportService.updateSupportStatus(reqSupportDTO);
@@ -94,7 +94,7 @@ public class SupportController {
                 ApiResponse.success(result, ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/updateUser")
+    @PostMapping("/update-user")
     public ResponseEntity<ApiResponse> updateResponseUserInfo(
             @RequestBody ReqSupportDTO reqSupportDTO) {
         Object result = supportService.updateResponseUserInfo(reqSupportDTO);
@@ -103,13 +103,13 @@ public class SupportController {
                 ApiResponse.success(result, ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
-    @GetMapping("/fileDownload/{supportFileId}")
+    @GetMapping("/file/{supportFileId}/download")
     public ResponseEntity<Resource> fileDownload(@PathVariable int supportFileId) {
         ResSupportFileDTO dto = supportService.fileDownload(supportFileId);
         return FileUtil.fileDownload(dto.getFilePath(), dto.getFileNm());
     }
 
-    @PostMapping("/fileDelete/{supportFileId}")
+    @PostMapping("/file/{supportFileId}/delete")
     public ResponseEntity<ApiResponse> fileDelete(@PathVariable int supportFileId) {
         supportService.fileDelete(supportFileId);
         return ResponseEntity.ok(
