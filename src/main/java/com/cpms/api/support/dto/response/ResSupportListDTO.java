@@ -29,15 +29,15 @@ public class ResSupportListDTO {
 
         private String requestProjectNm; // 요청 프로젝트 명
 
-        private Integer requestCd; // 요청 유형
+        private String responseUserNm; // 처리 담당자
+
+        private Integer requestCd; // 요청 유형 코드
 
         private String requestNm; // 요청 유형
 
-        private Integer statusCd; // 처리상태
+        private Integer statusCd; // 처리 상태 코드
 
-        private String statusNm; // 처리상태
-
-        private String responseUserNm; // 담당자
+        private String statusNm; // 처리 상태
 
         private String requestDate; // 처리기한
 

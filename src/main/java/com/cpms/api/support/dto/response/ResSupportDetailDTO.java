@@ -25,6 +25,8 @@ public class ResSupportDetailDTO {
 
     private String requestProjectNm;
 
+    private String responseUserNm;
+
     private Integer requestCd;
 
     private String requestNm;
@@ -32,12 +34,6 @@ public class ResSupportDetailDTO {
     private Integer statusCd;
 
     private String statusNm;
-
-    private Integer responseUserId;
-
-    private String responseUserNm;
-
-    private String requestUserNm;
 
     private String requestDate;
 

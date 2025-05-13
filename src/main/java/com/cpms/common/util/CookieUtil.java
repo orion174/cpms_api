@@ -24,8 +24,10 @@ public class CookieUtil {
                 ResponseCookie.from(name, value)
                         .path("/")
                         .httpOnly(true)
-                        .secure(true)
-                        .sameSite("Strict");
+                        // .secure(true)
+                        .secure(false)
+                        // .sameSite("Strict")
+                        .sameSite("None");
 
         if (maxAge > 0) {
             cookieBuilder.maxAge(maxAge);

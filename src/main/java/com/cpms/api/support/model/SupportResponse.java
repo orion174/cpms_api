@@ -1,12 +1,9 @@
 package com.cpms.api.support.model;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 
 import org.hibernate.annotations.Comment;
 
-import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.common.helper.BaseEntity;
 import com.cpms.common.helper.YesNo;
 
@@ -27,62 +24,36 @@ public class SupportResponse extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "support_request_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("문의 글 ID")
     private SupportRequest supportRequest;
 
-    @Column(name = "response_title")
-    @Comment("문의응답 제목")
+    @Column(name = "response_title", length = 255, nullable = false)
+    @Comment("응답 제목")
     private String responseTitle;
 
-    @Column(name = "response_editor")
-    @Comment("문의응답 내용")
+    @Column(name = "response_editor", columnDefinition = "TEXT")
+    @Comment("응답 상세 내용")
     private String responseEditor;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reg_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private CpmsUser regUser;
-
-    @Column(name = "udt_id", columnDefinition = "int(10) unsigned")
-    protected Integer udtId;
-
-    @Column(name = "del_id", columnDefinition = "int(10) unsigned")
-    protected Integer delId;
 
     public SupportResponse(
             SupportRequest supportRequest,
             String responseTitle,
             String responseEditor,
-            CpmsUser regUser) {
+            Integer regId) {
         this.supportRequest = supportRequest;
         this.responseTitle = responseTitle;
         this.responseEditor = responseEditor;
-        this.regUser = regUser;
+        this.regId = regId;
     }
 
-    // 답변 수정
     public void updateResponse(String responseTitle, String responseEditor, Integer udtId) {
         this.responseTitle = responseTitle;
         this.responseEditor = responseEditor;
         this.udtId = udtId;
     }
 
-    // 답변 삭제
     public void deleteResponse(YesNo delYn, Integer delId) {
         this.delYn = delYn;
         this.delId = delId;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.regDt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        if (YesNo.Y.equals(this.delYn)) {
-            this.delDt = LocalDateTime.now();
-
-        } else {
-            this.udtDt = LocalDateTime.now();
-        }
     }
 }

@@ -21,7 +21,7 @@ public class CpmsCompany extends BaseEntity {
     @Column(name = "company_id")
     private Integer companyId;
 
-    @Column(length = 255)
+    @Column(name = "company_nm", length = 255)
     @Comment("회사 명")
     private String companyNm;
 }

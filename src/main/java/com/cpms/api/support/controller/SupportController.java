@@ -1,6 +1,7 @@
 package com.cpms.api.support.controller;
 
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +30,10 @@ public class SupportController {
         Object result = supportService.selectSupportList(reqSupportListDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.SELECT_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.SELECT_SUCCESS.getMessage()));
     }
 
     @PostMapping("/detail")
@@ -38,7 +42,10 @@ public class SupportController {
         Object result = supportService.selectSupportDetail(reqSupportDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.SELECT_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.SELECT_SUCCESS.getMessage()));
     }
 
     @PostMapping("/insert")
@@ -53,7 +60,10 @@ public class SupportController {
         Object result = supportService.insertSupportRequest(reqSupportDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.INSERT_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 
     @PostMapping("/insert-response")
@@ -63,7 +73,10 @@ public class SupportController {
         Object result = supportService.insertSupportResponse(reqSupportResponseDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.INSERT_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 
     @PostMapping("/update-response")
@@ -73,7 +86,10 @@ public class SupportController {
         Object result = supportService.updateSupportResponse(reqSupportResponseDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.UPDATE_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
     @PostMapping("/delete-response")
@@ -82,7 +98,10 @@ public class SupportController {
         Object result = supportService.deleteSupportResponse(reqSupportDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.DELETE_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.DELETE_SUCCESS.getMessage()));
     }
 
     @PostMapping("/update-status")
@@ -91,7 +110,10 @@ public class SupportController {
         Object result = supportService.updateSupportStatus(reqSupportDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.UPDATE_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
     @PostMapping("/update-user")
@@ -100,19 +122,24 @@ public class SupportController {
         Object result = supportService.updateResponseUserInfo(reqSupportDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.UPDATE_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
     @GetMapping("/file/{supportFileId}/download")
     public ResponseEntity<Resource> fileDownload(@PathVariable int supportFileId) {
         ResSupportFileDTO dto = supportService.fileDownload(supportFileId);
+
         return FileUtil.fileDownload(dto.getFilePath(), dto.getFileNm());
     }
 
     @PostMapping("/file/{supportFileId}/delete")
     public ResponseEntity<ApiResponse> fileDelete(@PathVariable int supportFileId) {
         supportService.fileDelete(supportFileId);
+
         return ResponseEntity.ok(
-                ApiResponse.success(null, ResponseMessage.DELETE_SUCCESS.getMessage()));
+                ApiResponse.success(200, null, ResponseMessage.DELETE_SUCCESS.getMessage()));
     }
 }

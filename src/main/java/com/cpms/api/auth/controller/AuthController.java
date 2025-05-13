@@ -3,6 +3,7 @@ package com.cpms.api.auth.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,7 +32,8 @@ public class AuthController {
         Object result = authService.userLogin(request, reqLoginDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.LOGIN_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(), result, ResponseMessage.LOGIN_SUCCESS.getMessage()));
     }
 
     @PostMapping("/refresh-token")
@@ -40,6 +42,9 @@ public class AuthController {
         ResRreshTokenDTO result = authService.refreshToken(request, reqRefreshTokenDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.REFRESH_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.REFRESH_SUCCESS.getMessage()));
     }
 }

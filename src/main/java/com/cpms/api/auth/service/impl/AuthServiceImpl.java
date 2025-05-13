@@ -1,7 +1,5 @@
 package com.cpms.api.auth.service.impl;
 
-import java.util.Optional;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -99,11 +97,11 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      */
     @Override
     @Transactional(readOnly = true)
-    public UserDetails loadUserByUsername(String loginId) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String loginId) {
         ResLoginDTO resLoginDTO =
                 customAuthRepository
                         .findUserByLoginId(loginId)
-                        .orElseThrow(() -> new UsernameNotFoundException("아이디와 비밀번호가 일치하지 않습니다."));
+                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         return User.builder()
                 .username(resLoginDTO.getLoginId())
@@ -151,7 +149,6 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      * @return
      */
     private Authentication authenticate(ReqLoginDTO reqLoginDTO) {
-
         try {
             return authenticationManagerBuilder
                     .getObject()
@@ -160,7 +157,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                                     reqLoginDTO.getLoginId(), reqLoginDTO.getLoginPw()));
 
         } catch (Exception e) {
-            throw new UsernameNotFoundException("아이디와 비밀번호가 일치하지 않습니다.");
+            throw new CustomException(ErrorCode.USER_UNAUTHORIZED);
         }
     }
 
@@ -172,17 +169,18 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      * @return
      */
     private JwtDTO generateJwtToken(Authentication authentication, ResLoginDTO resLoginDTO) {
+        if (resLoginDTO == null) {
+            throw new CustomException(ErrorCode.INTERNAL_ERROR);
+        }
 
-        return Optional.of(resLoginDTO)
-                .map(
-                        user ->
-                                JwtDTO.builder()
-                                        .authType(user.getAuthType())
-                                        .userId(user.getUserId())
-                                        .companyId(user.getCompanyId())
-                                        .build())
-                .map(jwt -> jwtTokenProvider.generateToken(authentication, jwt))
-                .orElseThrow(() -> new IllegalStateException("토큰 생성 실패"));
+        JwtDTO jwt =
+                JwtDTO.builder()
+                        .authType(resLoginDTO.getAuthType())
+                        .userId(resLoginDTO.getUserId())
+                        .companyId(resLoginDTO.getCompanyId())
+                        .build();
+
+        return jwtTokenProvider.generateToken(authentication, jwt);
     }
 
     /**
@@ -193,7 +191,6 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      * @return
      */
     private ResLoginDTO buildResLoginDTO(ResLoginDTO resLoginDTO, JwtDTO jwtDTO) {
-
         return ResLoginDTO.builder()
                 .accessToken(jwtDTO.getAccessToken())
                 .refreshToken(jwtDTO.getRefreshToken())

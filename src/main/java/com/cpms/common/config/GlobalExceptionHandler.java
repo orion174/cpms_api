@@ -8,38 +8,29 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.cpms.common.exception.CustomException;
+import com.cpms.common.response.ApiResponse;
 import com.cpms.common.response.ErrorCode;
-import com.cpms.common.response.ErrorResponse;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResponse> handleCustomException(
+    public ResponseEntity<ApiResponse> handleCustomException(
             CustomException ex, HttpServletRequest request) {
-
         ErrorCode code = ex.getErrorCode();
-
-        ErrorResponse response =
-                new ErrorResponse(
-                        code.getHttpStatus().value(),
-                        code.getCode(),
-                        code.getMessage(),
-                        request.getRequestURI());
-
-        return ResponseEntity.status(code.getHttpStatus()).body(response);
+        return ResponseEntity.status(code.getHttpStatus())
+                .body(
+                        ApiResponse.fail(
+                                code.getHttpStatus().value(), code.getMessage(), code.getCode()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAll(Exception ex, HttpServletRequest request) {
-
-        ErrorResponse response =
-                new ErrorResponse(
-                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                        ErrorCode.INTERNAL_ERROR.getCode(),
-                        ex.getMessage(),
-                        request.getRequestURI());
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public ResponseEntity<ApiResponse> handleAll(Exception ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(
+                        ApiResponse.fail(
+                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                ErrorCode.INTERNAL_ERROR.getMessage(),
+                                ErrorCode.INTERNAL_ERROR.getCode()));
     }
 }

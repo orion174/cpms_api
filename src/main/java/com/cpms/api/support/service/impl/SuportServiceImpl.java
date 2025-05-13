@@ -69,7 +69,7 @@ public class SuportServiceImpl implements SupportService {
 
     private final CpmsProjectRepository cpmsProjectRepository;
 
-    /** TODO 해당 부분 공통 코드로 관리되게 이관 (임시) 문의 첨부파일은 'REQ' 문의 첨부파일은 'RES' */
+    /* TODO 해당 부분 공통 코드로 관리되게 이관 (임시) 문의 첨부파일은 'REQ' 응답 첨부파일은 'RES' */
     private static final String FILE_TYPE_REQ = "REQ";
 
     private static final String FILE_TYPE_RES = "RES";
@@ -85,7 +85,7 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * 현재 로그인한 사용자의 회사 ID를 가져온다.
+     * 현재 로그인한 사용자의 업체 ID를 가져온다.
      *
      * @return
      */
@@ -104,7 +104,7 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * 유지보수 요청을 신규로 등록한다.
+     * 문의를 신규 등록한다.
      *
      * @param reqSupportDTO
      * @return
@@ -137,11 +137,6 @@ public class SuportServiceImpl implements SupportService {
                         .findById(reqSupportDTO.getStatusCd())
                         .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        CpmsUser regUser =
-                cpmsUserRepository
-                        .findById(getUserId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
-
         SupportRequest supportRequest =
                 new SupportRequest(
                         requestCompany,
@@ -151,9 +146,10 @@ public class SuportServiceImpl implements SupportService {
                         requestCd,
                         statusCd,
                         reqSupportDTO.getRequestDate(),
+                        null,
                         reqSupportDTO.getSupportTitle(),
                         reqSupportDTO.getSupportEditor(),
-                        regUser);
+                        getUserId());
 
         // 유지보수 요청 저장
         supportRequestRepository.save(supportRequest);
@@ -161,14 +157,14 @@ public class SuportServiceImpl implements SupportService {
         // 파일 업로드 처리
         if (hasFiles(reqSupportDTO.getSupportFile())) {
             String fileType = FILE_TYPE_REQ;
-            supportFileUpload(reqSupportDTO.getSupportFile(), supportRequest, regUser, fileType);
+            supportFileUpload(reqSupportDTO.getSupportFile(), supportRequest, fileType);
         }
 
         return true;
     }
 
     /**
-     * 유지보수 요청 목록을 조회한다.
+     * 문의 목록을 조회한다.
      *
      * @param reqSupportListDTO
      * @return
@@ -206,7 +202,7 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * 유지보수 요청 상세 조회
+     * 문의 상세 조회
      *
      * @param reqSupportDTO
      * @return
@@ -238,55 +234,56 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * 문의의 대한 답변을 저장한다.
+     * 응답을 등록 한다.
      *
-     * @param reqSupportResDTO
+     * @param reqSupportResponseDTO
      * @return
      */
     @Override
     @Transactional
-    public boolean insertSupportResponse(ReqSupportResponseDTO reqSupportResDTO) {
+    public boolean insertSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO) {
         SupportRequest supportRequest =
                 supportRequestRepository
-                        .findById(reqSupportResDTO.getSupportRequestId())
+                        .findById(reqSupportResponseDTO.getSupportRequestId())
                         .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         CommonCode statusCd =
                 commonCodeRepository
-                        .findById(reqSupportResDTO.getResponseStatusCd())
+                        .findById(reqSupportResponseDTO.getResponseStatusCd())
                         .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        CpmsUser userId =
+        CpmsUser responseUserId =
                 cpmsUserRepository
                         .findById(getUserId())
                         .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        // 프로젝트 유지보수 문의 본문, 처리상태, 처리담당자 업데이트
-        supportRequest.updateStatusCd(statusCd, getUserId());
+        // 처리 상태 업데이트
+        supportRequest.updateStatusCd(statusCd);
 
-        supportRequest.updateResponseUser(userId, getUserId());
+        // 처리 담당자 업데이트
+        supportRequest.updateResponseUser(responseUserId);
 
         SupportResponse supportResponse =
                 new SupportResponse(
                         supportRequest,
-                        reqSupportResDTO.getResponseTitle(),
-                        reqSupportResDTO.getResponseEditor(),
-                        userId);
+                        reqSupportResponseDTO.getResponseTitle(),
+                        reqSupportResponseDTO.getResponseEditor(),
+                        getUserId());
 
-        // 유지보수 요청 저장
+        // 응답 저장
         supportResponseRepository.save(supportResponse);
 
-        // 답변 첨부파일 저장
-        if (hasFiles(reqSupportResDTO.getResponseFile())) {
+        // 응답 첨부파일 저장
+        if (hasFiles(reqSupportResponseDTO.getResponseFile())) {
             String fileType = FILE_TYPE_RES;
-            supportFileUpload(reqSupportResDTO.getResponseFile(), supportRequest, userId, fileType);
+            supportFileUpload(reqSupportResponseDTO.getResponseFile(), supportRequest, fileType);
         }
 
         return true;
     }
 
     /**
-     * 처리내역 답변을 수정한다.
+     * 응답 답변을 수정한다.
      *
      * @param reqSupportResponseDTO
      * @return
@@ -294,17 +291,12 @@ public class SuportServiceImpl implements SupportService {
     @Override
     @Transactional
     public boolean updateSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO) {
+        Integer userId = getUserId();
+
         // 일반 사용자는 답변을 수정 할 수 없다.
         if ("USER".equals(getAuthType())) {
             throw new CustomException(ErrorCode.NO_AUTHORITY);
         }
-
-        Integer userId = getUserId();
-
-        CpmsUser user =
-                cpmsUserRepository
-                        .findById(getUserId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
         CommonCode statusCd =
                 commonCodeRepository
@@ -316,9 +308,10 @@ public class SuportServiceImpl implements SupportService {
                         .findById(reqSupportResponseDTO.getSupportRequestId())
                         .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        supportRequest.updateStatusCd(statusCd, userId);
+        // 답변 문의 본문 처리상태 업데이트
+        supportRequest.updateStatusCd(statusCd);
 
-        // 처리내역 확인 및 수정
+        // 답변 수정
         supportResponseRepository
                 .findById(reqSupportResponseDTO.getSupportResponseId())
                 .ifPresentOrElse(
@@ -335,7 +328,6 @@ public class SuportServiceImpl implements SupportService {
                                 supportFileUpload(
                                         reqSupportResponseDTO.getResponseFile(),
                                         supportRequest,
-                                        user,
                                         fileType);
                             }
                         },
@@ -347,7 +339,7 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * 처리내역 답변을 삭제한다.
+     * 답변을 삭제한다.
      *
      * @param reqSupportDTO
      * @return
@@ -355,14 +347,13 @@ public class SuportServiceImpl implements SupportService {
     @Override
     @Transactional
     public boolean deleteSupportResponse(ReqSupportDTO reqSupportDTO) {
+        Integer userId = getUserId();
+        Integer supportRequestId = reqSupportDTO.getSupportRequestId();
+
         // 일반 사용자는 답변을 수정 할 수 없다.
         if ("USER".equals(getAuthType())) {
             throw new CustomException(ErrorCode.NO_AUTHORITY);
         }
-
-        Integer supportRequestId = reqSupportDTO.getSupportRequestId();
-
-        Integer userId = getUserId();
 
         Optional<SupportResponse> supportResponseOpt =
                 supportResponseRepository.findBySupportRequest_SupportRequestIdAndDelYn(
@@ -389,7 +380,7 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * ADMIN 권한 사용자가 문의글을 조회하면 자동으로 처리상태가 업데이트 된다.
+     * 'ADMIN' 권한 사용자가 문의글을 조회하면 자동으로 처리상태가 업데이트 된다.
      *
      * @param reqSupportDTO
      * @return
@@ -397,7 +388,7 @@ public class SuportServiceImpl implements SupportService {
     @Override
     @Transactional
     public boolean updateSupportStatus(ReqSupportDTO reqSupportDTO) {
-        // ADMIN 권한일때만 상태코드를 변경한다.
+        // 'ADMIN' 권한일때만 상태코드를 변경한다.
         if ("ADMIN".equals(getAuthType())) {
             SupportRequest supportRequest =
                     supportRequestRepository
@@ -409,7 +400,7 @@ public class SuportServiceImpl implements SupportService {
                             .findById(reqSupportDTO.getStatusCd())
                             .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-            supportRequest.updateStatusCd(statusCd, getUserId());
+            supportRequest.updateStatusCd(statusCd);
 
             supportRequestRepository.save(supportRequest);
         }
@@ -418,9 +409,9 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * 프로젝트 문의 처리 담당자 업데이트
+     * 처리 담당자 업데이트
      *
-     * @param reqSuportDTO
+     * @param reqSupportDTO
      * @return
      */
     @Override
@@ -431,12 +422,12 @@ public class SuportServiceImpl implements SupportService {
                         .findById(reqSupportDTO.getSupportRequestId())
                         .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        CpmsUser resUser =
+        CpmsUser responseUser =
                 cpmsUserRepository
                         .findById(reqSupportDTO.getUserId())
                         .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
 
-        supportRequest.updateResponseUser(resUser, getUserId());
+        supportRequest.updateResponseUser(responseUser);
 
         supportRequestRepository.save(supportRequest);
 
@@ -468,6 +459,11 @@ public class SuportServiceImpl implements SupportService {
     @Override
     @Transactional
     public void fileDelete(int supportFileId) {
+        // 일반 사용자는 첨부파일을 삭제할 수 없다.
+        if ("USER".equals(getAuthType())) {
+            throw new CustomException(ErrorCode.NO_AUTHORITY);
+        }
+
         SupportFile file =
                 supportFileRepository
                         .findById(supportFileId)
@@ -477,19 +473,15 @@ public class SuportServiceImpl implements SupportService {
     }
 
     /**
-     * 파일 업로드 공통
+     * 문의(응답) 파일 업로드 공통
      *
      * @param files
      * @param supportRequest
-     * @param regUser
      * @param fileType
      */
     @Transactional
     private void supportFileUpload(
-            MultipartFile[] files,
-            SupportRequest supportRequest,
-            CpmsUser regUser,
-            String fileType) {
+            MultipartFile[] files, SupportRequest supportRequest, String fileType) {
 
         for (MultipartFile file : files) {
             try {
@@ -510,7 +502,7 @@ public class SuportServiceImpl implements SupportService {
                                 fileDTO.getFileOgNm(),
                                 fileDTO.getFileExt(),
                                 fileDTO.getFileSize(),
-                                regUser);
+                                getUserId());
 
                 supportFileRepository.save(supportFile);
 

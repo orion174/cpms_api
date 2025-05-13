@@ -1,7 +1,6 @@
 package com.cpms.api.support.model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,55 +29,55 @@ public class SupportRequest extends BaseEntity {
     @Column(name = "support_request_id")
     private Integer supportRequestId;
 
-    /** 해당 회사 ID의 업체에게 문의를 요청 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "request_company_id",
             referencedColumnName = "company_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("해당 ID의 업체에게 문의를 요청")
     private CpmsCompany requestCompany;
 
-    /** 문의를 등록한 사용자의 회사 ID */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "user_company_id",
             referencedColumnName = "company_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("문의를 등록한 사용자의 업체ID")
     private CpmsCompany userCompany;
 
-    /** 프로젝트 ID */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "request_project_id",
             referencedColumnName = "project_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("문의 프로젝트 ID")
     private CpmsProject requestProject;
 
-    /** 해당 문의에 응답한 사용자 ID */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "response_user_id",
             referencedColumnName = "user_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("해당 문의에 응답한 사용자 ID")
     private CpmsUser responseUser;
 
-    /** 요청 유형 분류 코드 (공통 코드를 참조) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "request_cd",
             referencedColumnName = "code_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("요청 유형 분류 코드")
     private CommonCode requestCd;
 
-    /** 처리 상태 분류 코드 (공통 코드를 참조) */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
             name = "status_cd",
             referencedColumnName = "code_id",
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("처리 상태 분류 코드")
     private CommonCode statusCd;
 
-    @Column(name = "request_date")
+    @Column(name = "request_date", nullable = false)
     @Comment("요청 일자")
     private LocalDate requestDate;
 
@@ -86,28 +85,15 @@ public class SupportRequest extends BaseEntity {
     @Comment("응답 일자")
     private LocalDate responseDate;
 
-    @Column(name = "support_title")
+    @Column(name = "support_title", length = 255)
     @Comment("문의 제목")
     private String supportTitle;
 
-    @Column(name = "support_editor")
+    @Column(name = "support_editor", columnDefinition = "TEXT")
     @Comment("문의 상세 내용")
     private String supportEditor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-            name = "reg_id",
-            referencedColumnName = "user_id",
-            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private CpmsUser regUser;
-
-    @Column(name = "udt_id", columnDefinition = "int(10) unsigned")
-    protected Integer udtId;
-
-    @Column(name = "del_id", columnDefinition = "int(10) unsigned")
-    protected Integer delId;
-
-    /** 문의 요청 및 응답 첨부 파일 */
+    /* 문의 요청 및 응답 첨부 파일 */
     @OneToMany(mappedBy = "supportRequest", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SupportFile> files = new ArrayList<>();
 
@@ -119,9 +105,10 @@ public class SupportRequest extends BaseEntity {
             CommonCode requestCd,
             CommonCode statusCd,
             String requestDate,
+            LocalDate responseDate,
             String supportTitle,
             String supportEditor,
-            CpmsUser regUser) {
+            Integer regId) {
         this.requestCompany = requestCompany;
         this.userCompany = userCompany;
         this.requestProject = requestProject;
@@ -129,52 +116,27 @@ public class SupportRequest extends BaseEntity {
         this.requestCd = requestCd;
         this.statusCd = statusCd;
         this.requestDate = LocalDate.parse(requestDate);
+        this.responseDate = responseDate;
         this.supportTitle = supportTitle;
         this.supportEditor = supportEditor;
-        this.regUser = regUser;
+        this.regId = regId;
     }
 
-    /**
-     * 처리상태를 업데이트
-     *
-     * @param statusCd
-     * @param udtId
-     */
-    public void updateStatusCd(CommonCode statusCd, Integer udtId) {
+    // 처리 상태 업데이트
+    public void updateStatusCd(CommonCode statusCd) {
         this.statusCd = statusCd;
-        this.udtId = udtId;
     }
 
-    /**
-     * 처리 담당자를 업데이트
-     *
-     * @param responseUser
-     * @param udtId
-     */
-    public void updateResponseUser(CpmsUser responseUser, Integer udtId) {
+    // 처리 담당자 업데이트
+    public void updateResponseUser(CpmsUser responseUser) {
         this.responseUser = responseUser;
-        this.udtId = udtId;
+        this.responseDate = LocalDate.now();
     }
 
-    /**
-     * 문의 요청 및 응답에 대한 파일을 추가한다.
-     *
-     * @param file
-     */
     public void addFile(SupportFile file) {
         if (file != null) {
             files.add(file);
             file.setSupportRequest(this);
         }
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.regDt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.udtDt = LocalDateTime.now();
     }
 }

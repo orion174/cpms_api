@@ -1,3 +1,42 @@
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (1, '10', '문의', 1, 1, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (2, '10', '오류', 1, 2, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (3, '20', '접수대기', 1, 1, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (4, '20', '접수완료', 1, 2, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (5, '20', '처리중', 1, 3, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (6, '20', '반려', 1, 4, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (7, '20', '처리완료', 1, 5, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (8, '20', '이슈종료', 1, 6, 'Y');
 
 INSERT INTO cpms_local.cpms_company
 (company_id, company_nm, reg_id, reg_dt, udt_id, udt_dt, del_yn, del_id, del_dt)

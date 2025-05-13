@@ -21,11 +21,11 @@ public class CpmsProject extends BaseEntity {
     @Column(name = "project_id")
     private Integer projectId;
 
-    @Column(length = 255)
-    @Comment("프로젝트 명")
-    private String projectNm;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     private CpmsCompany cpmsCompany;
+
+    @Column(name = "project_nm", length = 255)
+    @Comment("프로젝트 명")
+    private String projectNm;
 }

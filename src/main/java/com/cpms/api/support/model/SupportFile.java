@@ -1,14 +1,11 @@
 package com.cpms.api.support.model;
 
-import java.time.LocalDateTime;
-
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 
 import org.hibernate.annotations.Comment;
 
-import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.common.helper.BaseEntity;
 import com.cpms.common.helper.YesNo;
 
@@ -18,8 +15,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "support_file")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SupportFile extends BaseEntity {
 
     @Id
@@ -29,41 +26,32 @@ public class SupportFile extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "support_request_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @Comment("문의 글 ID")
     private SupportRequest supportRequest;
 
-    @Column(name = "file_type")
+    @Column(name = "file_type", length = 30, nullable = false)
     @Comment("파일 구분")
     private String fileType;
 
-    @Column(name = "file_path")
+    @Column(name = "file_path", length = 255, nullable = false)
     @Comment("파일 물리 경로")
     private String filePath;
 
-    @Column(name = "file_nm")
+    @Column(name = "file_nm", length = 255, nullable = false)
     @Comment("변환된 파일 명")
     private String fileNm;
 
-    @Column(name = "file_og_nm")
+    @Column(name = "file_og_nm", length = 255, nullable = false)
     @Comment("실제 파일 명")
     private String fileOgNm;
 
-    @Column(name = "file_ext")
+    @Column(name = "file_ext", length = 255, nullable = false)
     @Comment("파일 확장자")
     private String fileExt;
 
-    @Column(name = "file_size")
+    @Column(name = "file_size", columnDefinition = "BIGINT")
     @Comment("파일 크기")
     private Long fileSize;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reg_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
-    private CpmsUser regUser;
-
-    @Column(name = "udt_id", columnDefinition = "int(10) unsigned")
-    protected Integer udtId;
-
-    @Column(name = "del_id", columnDefinition = "int(10) unsigned")
-    protected Integer delId;
 
     public SupportFile(
             SupportRequest supportRequest,
@@ -73,7 +61,7 @@ public class SupportFile extends BaseEntity {
             String fileOgNm,
             String fileExt,
             Long fileSize,
-            CpmsUser regUser) {
+            Integer regId) {
         this.supportRequest = supportRequest;
         this.fileType = fileType;
         this.filePath = filePath;
@@ -81,7 +69,7 @@ public class SupportFile extends BaseEntity {
         this.fileOgNm = fileOgNm;
         this.fileExt = fileExt;
         this.fileSize = fileSize;
-        this.regUser = regUser;
+        this.regId = regId;
     }
 
     public void setSupportRequest(SupportRequest supportRequest) {
@@ -91,20 +79,5 @@ public class SupportFile extends BaseEntity {
     public void deleteFile(YesNo delYn, Integer delId) {
         this.delYn = delYn;
         this.delId = delId;
-    }
-
-    @PrePersist
-    protected void onCreate() {
-        this.regDt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        if (YesNo.Y.equals(this.delYn)) {
-            this.delDt = LocalDateTime.now();
-
-        } else {
-            this.udtDt = LocalDateTime.now();
-        }
     }
 }

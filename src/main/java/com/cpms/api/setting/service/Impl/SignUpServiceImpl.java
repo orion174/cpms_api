@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import jakarta.annotation.PostConstruct;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +93,10 @@ public class SignUpServiceImpl implements SignUpService {
         int result = smsService.sendSMS(smsDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.TEMP_MESSAGE.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.SUCCESS_MESSAGE.getMessage()));
     }
 
     // 본인인증 확인
@@ -126,6 +130,9 @@ public class SignUpServiceImpl implements SignUpService {
         }
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.TEMP_MESSAGE.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.SUCCESS_MESSAGE.getMessage()));
     }
 }

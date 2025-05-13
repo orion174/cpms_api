@@ -114,13 +114,12 @@ CREATE TABLE `support_file` (
   `file_ext` varchar(20) DEFAULT NULL COMMENT '파일 확장자',
   `file_size` bigint(20) DEFAULT NULL COMMENT '파일 크기',
   `reg_id` int(10) unsigned DEFAULT NULL,
-  `red_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
+  `reg_dt` datetime NOT NULL DEFAULT current_timestamp(),
   `udt_id` int(10) unsigned DEFAULT NULL,
   `udt_dt` datetime DEFAULT NULL COMMENT '수정일',
   `del_yn` enum('Y','N') NOT NULL,
   `del_id` int(10) unsigned DEFAULT NULL,
   `del_dt` datetime DEFAULT NULL COMMENT '삭제일',
-  `reg_dt` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`support_file_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci ROW_FORMAT=DYNAMIC COMMENT='유지보수 첨부 파일';
 

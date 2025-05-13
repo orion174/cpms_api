@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.cpms.api.setting.model.CpmsCompany;
 
 @Repository
-public interface CpmsCompanyRepository extends JpaRepository<CpmsCompany, Integer> {}
+public interface CpmsCompanyRepository
+        extends JpaRepository<CpmsCompany, Integer>, CustomCpmsCompanyRepository {}

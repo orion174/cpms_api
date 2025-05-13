@@ -12,8 +12,8 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "common_code")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CommonCode {
 
     @Id
@@ -21,11 +21,11 @@ public class CommonCode {
     @Column(name = "code_id")
     private Integer codeId;
 
-    @Column(name = "group_code", length = 10, nullable = false)
+    @Column(name = "group_code", length = 30, nullable = false)
     @Comment("공통 코드 그룹")
     private String groupCode;
 
-    @Column(name = "code_nm", length = 30)
+    @Column(name = "code_nm", length = 255)
     @Comment("공통 코드 명")
     private String codeNm;
 

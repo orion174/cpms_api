@@ -1,7 +1,9 @@
 package com.cpms.common.response;
 
 public enum ResponseMessage {
-    REFRESH_SUCCESS("로그인에 성공했습니다."),
+    SUCCESS_MESSAGE("요청이 성공하였습니다."),
+
+    REFRESH_SUCCESS("토큰 갱신에 성공했습니다."),
 
     LOGIN_SUCCESS("로그인에 성공했습니다."),
 
@@ -11,9 +13,7 @@ public enum ResponseMessage {
 
     DELETE_SUCCESS("성공적으로 삭제되었습니다."),
 
-    SELECT_SUCCESS("데이터를 성공적으로 조회했습니다."),
-
-    TEMP_MESSAGE("API 요청 성공");
+    SELECT_SUCCESS("데이터를 성공적으로 조회했습니다.");
 
     private final String message;
 

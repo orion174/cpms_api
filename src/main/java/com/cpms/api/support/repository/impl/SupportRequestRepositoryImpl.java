@@ -110,11 +110,11 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                                         supportRequest.userCompany.companyNm.as("userCompanyNm"),
                                         supportRequest.requestProject.projectNm.as(
                                                 "requestProjectNm"),
+                                        supportRequest.responseUser.userNm.as("responseUserNm"),
                                         supportRequest.requestCd.codeId.as("requestCd"),
                                         supportRequest.requestCd.codeNm.as("requestNm"),
                                         supportRequest.statusCd.codeId.as("statusCd"),
                                         supportRequest.statusCd.codeNm.as("statusNm"),
-                                        cpmsUser.userNm.as("regUserNm"),
                                         Expressions.stringTemplate(
                                                         "DATE_FORMAT({0}, '%Y-%m-%d')",
                                                         supportRequest.requestDate)
@@ -160,15 +160,19 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                                         supportRequest.userCompany.companyNm.as("userCompanyNm"),
                                         supportRequest.requestProject.projectNm.as(
                                                 "requestProjectNm"),
+                                        supportRequest.responseUser.userNm.as("responseUserNm"),
                                         supportRequest.requestCd.codeId.as("requestCd"),
                                         supportRequest.requestCd.codeNm.as("requestNm"),
                                         supportRequest.statusCd.codeId.as("statusCd"),
                                         supportRequest.statusCd.codeNm.as("statusNm"),
-                                        supportRequest.responseUser.userNm.as("responseUserNm"),
                                         Expressions.stringTemplate(
                                                         "DATE_FORMAT({0}, '%Y-%m-%d')",
                                                         supportRequest.requestDate)
                                                 .as("requestDate"),
+                                        Expressions.stringTemplate(
+                                                        "DATE_FORMAT({0}, '%Y-%m-%d')",
+                                                        supportRequest.responseDate)
+                                                .as("responseDate"),
                                         supportRequest.supportTitle,
                                         supportRequest.supportEditor))
                         .from(supportRequest)

@@ -1,5 +1,6 @@
 package com.cpms.api.setting.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,9 @@ public class CpmsProjectController {
         Object result = cpmsProjectService.selectCpmsProjectList(reqProjectDTO);
 
         return ResponseEntity.ok(
-                ApiResponse.success(result, ResponseMessage.SELECT_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.SELECT_SUCCESS.getMessage()));
     }
 }

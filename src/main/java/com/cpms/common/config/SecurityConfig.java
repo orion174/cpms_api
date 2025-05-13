@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private final CorsProperties corsProperties;
+
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     private final JwtTokenProvider jwtTokenProvider;
@@ -38,8 +40,6 @@ public class SecurityConfig {
                     "/api/cookie/delete",
                     "/util/Editor/smartEditorUploadURL",
                     "/resource/upload/**");
-
-    private static final List<String> ALLOWED_ORIGINS = List.of("http://localhost:5173");
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -72,8 +72,9 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(ALLOWED_ORIGINS);
+        config.setAllowedOriginPatterns(corsProperties.getAllowedOrigins());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.addAllowedHeader("*");
 
@@ -85,7 +86,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-
         return new BCryptPasswordEncoder();
     }
 }
