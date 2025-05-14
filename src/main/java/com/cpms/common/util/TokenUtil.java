@@ -29,11 +29,20 @@ public class TokenUtil {
      * @param expiration
      * @return
      */
-    public static int parseExpiration(String expiration) {
-        return Optional.ofNullable(expiration)
-                .map(Integer::parseInt)
-                .map(exp -> exp / 1000)
-                .orElse(0);
+    public static int parseExpiration(Object expiration) {
+        try {
+            if (expiration == null) return 0;
+            int exp;
+            if (expiration instanceof Number) {
+                exp = ((Number) expiration).intValue();
+            } else {
+                exp = Integer.parseInt(expiration.toString().trim());
+            }
+            return exp / 1000;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
     }
 
     /**

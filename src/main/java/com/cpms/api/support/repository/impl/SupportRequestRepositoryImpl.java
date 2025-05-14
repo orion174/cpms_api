@@ -61,6 +61,10 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
 
         builder.and(supportRequest.delYn.eq(YesNo.valueOf("N")));
 
+        if (reqSupportListDTO.getRegId() != null && reqSupportListDTO.getRegId() != 0) {
+            builder.and(supportRequest.regId.eq(reqSupportListDTO.getRegId()));
+        }
+
         if (reqSupportListDTO.getSearchCompanyId() != null
                 && reqSupportListDTO.getSearchCompanyId() != 0) {
             builder.and(

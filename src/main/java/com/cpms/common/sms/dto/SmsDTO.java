@@ -1,15 +1,17 @@
 package com.cpms.common.sms.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
 
-@Data
+import lombok.*;
+
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SmsDTO {
-    private String receiver; // 수신자 번호
+
+    @NotBlank private String receiver; // 수신자 번호
+
     private String message; // 문자 메세지 내용
 }

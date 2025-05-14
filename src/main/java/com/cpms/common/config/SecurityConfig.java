@@ -38,6 +38,10 @@ public class SecurityConfig {
                     "/api/cookie/save",
                     "/api/cookie/get",
                     "/api/cookie/delete",
+                    "/api/user/verify/send-sms",
+                    "/api/user/verify/identity-code",
+                    "/api/user/verify/id-check",
+                    "/api/user/verify/register",
                     "/util/Editor/smartEditorUploadURL",
                     "/resource/upload/**");
 

@@ -9,7 +9,25 @@ public enum ErrorCode {
 
     EXPIRED_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "1003", "리프레시 토큰이 만료되었습니다."),
 
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "1004", "인증되지 않았습니다."),
+    SMS_SEND_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "1004", "문자 전송에 실패했습니다."),
+
+    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "1005", "인증되지 않았습니다."),
+
+    AUTH_CODE_NOT_FOUND(HttpStatus.BAD_REQUEST, "1006", "인증요청이 존재하지 않습니다."),
+
+    AUTH_CODE_EXPIRED(HttpStatus.BAD_REQUEST, "1007", "인증번호 유효시간이 초과되었습니다."),
+
+    AUTH_CODE_MISMATCH(HttpStatus.BAD_REQUEST, "1008", "인증번호가 일치하지 않습니다."),
+
+    AUTH_ALREADY_VERIFIED(HttpStatus.BAD_REQUEST, "1009", "이미 인증이 완료된 번호입니다."),
+
+    ID_DUPLICATE(HttpStatus.CONFLICT, "1010", "중복된 아이디입니다."),
+
+    PHONE_ALREADY_REGISTERED(HttpStatus.CONFLICT, "1011", "이미 등록된 전화번호입니다."),
+
+    PHONE_NOT_VERIFIED(HttpStatus.UNAUTHORIZED, "1012", "휴대폰 번호가 인증되지 않았습니다."),
+
+    PHONE_VERIFICATION_MISMATCH(HttpStatus.UNAUTHORIZED, "1013", "인증된 번호와 제출된 번호가 일치하지 않습니다."),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "2001", "존재하지 않는 사용자입니다."),
 

@@ -44,7 +44,6 @@ public abstract class BaseEntity {
     @PrePersist
     protected void onCreate() {
         this.regDt = LocalDateTime.now();
-        this.udtDt = LocalDateTime.now();
     }
 
     @PreUpdate

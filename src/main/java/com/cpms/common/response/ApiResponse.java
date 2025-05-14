@@ -31,8 +31,8 @@ public class ApiResponse {
         return new ApiResponse(true, status, data, message, null);
     }
 
-    public static ApiResponse success(int status, Object data) {
-        return new ApiResponse(true, status, data, null, null);
+    public static ApiResponse success(int status, String message) {
+        return new ApiResponse(true, status, null, message, null);
     }
 
     public static ApiResponse fail(int status, String message, String errorCode) {

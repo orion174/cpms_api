@@ -8,6 +8,7 @@ import com.cpms.common.helper.BaseEntity;
 import com.cpms.common.helper.YesNo;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -62,4 +63,30 @@ public class CpmsUser extends BaseEntity {
     @Column(columnDefinition = "enum('Y','N')", nullable = false)
     @Comment("사용 유무")
     private YesNo useYn = YesNo.Y;
+
+    @Builder
+    public CpmsUser(
+            String authType,
+            Integer companyId,
+            String loginId,
+            String loginPw,
+            String userNm,
+            String userPhone,
+            String userDept,
+            String userPos,
+            String userInfo,
+            YesNo useYn,
+            Integer regId) {
+        this.authType = authType;
+        this.companyId = companyId;
+        this.loginId = loginId;
+        this.loginPw = loginPw;
+        this.userNm = userNm;
+        this.userPhone = userPhone;
+        this.userDept = userDept;
+        this.userPos = userPos;
+        this.userInfo = userInfo;
+        this.useYn = useYn;
+        this.regId = regId;
+    }
 }

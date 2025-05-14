@@ -6,4 +6,9 @@ import org.springframework.stereotype.Repository;
 import com.cpms.api.auth.model.CpmsUser;
 
 @Repository
-public interface CpmsUserRepository extends JpaRepository<CpmsUser, Integer> {}
+public interface CpmsUserRepository extends JpaRepository<CpmsUser, Integer> {
+
+    boolean existsByLoginId(String loginId);
+
+    boolean existsByUserPhone(String phone);
+}

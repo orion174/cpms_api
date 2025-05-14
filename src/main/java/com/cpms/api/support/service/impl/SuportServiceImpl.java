@@ -179,10 +179,13 @@ public class SuportServiceImpl implements SupportService {
         reqSupportListDTO.setSearchEndDt(
                 Optional.ofNullable(reqSupportListDTO.getSearchEndDt()).orElse(""));
 
-        // USER 권한은 자신이 속한 업체의 요청 데이터만 조회가 가능하다.
-        Optional.ofNullable(getAuthType())
-                .filter(authType -> "USER".equals(authType))
-                .ifPresent(authType -> reqSupportListDTO.setSearchCompanyId(getCompanyId()));
+        String authType = getAuthType();
+        if ("USER".equals(authType)) {
+            reqSupportListDTO.setSearchCompanyId(getCompanyId());
+
+        } else if ("TEMP".equals(authType)) {
+            reqSupportListDTO.setRegId(getUserId());
+        }
 
         Pageable pageable =
                 PageUtil.createPageable(
