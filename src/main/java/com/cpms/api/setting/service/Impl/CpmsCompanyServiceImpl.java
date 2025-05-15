@@ -1,7 +1,6 @@
 package com.cpms.api.setting.service.Impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -27,11 +26,10 @@ public class CpmsCompanyServiceImpl implements CpmsCompanyService {
 
     @Override
     public List<ResCompanyListDTO> selectCpmsCompanyList(ReqCompanyDTO reqCompanyDTO) {
-        // USER 권한은 특정업체만 선택가능
-        // TODO : 고도화 시, 업체 권한 부여 및 기능 분리
-        Optional.ofNullable(getAuthType())
-                .filter(authType -> "USER".equals(authType))
-                .ifPresent(authType -> reqCompanyDTO.setCompanyId(1));
+        String authType = getAuthType();
+        if (!"ADMIN".equals(authType)) {
+            reqCompanyDTO.setAuthType("ADMIN");
+        }
 
         return cpmsCompanyRepository.selectCpmsCompanyList(reqCompanyDTO);
     }

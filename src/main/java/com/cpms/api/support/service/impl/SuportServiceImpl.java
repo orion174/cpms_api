@@ -74,31 +74,19 @@ public class SuportServiceImpl implements SupportService {
 
     private static final String FILE_TYPE_RES = "RES";
 
-    /**
-     * 현재 로그인한 사용자 ID를 가져온다.
-     *
-     * @return
-     */
+    // 요청자 ID
     private Integer getUserId() {
         String userIdStr = jwtTokenProvider.getClaim("userId");
         return parseToIntSafely(userIdStr);
     }
 
-    /**
-     * 현재 로그인한 사용자의 업체 ID를 가져온다.
-     *
-     * @return
-     */
+    // 요청자 소속업체 ID
     private Integer getCompanyId() {
         String companyIdStr = jwtTokenProvider.getClaim("companyId");
         return parseToIntSafely(companyIdStr);
     }
 
-    /**
-     * 현재 로그인한 사용자의 권한 등급을 가져온다.
-     *
-     * @return
-     */
+    // 요청자 권한등급
     private String getAuthType() {
         return jwtTokenProvider.getClaim("authType");
     }
@@ -220,8 +208,17 @@ public class SuportServiceImpl implements SupportService {
         }
 
         ResSupportDetailDTO result = supportRequestRepository.findSupportDetail(supportRequestId);
-
         result.setAuthType(getAuthType());
+
+        // TEMP 권한은 자신의 글만 조회가 가능하다.
+        if ("TEMP".equals(getAuthType())) {
+            Integer userId = getUserId();
+            Integer regId = result.getRegId();
+
+            if (!userId.equals(regId)) {
+                throw new CustomException(ErrorCode.NO_AUTHORITY);
+            }
+        }
 
         // USER 권한은 자신이 속한 업체의 요청 데이터만 조회가 가능하다.
         if ("USER".equals(getAuthType())) {

@@ -10,6 +10,7 @@ CREATE TABLE `common_code` (
 
 CREATE TABLE `cpms_company` (
   `company_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `auth_type` varchar(30) DEFAULT NULL COMMENT '업체 권한',
   `company_nm` varchar(255) DEFAULT NULL COMMENT '회사 명',
   `reg_id` int(11) unsigned DEFAULT NULL COMMENT '생성자',
   `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',

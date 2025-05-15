@@ -3,7 +3,6 @@ package com.cpms.api.setting.service.Impl;
 import static com.cpms.common.util.CommonUtil.parseToIntSafely;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -34,10 +33,10 @@ public class CpmsProjectServiceImpl implements CpmsProjectService {
 
     @Override
     public List<ResProjectListDTO> selectCpmsProjectList(ReqProjectDTO reqProjectDTO) {
-        // USER 권한은 소속 업체 프로젝트만 조회가능
-        Optional.ofNullable(getAuthType())
-                .filter(authType -> "USER".equals(authType))
-                .ifPresent(authType -> reqProjectDTO.setCompanyId(getCompanyId()));
+        String authType = getAuthType();
+        if (!"ADMIN".equals(authType)) {
+            reqProjectDTO.setCompanyId(getCompanyId());
+        }
 
         return cpmsProjectRepository.selectCpmsProjectList(reqProjectDTO);
     }

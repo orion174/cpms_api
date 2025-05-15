@@ -2,6 +2,8 @@ package com.cpms.api.setting.repository.impl;
 
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import com.cpms.api.setting.dto.request.ReqCompanyDTO;
 import com.cpms.api.setting.dto.response.QResCompanyListDTO;
 import com.cpms.api.setting.dto.response.ResCompanyListDTO;
@@ -24,10 +26,9 @@ public class CpmsCompanyRepositoryImpl implements CustomCpmsCompanyRepository {
     public List<ResCompanyListDTO> selectCpmsCompanyList(ReqCompanyDTO reqCompanyDTO) {
         BooleanBuilder builder = new BooleanBuilder();
 
-        Integer companyId = reqCompanyDTO.getCompanyId();
-
-        if (companyId != null && companyId != 0) {
-            builder.and(cpmsCompany.cpmsCompany.companyId.eq(companyId));
+        String authType = reqCompanyDTO.getAuthType();
+        if (StringUtils.hasText(authType)) {
+            builder.and(cpmsCompany.cpmsCompany.authType.eq(authType));
         }
 
         builder.and(cpmsCompany.delYn.eq(YesNo.N));

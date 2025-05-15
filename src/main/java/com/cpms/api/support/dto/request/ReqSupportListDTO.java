@@ -26,4 +26,6 @@ public class ReqSupportListDTO extends ReqPageDTO {
     private String searchEndDt;
 
     private String searchTitle;
+
+    private Integer regId;
 }

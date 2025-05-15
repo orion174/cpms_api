@@ -21,6 +21,10 @@ public class CpmsCompany extends BaseEntity {
     @Column(name = "company_id")
     private Integer companyId;
 
+    @Column(name = "auth_type", length = 30, nullable = false)
+    @Comment("업체 권한")
+    private String authType;
+
     @Column(name = "company_nm", length = 255)
     @Comment("회사 명")
     private String companyNm;

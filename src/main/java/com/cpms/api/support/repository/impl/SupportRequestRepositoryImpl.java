@@ -178,7 +178,8 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                                                         supportRequest.responseDate)
                                                 .as("responseDate"),
                                         supportRequest.supportTitle,
-                                        supportRequest.supportEditor))
+                                        supportRequest.supportEditor,
+                                        supportRequest.regId))
                         .from(supportRequest)
                         .leftJoin(supportRequest.requestCompany, requestCompany)
                         .leftJoin(supportRequest.userCompany, userCompany)

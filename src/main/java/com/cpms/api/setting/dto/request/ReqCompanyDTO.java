@@ -11,5 +11,7 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReqCompanyDTO {
 
+    private String authType;
+
     private Integer companyId;
 }

@@ -43,6 +43,8 @@ public class ResSupportDetailDTO {
 
     private String supportEditor;
 
+    private Integer regId;
+
     private SupportResponse supportResponse;
 
     private List<FileList> fileList;
