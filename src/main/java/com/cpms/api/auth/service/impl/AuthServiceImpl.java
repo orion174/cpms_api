@@ -1,7 +1,9 @@
 package com.cpms.api.auth.service.impl;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -22,10 +24,12 @@ import com.cpms.api.auth.repository.AuthRepository;
 import com.cpms.api.auth.repository.CustomAuthRepository;
 import com.cpms.api.auth.repository.UserLoginHistoryRepository;
 import com.cpms.api.auth.service.AuthService;
+import com.cpms.common.config.CorsProperties;
 import com.cpms.common.exception.CustomException;
 import com.cpms.common.helper.JwtDTO;
 import com.cpms.common.jwt.JwtTokenProvider;
 import com.cpms.common.response.ErrorCode;
+import com.cpms.common.util.CookieUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -45,6 +49,8 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
     private final UserLoginHistoryRepository loginHistoryRepository;
 
+    private final CorsProperties corsProperties;
+
     /**
      * CPMS 로그인
      *
@@ -54,17 +60,16 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      */
     @Override
     @Transactional
-    public ResLoginDTO userLogin(HttpServletRequest request, ReqLoginDTO reqLoginDTO) {
-        // 로그인 아이디 검증
+    public ResponseEntity<ResLoginDTO> userLogin(
+            HttpServletRequest request, HttpServletResponse response, ReqLoginDTO reqLoginDTO) {
+        // 사용자 정보
         ResLoginDTO resLoginDTO =
                 customAuthRepository
                         .findUserByLoginId(reqLoginDTO.getLoginId())
                         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-
-        // 인증 검증 (비밀번호 체크)
+        // 사용자 검증
         Authentication authentication = authenticate(reqLoginDTO);
 
-        // 로그인 이력 추가 및 갱신
         UserLoginHistory loginHistory =
                 UserLoginHistory.builder()
                         .userId(resLoginDTO.getUserId())
@@ -72,20 +77,33 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                         .accessIp(request.getRemoteAddr())
                         .build();
 
-        // 생성된 loginHistoryId를 DTO에 반영
+        // 로그인 이력 저장
         UserLoginHistory savedHistory = loginHistoryRepository.saveAndFlush(loginHistory);
         resLoginDTO.setLoginHistoryId(savedHistory.getLoginHistoryId());
 
-        // 인증정보 기반 토큰 생성
+        // 로그인한 정보를 바탕으로 토큰을 생성한다.
         JwtDTO jwtDTO = generateJwtToken(authentication, resLoginDTO);
-
         loginHistory.updateRefreshToken(jwtDTO.getRefreshToken());
         loginHistoryRepository.save(loginHistory);
 
-        // 응답 DTO 생성
-        ResLoginDTO result = buildResLoginDTO(resLoginDTO, jwtDTO);
+        // 토큰 만료시간
+        int refreshExp = jwtDTO.getRefreshTokenExpiration() / 1000;
+        int accessExp = jwtDTO.getAccessTokenExpiration() / 1000;
 
-        return result;
+        // 프론트 서버 도메인
+        String domain = CorsProperties.extractDomain(corsProperties.getAllowedOrigins().get(0));
+
+        // 쿠키를 저장한다.
+        CookieUtil.saveLoginCookies(
+                response, jwtDTO, accessExp, refreshExp, savedHistory.getLoginHistoryId(), domain);
+
+        ResLoginDTO result =
+                ResLoginDTO.builder()
+                        .accessToken(jwtDTO.getAccessToken())
+                        .accessTokenExpiration(jwtDTO.getAccessTokenExpiration())
+                        .build();
+
+        return ResponseEntity.ok(result);
     }
 
     /**
@@ -121,7 +139,6 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     @Transactional(readOnly = true)
     public ResRreshTokenDTO refreshToken(
             HttpServletRequest request, ReqRefreshTokenDTO reqRefreshTokenDTO) {
-
         String refreshToken = request.getHeader("X-Refresh-Token");
 
         if (!jwtTokenProvider.validateToken(refreshToken)) {
@@ -175,31 +192,12 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
         JwtDTO jwt =
                 JwtDTO.builder()
+                        .loginId(resLoginDTO.getLoginId())
                         .authType(resLoginDTO.getAuthType())
-                        .userId(resLoginDTO.getUserId())
-                        .companyId(resLoginDTO.getCompanyId())
+                        .userId(String.valueOf(resLoginDTO.getUserId()))
+                        .companyId(String.valueOf(resLoginDTO.getCompanyId()))
                         .build();
 
         return jwtTokenProvider.generateToken(authentication, jwt);
-    }
-
-    /**
-     * 로그인 응답 객체생성
-     *
-     * @param resLoginDTO
-     * @param jwtDTO
-     * @return
-     */
-    private ResLoginDTO buildResLoginDTO(ResLoginDTO resLoginDTO, JwtDTO jwtDTO) {
-        return ResLoginDTO.builder()
-                .accessToken(jwtDTO.getAccessToken())
-                .refreshToken(jwtDTO.getRefreshToken())
-                .accessTokenExpiration(jwtDTO.getAccessTokenExpiration())
-                .refreshTokenExpiration(jwtDTO.getRefreshTokenExpiration())
-                .authType(resLoginDTO.getAuthType())
-                .loginHistoryId(resLoginDTO.getLoginHistoryId())
-                .userId(resLoginDTO.getUserId())
-                .companyId(resLoginDTO.getCompanyId())
-                .build();
     }
 }

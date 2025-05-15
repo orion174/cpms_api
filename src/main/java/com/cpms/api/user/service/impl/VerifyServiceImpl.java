@@ -198,7 +198,7 @@ public class VerifyServiceImpl implements VerifyService {
         CpmsUser user =
                 CpmsUser.builder()
                         .authType("TEMP")
-                        .companyId(0)
+                        .companyId(1)
                         .loginId(loginId)
                         .loginPw(passwordEncoder.encode(reqRegisterDTO.password()))
                         .userNm(loginId)

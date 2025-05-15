@@ -1,6 +1,7 @@
 package com.cpms.api.auth.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cpms.api.auth.dto.request.ReqLoginDTO;
 import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
+import com.cpms.api.auth.dto.response.ResLoginDTO;
 import com.cpms.api.auth.dto.response.ResRreshTokenDTO;
 import com.cpms.api.auth.service.AuthService;
 import com.cpms.common.response.ApiResponse;
@@ -28,12 +30,18 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse> userLogin(
-            HttpServletRequest request, @RequestBody @Valid ReqLoginDTO reqLoginDTO) {
-        Object result = authService.userLogin(request, reqLoginDTO);
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestBody @Valid ReqLoginDTO reqLoginDTO) {
+
+        ResponseEntity<ResLoginDTO> loginResponse =
+                authService.userLogin(request, response, reqLoginDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        HttpStatus.OK.value(), result, ResponseMessage.LOGIN_SUCCESS.getMessage()));
+                        HttpStatus.OK.value(),
+                        loginResponse.getBody(),
+                        ResponseMessage.LOGIN_SUCCESS.getMessage()));
     }
 
     @PostMapping("/refresh-token")

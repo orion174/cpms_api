@@ -45,7 +45,6 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
      * @return
      */
     private String resolveToken(HttpServletRequest req) {
-
         return Optional.ofNullable(req.getHeader("Authorization"))
                 .filter(StringUtils::hasText)
                 .filter(token -> token.startsWith("Bearer"))

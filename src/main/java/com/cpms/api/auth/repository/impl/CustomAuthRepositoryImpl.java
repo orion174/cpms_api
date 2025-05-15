@@ -28,13 +28,13 @@ public class CustomAuthRepositoryImpl implements CustomAuthRepository {
 
     @Override
     public Optional<ResLoginDTO> findUserByLoginId(String loginId) {
-
         ResLoginDTO result =
                 jpaQueryFactory
                         .select(
                                 new QResLoginDTO(
                                         cpmsUser.authType,
                                         cpmsUser.userId,
+                                        cpmsUser.userNm,
                                         cpmsUser.companyId,
                                         cpmsUser.loginId,
                                         cpmsUser.loginPw,
@@ -48,7 +48,6 @@ public class CustomAuthRepositoryImpl implements CustomAuthRepository {
 
     @Override
     public JwtDTO getUserInfoByLoginHistoryId(ReqRefreshTokenDTO reqRefreshTokenDTO) {
-
         Integer loginHistoryId = reqRefreshTokenDTO.getLoginHistoryId();
         String refreshToken = reqRefreshTokenDTO.getRefreshToken();
 
@@ -58,8 +57,9 @@ public class CustomAuthRepositoryImpl implements CustomAuthRepository {
                                 Projections.fields(
                                         JwtDTO.class,
                                         cpmsUser.userId,
-                                        cpmsUser.companyId,
                                         cpmsUser.authType,
+                                        cpmsUser.userNm,
+                                        cpmsUser.companyId,
                                         cpmsUser.loginId))
                         .from(userLoginHistory)
                         .join(cpmsUser)

@@ -186,7 +186,6 @@ public class SuportServiceImpl implements SupportService {
                 ResSupportListDTO.builder()
                         .totalCnt((int) supportListPage.getTotalElements())
                         .supportList(supportListPage.getContent())
-                        .authType(getAuthType())
                         .build();
 
         return result;
@@ -208,7 +207,6 @@ public class SuportServiceImpl implements SupportService {
         }
 
         ResSupportDetailDTO result = supportRequestRepository.findSupportDetail(supportRequestId);
-        result.setAuthType(getAuthType());
 
         // TEMP 권한은 자신의 글만 조회가 가능하다.
         if ("TEMP".equals(getAuthType())) {

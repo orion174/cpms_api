@@ -15,8 +15,6 @@ public class ResSupportListDTO {
 
     private int totalCnt;
 
-    private String authType;
-
     private List<SupportList> supportList;
 
     @Getter

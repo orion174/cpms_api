@@ -13,6 +13,20 @@ public class JwtDTO {
 
     private String grantType;
 
+    private String authType;
+
+    private String loginHistoryId;
+
+    private String userId;
+
+    private String userNm;
+
+    private String companyId;
+
+    private String loginId;
+
+    private String loginPw;
+
     private String accessToken;
 
     private String refreshToken;
@@ -20,16 +34,4 @@ public class JwtDTO {
     private Integer accessTokenExpiration;
 
     private Integer refreshTokenExpiration;
-
-    private String authType;
-
-    private Integer loginHistoryId;
-
-    private Integer userId;
-
-    private Integer companyId;
-
-    private String loginId;
-
-    private String loginPw;
 }

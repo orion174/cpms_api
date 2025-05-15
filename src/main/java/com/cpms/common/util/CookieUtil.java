@@ -1,73 +1,88 @@
 package com.cpms.common.util;
 
-import jakarta.servlet.http.Cookie;
+import java.util.Base64;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseCookie;
+import org.springframework.util.StringUtils;
+
+import com.cpms.common.helper.JwtDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CookieUtil {
 
-    /**
-     * 새로운 쿠키 생성 후, HTTP 응답 헤더에 추가한다.
-     *
-     * @param response
-     * @param name
-     * @param value
-     * @param maxAge
-     */
     public static void addCookie(
-            HttpServletResponse response, String name, String value, int maxAge) {
-        ResponseCookie.ResponseCookieBuilder cookieBuilder =
+            HttpServletResponse response, String name, String value, int maxAge, String domain) {
+        addCookie(response, name, value, maxAge, domain, true, true, "None");
+    }
+
+    public static void addCookie(
+            HttpServletResponse response,
+            String name,
+            String value,
+            int maxAge,
+            String domain,
+            boolean httpOnly,
+            boolean secure,
+            String sameSite) {
+        if (!StringUtils.hasText(name) || !StringUtils.hasText(value)) return;
+
+        ResponseCookie cookie =
                 ResponseCookie.from(name, value)
+                        .httpOnly(httpOnly)
+                        .secure(secure)
+                        .sameSite(sameSite)
                         .path("/")
-                        .httpOnly(true)
-                        // .secure(true)
-                        .secure(false)
-                        // .sameSite("Strict")
-                        .sameSite("None");
-
-        if (maxAge > 0) {
-            cookieBuilder.maxAge(maxAge);
-        }
-
-        ResponseCookie cookie = cookieBuilder.build();
+                        .maxAge(maxAge)
+                        .domain(domain)
+                        .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
     }
 
-    /**
-     * 쿠키를 추가한다.
-     *
-     * @param response
-     * @param value
-     * @param name
-     * @param maxAge
-     */
     public static void addCookieIfPresent(
-            HttpServletResponse response, String name, String value, int maxAge) {
-        if (value != null) {
-            addCookie(response, name, value, maxAge);
+            HttpServletResponse response, String name, String value, int maxAge, String domain) {
+        if (StringUtils.hasText(value)) {
+            addCookie(response, name, value, maxAge, domain);
         }
     }
 
-    /**
-     * 쿠키를 삭제한다.
-     *
-     * @param response
-     * @param key
-     */
-    public static void deleteCookieIfAllowed(HttpServletResponse response, String key) {
-        if (TokenUtil.isValidKey(key)) {
-            Cookie cookie = new Cookie(key, null);
-            cookie.setMaxAge(0);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
-            cookie.setSecure(true);
+    public static void deleteCookie(HttpServletResponse response, String name, String domain) {
+        ResponseCookie cookie =
+                ResponseCookie.from(name, "")
+                        .httpOnly(true)
+                        .secure(true)
+                        .path("/")
+                        .maxAge(0)
+                        .sameSite("None")
+                        .domain(domain)
+                        .build();
 
-            response.addCookie(cookie);
-        }
+        response.addHeader("Set-Cookie", cookie.toString());
+    }
+
+    public static void saveLoginCookies(
+            HttpServletResponse response,
+            JwtDTO jwtDTO,
+            int accessExp,
+            int refreshExp,
+            int loginHistoryId,
+            String domain) {
+        addCookie(response, "refreshToken", jwtDTO.getRefreshToken(), refreshExp, domain);
+        addCookie(response, "accessToken", jwtDTO.getAccessToken(), accessExp, domain);
+        addCookie(
+                response,
+                "loginHistoryId",
+                encode(String.valueOf(loginHistoryId)),
+                refreshExp,
+                domain);
+    }
+
+    private static String encode(String value) {
+        if (!StringUtils.hasText(value)) return "";
+        return Base64.getEncoder().encodeToString(value.getBytes());
     }
 }

@@ -15,6 +15,10 @@ public enum ResponseMessage {
 
     LOGIN_SUCCESS("로그인에 성공했습니다."),
 
+    COOKIE_DELETE_SUCCESS("쿠키 삭제 성공"),
+
+    COOKIE_FETCH_SUCCESS("쿠키 조회 성공"),
+
     INSERT_SUCCESS("성공적으로 등록되었습니다."),
 
     UPDATE_SUCCESS("성공적으로 수정되었습니다."),

@@ -16,7 +16,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.cpms.common.exception.CustomException;
 import com.cpms.common.helper.JwtDTO;
+import com.cpms.common.response.ErrorCode;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -47,7 +49,6 @@ public class JwtTokenProvider {
      * @param secretKey
      */
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
@@ -59,7 +60,6 @@ public class JwtTokenProvider {
      * @return
      */
     public String getToken(String bearerToken) {
-
         return Optional.ofNullable(bearerToken)
                 .filter(token -> StringUtils.hasText(token))
                 .filter(token -> token.startsWith(BEARER_PREFIX))
@@ -74,7 +74,6 @@ public class JwtTokenProvider {
      * @return
      */
     public String getClaim(String key) {
-
         return Optional.ofNullable(RequestContextHolder.currentRequestAttributes())
                 .filter(attr -> attr instanceof ServletRequestAttributes) // 요청 속성이
                 // ServletRequestAttributes인지
@@ -97,7 +96,6 @@ public class JwtTokenProvider {
      * @return
      */
     public JwtDTO generateToken(Authentication authentication, JwtDTO jwtDTO) {
-
         String authorities =
                 authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
@@ -107,6 +105,10 @@ public class JwtTokenProvider {
 
         return JwtDTO.builder()
                 .grantType("Bearer")
+                .authType(jwtDTO.getAuthType())
+                .userId(jwtDTO.getUserId())
+                .companyId(jwtDTO.getCompanyId())
+                .loginId(jwtDTO.getLoginId())
                 .accessToken(createAccessToken(claims))
                 .refreshToken(createRefreshToken())
                 .accessTokenExpiration(ACCESS_TOKEN_EXPIRATION)
@@ -121,7 +123,6 @@ public class JwtTokenProvider {
      * @return
      */
     public JwtDTO generateAccessToken(JwtDTO jwtDTO) {
-
         Claims claims = createClaims(jwtDTO.getLoginId(), jwtDTO, null);
 
         return JwtDTO.builder()
@@ -137,7 +138,6 @@ public class JwtTokenProvider {
      * @return
      */
     public JwtDTO generateRefreshToken() {
-
         return JwtDTO.builder()
                 .grantType(BEARER)
                 .refreshToken(createRefreshToken())
@@ -152,7 +152,6 @@ public class JwtTokenProvider {
      * @return
      */
     public Authentication getAuthentication(String accessToken) {
-
         Claims claims = parseClaims(accessToken);
 
         Collection<? extends GrantedAuthority> authorities =
@@ -188,11 +187,10 @@ public class JwtTokenProvider {
                                         .getBody();
 
                             } catch (ExpiredJwtException e) {
-
                                 return e.getClaims();
                             }
                         })
-                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 토큰입니다."));
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_AUTHORITY));
     }
 
     /**
@@ -203,9 +201,7 @@ public class JwtTokenProvider {
      */
     public boolean validateToken(String token) {
         try {
-
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-
             return true;
 
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
@@ -233,7 +229,6 @@ public class JwtTokenProvider {
      * @return
      */
     private Claims createClaims(String subject, JwtDTO jwtDTO, String authorities) {
-
         Claims claims = Jwts.claims().setSubject(subject);
 
         if (authorities != null) {
@@ -243,18 +238,18 @@ public class JwtTokenProvider {
         claims.put("authType", jwtDTO.getAuthType());
         claims.put("userId", jwtDTO.getUserId());
         claims.put("companyId", jwtDTO.getCompanyId());
+        claims.put("loginId", jwtDTO.getLoginId());
 
         return claims;
     }
 
     /**
-     * 어세스 토큰을 생성한다.
+     * access 토큰을 생성한다.
      *
      * @param claims
      * @return
      */
     private String createAccessToken(Claims claims) {
-
         long now = System.currentTimeMillis();
 
         Date expiration = new Date(now + ACCESS_TOKEN_EXPIRATION);
@@ -267,12 +262,11 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 리프레쉬 토큰을 생성한다.
+     * refresh 토큰을 생성한다.
      *
      * @return
      */
     private String createRefreshToken() {
-
         long now = System.currentTimeMillis();
         Date expiration = new Date(now + REFRESH_TOKEN_EXPIRATION);
 
