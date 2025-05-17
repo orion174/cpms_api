@@ -14,11 +14,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.cpms.api.auth.dto.request.ReqLoginDTO;
 import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
 import com.cpms.api.auth.dto.response.ResLoginDTO;
-import com.cpms.api.auth.dto.response.ResRreshTokenDTO;
+import com.cpms.api.auth.dto.response.ResRefreshTokenDTO;
 import com.cpms.api.auth.model.UserLoginHistory;
 import com.cpms.api.auth.repository.AuthRepository;
 import com.cpms.api.auth.repository.CustomAuthRepository;
@@ -32,7 +34,9 @@ import com.cpms.common.response.ErrorCode;
 import com.cpms.common.util.CookieUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService, UserDetailsService {
@@ -54,7 +58,8 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     /**
      * CPMS 로그인
      *
-     * @param req
+     * @param request
+     * @param response
      * @param reqLoginDTO
      * @return
      */
@@ -86,24 +91,49 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
         loginHistory.updateRefreshToken(jwtDTO.getRefreshToken());
         loginHistoryRepository.save(loginHistory);
 
-        // 토큰 만료시간
+        // 리프레쉬 토큰 저장
         int refreshExp = jwtDTO.getRefreshTokenExpiration() / 1000;
-        int accessExp = jwtDTO.getAccessTokenExpiration() / 1000;
-
-        // 프론트 서버 도메인
-        String domain = CorsProperties.extractDomain(corsProperties.getAllowedOrigins().get(0));
-
-        // 쿠키를 저장한다.
-        CookieUtil.saveLoginCookies(
-                response, jwtDTO, accessExp, refreshExp, savedHistory.getLoginHistoryId(), domain);
+        boolean secure = request.isSecure();
+        CookieUtil.saveRefreshCookie(response, jwtDTO.getRefreshToken(), refreshExp, secure);
 
         ResLoginDTO result =
                 ResLoginDTO.builder()
                         .accessToken(jwtDTO.getAccessToken())
                         .accessTokenExpiration(jwtDTO.getAccessTokenExpiration())
+                        .loginHistoryId(
+                                savedHistory.getLoginHistoryId()) // 프론트가 sessionStorage 에 보관
                         .build();
 
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Access 토큰 재발급
+     *
+     * @param refreshToken
+     * @param reqDto
+     * @return
+     */
+    @Override
+    @Transactional(readOnly = true)
+    public ResRefreshTokenDTO refreshToken(
+            @CookieValue("refreshToken") String refreshToken,
+            @RequestBody ReqRefreshTokenDTO reqDto) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
+            throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
+        }
+
+        JwtDTO user = customAuthRepository.getUserInfoByLoginHistoryId(reqDto);
+        if (user == null) {
+            throw new CustomException(ErrorCode.INVALID_USER);
+        }
+
+        JwtDTO newAccessToken = jwtTokenProvider.generateAccessToken(user);
+
+        return ResRefreshTokenDTO.builder()
+                .accessToken(newAccessToken.getAccessToken())
+                .accessTokenExpiration(newAccessToken.getAccessTokenExpiration())
+                .build();
     }
 
     /**
@@ -125,37 +155,6 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                 .username(resLoginDTO.getLoginId())
                 .password(resLoginDTO.getLoginPw())
                 .roles(resLoginDTO.getAuthType())
-                .build();
-    }
-
-    /**
-     * 리프레쉬 토큰을 발급한다.
-     *
-     * @param req
-     * @param reqRefreshTokenDTO
-     * @return
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public ResRreshTokenDTO refreshToken(
-            HttpServletRequest request, ReqRefreshTokenDTO reqRefreshTokenDTO) {
-        String refreshToken = request.getHeader("X-Refresh-Token");
-
-        if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
-        }
-
-        JwtDTO user = customAuthRepository.getUserInfoByLoginHistoryId(reqRefreshTokenDTO);
-
-        if (user == null) {
-            throw new CustomException(ErrorCode.INVALID_USER);
-        }
-
-        JwtDTO newAccessToken = jwtTokenProvider.generateAccessToken(user);
-
-        return ResRreshTokenDTO.builder()
-                .accessToken(newAccessToken.getAccessToken())
-                .accessTokenExpiration(newAccessToken.getAccessTokenExpiration())
                 .build();
     }
 

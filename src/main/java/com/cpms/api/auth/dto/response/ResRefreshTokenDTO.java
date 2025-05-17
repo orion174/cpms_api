@@ -6,9 +6,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ResRreshTokenDTO {
-
+public class ResRefreshTokenDTO {
     private String accessToken;
-
     private Integer accessTokenExpiration;
 }

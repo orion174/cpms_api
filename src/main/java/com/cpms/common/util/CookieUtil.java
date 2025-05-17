@@ -1,55 +1,44 @@
 package com.cpms.common.util;
 
-import java.util.Base64;
-
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
-import org.springframework.util.StringUtils;
-
-import com.cpms.common.helper.JwtDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CookieUtil {
 
-    public static void addCookie(
-            HttpServletResponse response, String name, String value, int maxAge, String domain) {
-        addCookie(response, name, value, maxAge, domain, true, true, "None");
-    }
-
-    public static void addCookie(
-            HttpServletResponse response,
-            String name,
-            String value,
-            int maxAge,
-            String domain,
-            boolean httpOnly,
-            boolean secure,
-            String sameSite) {
-        if (!StringUtils.hasText(name) || !StringUtils.hasText(value)) return;
-
+    /**
+     * 리프레쉬 토큰을 쿠키에 저장한다.
+     *
+     * @param res
+     * @param refreshToken
+     * @param maxAge
+     * @param secure
+     */
+    public static void saveRefreshCookie(
+            HttpServletResponse res, String refreshToken, int maxAge, boolean secure) {
         ResponseCookie cookie =
-                ResponseCookie.from(name, value)
-                        .httpOnly(httpOnly)
+                ResponseCookie.from("refreshToken", refreshToken)
+                        .httpOnly(true)
                         .secure(secure)
-                        .sameSite(sameSite)
+                        .sameSite("Lax")
                         .path("/")
                         .maxAge(maxAge)
-                        .domain(domain)
                         .build();
 
-        response.addHeader("Set-Cookie", cookie.toString());
+        res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
 
-    public static void addCookieIfPresent(
-            HttpServletResponse response, String name, String value, int maxAge, String domain) {
-        if (StringUtils.hasText(value)) {
-            addCookie(response, name, value, maxAge, domain);
-        }
-    }
-
+    /**
+     * 전체 쿠키를 삭제한다.
+     *
+     * @param response
+     * @param name
+     * @param domain
+     */
     public static void deleteCookie(HttpServletResponse response, String name, String domain) {
         ResponseCookie cookie =
                 ResponseCookie.from(name, "")
@@ -62,27 +51,5 @@ public class CookieUtil {
                         .build();
 
         response.addHeader("Set-Cookie", cookie.toString());
-    }
-
-    public static void saveLoginCookies(
-            HttpServletResponse response,
-            JwtDTO jwtDTO,
-            int accessExp,
-            int refreshExp,
-            int loginHistoryId,
-            String domain) {
-        addCookie(response, "refreshToken", jwtDTO.getRefreshToken(), refreshExp, domain);
-        addCookie(response, "accessToken", jwtDTO.getAccessToken(), accessExp, domain);
-        addCookie(
-                response,
-                "loginHistoryId",
-                encode(String.valueOf(loginHistoryId)),
-                refreshExp,
-                domain);
-    }
-
-    private static String encode(String value) {
-        if (!StringUtils.hasText(value)) return "";
-        return Base64.getEncoder().encodeToString(value.getBytes());
     }
 }

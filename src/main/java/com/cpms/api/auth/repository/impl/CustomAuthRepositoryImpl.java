@@ -49,7 +49,6 @@ public class CustomAuthRepositoryImpl implements CustomAuthRepository {
     @Override
     public JwtDTO getUserInfoByLoginHistoryId(ReqRefreshTokenDTO reqRefreshTokenDTO) {
         Integer loginHistoryId = reqRefreshTokenDTO.getLoginHistoryId();
-        String refreshToken = reqRefreshTokenDTO.getRefreshToken();
 
         JwtDTO result =
                 jpaQueryFactory
@@ -64,11 +63,7 @@ public class CustomAuthRepositoryImpl implements CustomAuthRepository {
                         .from(userLoginHistory)
                         .join(cpmsUser)
                         .on(userLoginHistory.userId.eq(cpmsUser.userId))
-                        .where(
-                                userLoginHistory
-                                        .loginHistoryId
-                                        .eq(loginHistoryId)
-                                        .and(userLoginHistory.refreshToken.eq(refreshToken)))
+                        .where(userLoginHistory.loginHistoryId.eq(loginHistoryId))
                         .fetchOne();
 
         return result;

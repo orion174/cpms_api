@@ -6,15 +6,12 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cpms.api.auth.dto.request.ReqLoginDTO;
 import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
 import com.cpms.api.auth.dto.response.ResLoginDTO;
-import com.cpms.api.auth.dto.response.ResRreshTokenDTO;
+import com.cpms.api.auth.dto.response.ResRefreshTokenDTO;
 import com.cpms.api.auth.service.AuthService;
 import com.cpms.common.response.ApiResponse;
 import com.cpms.common.response.ResponseMessage;
@@ -46,8 +43,9 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<ApiResponse> refreshToken(
-            HttpServletRequest request, @RequestBody ReqRefreshTokenDTO reqRefreshTokenDTO) {
-        ResRreshTokenDTO result = authService.refreshToken(request, reqRefreshTokenDTO);
+            @CookieValue("refreshToken") String refreshToken,
+            @RequestBody ReqRefreshTokenDTO reqRefreshTokenDTO) {
+        ResRefreshTokenDTO result = authService.refreshToken(refreshToken, reqRefreshTokenDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
