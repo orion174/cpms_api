@@ -1,5 +1,6 @@
 package com.cpms.common.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpHeaders;
@@ -19,15 +20,25 @@ public class CookieUtil {
      * @param secure
      */
     public static void saveRefreshCookie(
-            HttpServletResponse res, String refreshToken, int maxAge, boolean secure) {
-        ResponseCookie cookie =
+            HttpServletRequest req, HttpServletResponse res, String refreshToken, int maxAge) {
+
+        String serverName = req.getServerName();
+
+        ResponseCookie.ResponseCookieBuilder cookieBuilder =
                 ResponseCookie.from("refreshToken", refreshToken)
                         .httpOnly(true)
-                        .secure(secure)
-                        .sameSite("Lax")
+                        .sameSite("None")
                         .path("/")
-                        .maxAge(maxAge)
-                        .build();
+                        .maxAge(maxAge);
+
+        // 로컬 환경과 운영 환경 구분
+        if ("localhost".equals(serverName) || "127.0.0.1".equals(serverName)) {
+            cookieBuilder.secure(false);
+        } else {
+            cookieBuilder.secure(true);
+        }
+
+        ResponseCookie cookie = cookieBuilder.build();
 
         res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }

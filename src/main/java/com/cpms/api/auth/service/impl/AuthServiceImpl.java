@@ -93,8 +93,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
 
         // 리프레쉬 토큰 저장
         int refreshExp = jwtDTO.getRefreshTokenExpiration() / 1000;
-        boolean secure = request.isSecure();
-        CookieUtil.saveRefreshCookie(response, jwtDTO.getRefreshToken(), refreshExp, secure);
+        CookieUtil.saveRefreshCookie(request, response, jwtDTO.getRefreshToken(), refreshExp);
 
         ResLoginDTO result =
                 ResLoginDTO.builder()
