@@ -21,6 +21,7 @@ import com.cpms.api.user.dto.request.ReqSmsCodeDTO;
 import com.cpms.api.user.service.VerifyService;
 import com.cpms.api.user.vo.AuthVO;
 import com.cpms.common.exception.CustomException;
+import com.cpms.common.helper.AuthType;
 import com.cpms.common.helper.YesNo;
 import com.cpms.common.response.ErrorCode;
 import com.cpms.common.sms.dto.SmsDTO;
@@ -197,7 +198,7 @@ public class VerifyServiceImpl implements VerifyService {
 
         CpmsUser user =
                 CpmsUser.builder()
-                        .authType("TEMP")
+                        .authType(AuthType.TEMP.getCode())
                         .companyId(1)
                         .loginId(loginId)
                         .loginPw(passwordEncoder.encode(reqRegisterDTO.password()))

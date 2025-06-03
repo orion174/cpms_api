@@ -28,6 +28,7 @@ import com.cpms.api.auth.repository.UserLoginHistoryRepository;
 import com.cpms.api.auth.service.AuthService;
 import com.cpms.common.config.CorsProperties;
 import com.cpms.common.exception.CustomException;
+import com.cpms.common.helper.EntityFinder;
 import com.cpms.common.helper.JwtDTO;
 import com.cpms.common.jwt.JwtTokenProvider;
 import com.cpms.common.response.ErrorCode;
@@ -46,6 +47,8 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     private final JwtTokenProvider jwtTokenProvider;
+
+    private final EntityFinder entityFinder;
 
     private final AuthRepository authRepository;
 
@@ -69,9 +72,10 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
             HttpServletRequest request, HttpServletResponse response, ReqLoginDTO reqLoginDTO) {
         // 사용자 정보
         ResLoginDTO resLoginDTO =
-                customAuthRepository
-                        .findUserByLoginId(reqLoginDTO.getLoginId())
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                entityFinder.findByOptionalOrThrow(
+                        customAuthRepository.findUserByLoginId(reqLoginDTO.getLoginId()),
+                        ErrorCode.USER_NOT_FOUND);
+
         // 사용자 검증
         Authentication authentication = authenticate(reqLoginDTO);
 
@@ -146,9 +150,8 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String loginId) {
         ResLoginDTO resLoginDTO =
-                customAuthRepository
-                        .findUserByLoginId(loginId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+                entityFinder.findByOptionalOrThrow(
+                        customAuthRepository.findUserByLoginId(loginId), ErrorCode.USER_NOT_FOUND);
 
         return User.builder()
                 .username(resLoginDTO.getLoginId())

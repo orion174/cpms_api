@@ -1,4 +1,4 @@
-package com.cpms.common.util;
+package com.cpms.common.editor;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,10 +16,12 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class EditorUtil {
+@RequestMapping("/util/Editor")
+public class EditorController {
 
     @Value("${editor.file.upload.path}")
     private String fileUploadPath;
@@ -28,7 +30,7 @@ public class EditorUtil {
     private String serverUrl;
 
     /* 네이버 스마트 에디터 사진첨부 미리보기 서버 */
-    @PostMapping("/util/Editor/smartEditorUploadURL")
+    @PostMapping("/smartEditorUploadURL")
     public void smarteditorMultiImageUpload(
             HttpServletRequest request, HttpServletResponse response) throws IOException {
         String sFileInfo = "";

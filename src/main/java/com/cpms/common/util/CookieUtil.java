@@ -21,7 +21,6 @@ public class CookieUtil {
      */
     public static void saveRefreshCookie(
             HttpServletRequest req, HttpServletResponse res, String refreshToken, int maxAge) {
-
         String serverName = req.getServerName();
 
         ResponseCookie.ResponseCookieBuilder cookieBuilder =

@@ -9,17 +9,17 @@ public interface SupportService {
 
     ResSupportDetailDTO selectSupportDetail(ReqSupportDTO reqSupportDTO);
 
-    boolean insertSupportRequest(ReqSupportDTO reqSupportDTO);
+    void insertSupportRequest(ReqSupportDTO reqSupportDTO);
 
-    boolean insertSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
+    void insertSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
 
-    boolean updateSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
+    void updateSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
 
-    boolean deleteSupportResponse(ReqSupportDTO reqSupportDTO);
+    void deleteSupportResponse(ReqSupportDTO reqSupportDTO);
 
-    boolean updateSupportStatus(ReqSupportDTO reqSupportDTO);
+    void updateSupportStatus(ReqSupportDTO reqSupportDTO);
 
-    boolean updateResponseUserInfo(ReqSupportDTO reqSupportDTO);
+    void updateResponseUserInfo(ReqSupportDTO reqSupportDTO);
 
     ResSupportFileDTO fileDownload(int supportFileId);
 

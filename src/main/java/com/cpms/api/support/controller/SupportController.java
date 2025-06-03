@@ -57,75 +57,63 @@ public class SupportController {
             reqSupportDTO.setSupportFile(supportFile);
         }
 
-        Object result = supportService.insertSupportRequest(reqSupportDTO);
+        supportService.insertSupportRequest(reqSupportDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        HttpStatus.OK.value(),
-                        result,
-                        ResponseMessage.INSERT_SUCCESS.getMessage()));
+                        HttpStatus.OK.value(), ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 
     @PostMapping("/insert-response")
     public ResponseEntity<ApiResponse> insertSupportResponse(
             @RequestPart(value = "responseFile", required = false) MultipartFile[] responseFile,
             @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
-        Object result = supportService.insertSupportResponse(reqSupportResponseDTO);
+        supportService.insertSupportResponse(reqSupportResponseDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        HttpStatus.OK.value(),
-                        result,
-                        ResponseMessage.INSERT_SUCCESS.getMessage()));
+                        HttpStatus.OK.value(), ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 
     @PostMapping("/update-response")
     public ResponseEntity<ApiResponse> updateSupportResponse(
             @RequestPart(value = "responseFile", required = false) MultipartFile[] responseFile,
             @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
-        Object result = supportService.updateSupportResponse(reqSupportResponseDTO);
+        supportService.updateSupportResponse(reqSupportResponseDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        HttpStatus.OK.value(),
-                        result,
-                        ResponseMessage.UPDATE_SUCCESS.getMessage()));
+                        HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
     @PostMapping("/delete-response")
     public ResponseEntity<ApiResponse> deleteSupportResponse(
             @RequestBody ReqSupportDTO reqSupportDTO) {
-        Object result = supportService.deleteSupportResponse(reqSupportDTO);
+        supportService.deleteSupportResponse(reqSupportDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        HttpStatus.OK.value(),
-                        result,
-                        ResponseMessage.DELETE_SUCCESS.getMessage()));
+                        HttpStatus.OK.value(), ResponseMessage.DELETE_SUCCESS.getMessage()));
     }
 
     @PostMapping("/update-status")
     public ResponseEntity<ApiResponse> updateSupportStatus(
             @RequestBody ReqSupportDTO reqSupportDTO) {
-        Object result = supportService.updateSupportStatus(reqSupportDTO);
+        supportService.updateSupportStatus(reqSupportDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        HttpStatus.OK.value(),
-                        result,
-                        ResponseMessage.UPDATE_SUCCESS.getMessage()));
+                        HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
     @PostMapping("/update-user")
     public ResponseEntity<ApiResponse> updateResponseUserInfo(
             @RequestBody ReqSupportDTO reqSupportDTO) {
-        Object result = supportService.updateResponseUserInfo(reqSupportDTO);
+        supportService.updateResponseUserInfo(reqSupportDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
-                        HttpStatus.OK.value(),
-                        result,
-                        ResponseMessage.UPDATE_SUCCESS.getMessage()));
+                        HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
     @GetMapping("/file/{supportFileId}/download")
@@ -140,6 +128,7 @@ public class SupportController {
         supportService.fileDelete(supportFileId);
 
         return ResponseEntity.ok(
-                ApiResponse.success(200, null, ResponseMessage.DELETE_SUCCESS.getMessage()));
+                ApiResponse.success(
+                        HttpStatus.OK.value(), ResponseMessage.DELETE_SUCCESS.getMessage()));
     }
 }
