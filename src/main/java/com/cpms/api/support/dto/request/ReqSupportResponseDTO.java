@@ -26,17 +26,5 @@ public class ReqSupportResponseDTO {
 
     private MultipartFile[] responseFile;
 
-    private String fileCategory;
-
-    private String filePath;
-
-    private String fileNm;
-
-    private String fileOgNm;
-
-    private String fileExt;
-
-    private Long fileSize;
-
     private Integer userId;
 }

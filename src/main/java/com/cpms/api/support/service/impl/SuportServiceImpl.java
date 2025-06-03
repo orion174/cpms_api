@@ -405,10 +405,7 @@ public class SuportServiceImpl implements SupportService {
             throw new CustomException(ErrorCode.NO_AUTHORITY);
         }
 
-        SupportFile file =
-                supportFileRepository
-                        .findById(supportFileId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.ENTITY_NOT_FOUND));
+        SupportFile file = entityFinder.findByIdOrThrow(supportFileRepository, supportFileId);
 
         file.deleteFile(YesNo.Y, jwtUserUtil.getUserId());
     }
