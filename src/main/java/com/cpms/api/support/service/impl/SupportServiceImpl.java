@@ -49,7 +49,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class SuportServiceImpl implements SupportService {
+public class SupportServiceImpl implements SupportService {
 
     @Value("${support.file.upload.path}")
     private String uploadPath;
