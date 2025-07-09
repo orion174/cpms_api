@@ -14,8 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cpms.api.auth.model.CpmsUser;
-import com.cpms.api.auth.repository.CpmsUserRepository;
 import com.cpms.api.code.model.CommonCode;
 import com.cpms.api.code.repository.CommonCodeRepository;
 import com.cpms.api.setting.model.CpmsCompany;
@@ -35,6 +33,8 @@ import com.cpms.api.support.repository.SupportFileRepository;
 import com.cpms.api.support.repository.SupportRequestRepository;
 import com.cpms.api.support.repository.SupportResponseRepository;
 import com.cpms.api.support.service.SupportService;
+import com.cpms.api.user.model.CpmsUser;
+import com.cpms.api.user.repository.CpmsUserRepository;
 import com.cpms.common.exception.CustomException;
 import com.cpms.common.helper.EntityFinder;
 import com.cpms.common.helper.FileDTO;

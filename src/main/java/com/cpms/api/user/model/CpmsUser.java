@@ -1,9 +1,10 @@
-package com.cpms.api.auth.model;
+package com.cpms.api.user.model;
 
 import jakarta.persistence.*;
 
 import org.hibernate.annotations.Comment;
 
+import com.cpms.api.setting.model.CpmsCompany;
 import com.cpms.common.helper.BaseEntity;
 import com.cpms.common.helper.YesNo;
 
@@ -31,6 +32,14 @@ public class CpmsUser extends BaseEntity {
     @Comment("사용자 소속 업체 ID")
     private Integer companyId;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+            name = "company_id",
+            insertable = false,
+            updatable = false,
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    private CpmsCompany cpmsCompany;
+
     @Column(name = "login_id", length = 255, nullable = false)
     @Comment("로그인 ID")
     private String loginId;
@@ -47,6 +56,10 @@ public class CpmsUser extends BaseEntity {
     @Comment("전화번호")
     private String userPhone;
 
+    @Column(name = "user_email", length = 255, nullable = false)
+    @Comment("사용자 이메일")
+    private String userEmail;
+
     @Column(name = "user_dept", length = 255)
     @Comment("부서")
     private String userDept;
@@ -58,6 +71,10 @@ public class CpmsUser extends BaseEntity {
     @Column(name = "user_info", length = 255)
     @Comment("사용자 정보")
     private String userInfo;
+
+    @Column(name = "user_note", columnDefinition = "TEXT")
+    @Comment("기타 메모")
+    private String userNote;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum('Y','N')", nullable = false)

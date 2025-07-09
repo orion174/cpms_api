@@ -13,11 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cpms.api.auth.model.CpmsUser;
-import com.cpms.api.auth.repository.CpmsUserRepository;
 import com.cpms.api.user.dto.request.ReqCheckIdDTO;
 import com.cpms.api.user.dto.request.ReqRegisterDTO;
 import com.cpms.api.user.dto.request.ReqSmsCodeDTO;
+import com.cpms.api.user.model.CpmsUser;
+import com.cpms.api.user.repository.CpmsUserRepository;
 import com.cpms.api.user.service.VerifyService;
 import com.cpms.api.user.vo.AuthVO;
 import com.cpms.common.exception.CustomException;
@@ -186,12 +186,14 @@ public class VerifyServiceImpl implements VerifyService {
 
         // 2. 인증 성공 여부 확인
         Boolean isVerified = verificationStatus.get(phone);
+
         if (isVerified == null || !isVerified) {
             throw new CustomException(ErrorCode.PHONE_NOT_VERIFIED);
         }
 
         // 3. 인증된 번호와 제출 번호 일치 여부 확인
         AuthVO authVO = verificationCodes.get(phone);
+
         if (authVO == null || !phone.equals(phone)) {
             throw new CustomException(ErrorCode.PHONE_VERIFICATION_MISMATCH);
         }

@@ -8,10 +8,10 @@ import jakarta.persistence.*;
 
 import org.hibernate.annotations.Comment;
 
-import com.cpms.api.auth.model.CpmsUser;
 import com.cpms.api.code.model.CommonCode;
 import com.cpms.api.setting.model.CpmsCompany;
 import com.cpms.api.setting.model.CpmsProject;
+import com.cpms.api.user.model.CpmsUser;
 import com.cpms.common.helper.BaseEntity;
 
 import lombok.AccessLevel;
@@ -33,6 +33,8 @@ public class SupportRequest extends BaseEntity {
     @JoinColumn(
             name = "request_company_id",
             referencedColumnName = "company_id",
+            insertable = false,
+            updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("해당 ID의 업체에게 문의를 요청")
     private CpmsCompany requestCompany;
@@ -41,6 +43,8 @@ public class SupportRequest extends BaseEntity {
     @JoinColumn(
             name = "user_company_id",
             referencedColumnName = "company_id",
+            insertable = false,
+            updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("문의를 등록한 사용자의 업체ID")
     private CpmsCompany userCompany;
@@ -49,6 +53,8 @@ public class SupportRequest extends BaseEntity {
     @JoinColumn(
             name = "request_project_id",
             referencedColumnName = "project_id",
+            insertable = false,
+            updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("문의 프로젝트 ID")
     private CpmsProject requestProject;
@@ -57,6 +63,8 @@ public class SupportRequest extends BaseEntity {
     @JoinColumn(
             name = "response_user_id",
             referencedColumnName = "user_id",
+            insertable = false,
+            updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("해당 문의에 응답한 사용자 ID")
     private CpmsUser responseUser;
@@ -65,6 +73,8 @@ public class SupportRequest extends BaseEntity {
     @JoinColumn(
             name = "request_cd",
             referencedColumnName = "code_id",
+            insertable = false,
+            updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("요청 유형 분류 코드")
     private CommonCode requestCd;
@@ -73,6 +83,8 @@ public class SupportRequest extends BaseEntity {
     @JoinColumn(
             name = "status_cd",
             referencedColumnName = "code_id",
+            insertable = false,
+            updatable = false,
             foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("처리 상태 분류 코드")
     private CommonCode statusCd;

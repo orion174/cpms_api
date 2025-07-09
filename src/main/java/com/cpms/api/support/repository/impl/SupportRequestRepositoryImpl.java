@@ -11,7 +11,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
-import com.cpms.api.auth.model.QCpmsUser;
 import com.cpms.api.code.model.QCommonCode;
 import com.cpms.api.setting.model.QCpmsCompany;
 import com.cpms.api.setting.model.QCpmsProject;
@@ -22,6 +21,7 @@ import com.cpms.api.support.model.QSupportFile;
 import com.cpms.api.support.model.QSupportRequest;
 import com.cpms.api.support.model.QSupportResponse;
 import com.cpms.api.support.repository.CustomSupportRequestRepository;
+import com.cpms.api.user.model.QCpmsUser;
 import com.cpms.common.helper.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;

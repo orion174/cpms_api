@@ -30,7 +30,7 @@ public class CommonCode {
     private String codeNm;
 
     @Column(name = "depth", columnDefinition = "int(10) unsigned", nullable = false)
-    @Comment("공콩 코드 계층 분류")
+    @Comment("공통 코드 레벨")
     private Integer depth;
 
     @Column(name = "sort_order", columnDefinition = "int(10) unsigned", nullable = false)

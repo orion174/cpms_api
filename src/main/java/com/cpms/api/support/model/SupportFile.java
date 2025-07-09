@@ -25,7 +25,11 @@ public class SupportFile extends BaseEntity {
     private Integer supportFileId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "support_request_id", foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(
+            name = "support_request_id",
+            insertable = false,
+            updatable = false,
+            foreignKey = @ForeignKey(ConstraintMode.NO_CONSTRAINT))
     @Comment("문의 글 ID")
     private SupportRequest supportRequest;
 
