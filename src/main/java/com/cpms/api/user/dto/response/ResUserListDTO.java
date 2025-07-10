@@ -1,5 +1,6 @@
 package com.cpms.api.user.dto.response;
 
+import com.cpms.common.helper.YesNo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.*;
@@ -21,5 +22,5 @@ public class ResUserListDTO {
 
     private String userPos;
 
-    private String useYn;
+    private YesNo useYn;
 }

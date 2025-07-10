@@ -3,8 +3,8 @@ package com.cpms.common.helper;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
 @Getter
+@Builder
 public class FileDTO {
 
     private String filePath;

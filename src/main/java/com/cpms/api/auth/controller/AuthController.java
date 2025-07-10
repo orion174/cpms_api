@@ -45,6 +45,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse> refreshToken(
             @CookieValue("refreshToken") String refreshToken,
             @RequestBody ReqRefreshTokenDTO reqRefreshTokenDTO) {
+
         ResRefreshTokenDTO result = authService.refreshToken(refreshToken, reqRefreshTokenDTO);
 
         return ResponseEntity.ok(

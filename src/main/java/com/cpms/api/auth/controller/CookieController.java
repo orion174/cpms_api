@@ -23,6 +23,7 @@ public class CookieController {
     @PostMapping("/delete")
     public ResponseEntity<ApiResponse> deleteCookies(
             HttpServletRequest request, HttpServletResponse response) {
+
         cookieService.deleteCookies(request, response);
 
         return ResponseEntity.ok(

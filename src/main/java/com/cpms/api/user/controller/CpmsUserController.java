@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/setting/user")
+@RequestMapping("/api/user")
 public class CpmsUserController {
 
     private final CpmsUserService cpmsUserService;

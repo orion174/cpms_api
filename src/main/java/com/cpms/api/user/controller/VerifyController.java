@@ -60,6 +60,7 @@ public class VerifyController {
     @PostMapping("/register")
     public ResponseEntity<ApiResponse> register(@RequestBody @Valid ReqRegisterDTO reqRegisterDTO) {
         verifyService.registerUser(reqRegisterDTO);
+
         return ResponseEntity.ok(
                 ApiResponse.success(
                         HttpStatus.OK.value(), ResponseMessage.REGISTER_SUCCESS.getMessage()));
