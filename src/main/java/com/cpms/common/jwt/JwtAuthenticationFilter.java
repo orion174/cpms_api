@@ -26,14 +26,16 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
 
         HttpServletRequest httpRequest = (HttpServletRequest) req;
 
-        // Request Header에서 토큰 추출 및 유효성 검사 후 SecurityContext 설정
         Optional.ofNullable(resolveToken(httpRequest))
                 .filter(jwtTokenProvider::validateToken)
                 .map(jwtTokenProvider::getAuthentication)
                 .ifPresent(
-                        authentication ->
+                        authentication -> {
+                            if (SecurityContextHolder.getContext().getAuthentication() == null) {
                                 SecurityContextHolder.getContext()
-                                        .setAuthentication(authentication));
+                                        .setAuthentication(authentication);
+                            }
+                        });
 
         chain.doFilter(req, res);
     }
@@ -47,8 +49,8 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private String resolveToken(HttpServletRequest req) {
         return Optional.ofNullable(req.getHeader("Authorization"))
                 .filter(StringUtils::hasText)
-                .filter(token -> token.startsWith("Bearer"))
-                .map(token -> token.substring(7))
+                .filter(token -> token.toLowerCase().startsWith("bearer "))
+                .map(token -> token.substring(7).trim())
                 .orElse(null);
     }
 }

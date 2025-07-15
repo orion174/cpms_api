@@ -1,7 +1,11 @@
 package com.cpms.common.util;
 
+import static com.cpms.common.helper.Constants.*;
 import static com.cpms.common.util.CommonUtil.parseToIntSafely;
 
+import java.util.Optional;
+
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.cpms.common.helper.AuthType;
@@ -15,19 +19,27 @@ public class JwtUserUtil {
 
     private final JwtTokenProvider jwtTokenProvider;
 
-    // 사용자 ID
+    private String getCurrentToken() {
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .map(auth -> auth.getCredentials().toString()) // token은 credentials에 있음
+                .orElse(null);
+    }
+
+    private String getClaim(String key) {
+        String token = getCurrentToken();
+        return jwtTokenProvider.getClaim(token, key);
+    }
+
     public Integer getUserId() {
-        return parseToIntSafely(jwtTokenProvider.getClaim("userId"));
+        return parseToIntSafely(getClaim(CLAIM_USER_ID));
     }
 
-    // 사용자 회사 ID
     public Integer getCompanyId() {
-        return parseToIntSafely(jwtTokenProvider.getClaim("companyId"));
+        return parseToIntSafely(getClaim(CLAIM_COMPANY_ID));
     }
 
-    // 사용자 권한 타입
     public String getAuthType() {
-        return jwtTokenProvider.getClaim("authType");
+        return getClaim(CLAIM_AUTH_TYPE);
     }
 
     public boolean isUser() {
@@ -43,14 +55,14 @@ public class JwtUserUtil {
     }
 
     public boolean isNotUser() {
-        return AuthType.USER != AuthType.fromCode(getAuthType());
+        return !isUser();
     }
 
     public boolean isNotTemp() {
-        return AuthType.TEMP != AuthType.fromCode(getAuthType());
+        return !isTemp();
     }
 
     public boolean isNotAdmin() {
-        return AuthType.ADMIN != AuthType.fromCode(getAuthType());
+        return !isAdmin();
     }
 }

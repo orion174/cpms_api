@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,6 +23,18 @@ public class GlobalExceptionHandler {
                 .body(
                         ApiResponse.fail(
                                 code.getHttpStatus().value(), code.getMessage(), code.getCode()));
+    }
+
+    // 권한 체크
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> handleAccessDeniedException(
+            AccessDeniedException ex, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(
+                        ApiResponse.fail(
+                                HttpStatus.FORBIDDEN.value(),
+                                ErrorCode.NO_AUTHORITY.getMessage(),
+                                ErrorCode.NO_AUTHORITY.getCode()));
     }
 
     @ExceptionHandler(Exception.class)

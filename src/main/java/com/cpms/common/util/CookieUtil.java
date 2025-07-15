@@ -14,15 +14,14 @@ public class CookieUtil {
     /**
      * 리프레쉬 토큰을 쿠키에 저장한다.
      *
+     * @param req
      * @param res
      * @param refreshToken
      * @param maxAge
-     * @param secure
      */
     public static void saveRefreshCookie(
             HttpServletRequest req, HttpServletResponse res, String refreshToken, int maxAge) {
-        String serverName = req.getServerName();
-
+        // 클라이언트 브라우저에 리프레쉬 토큰 발급
         ResponseCookie.ResponseCookieBuilder cookieBuilder =
                 ResponseCookie.from("refreshToken", refreshToken)
                         .httpOnly(true)
@@ -30,13 +29,15 @@ public class CookieUtil {
                         .path("/")
                         .maxAge(maxAge);
 
-        // 로컬 환경과 운영 환경 구분
-        if ("localhost".equals(serverName) || "127.0.0.1".equals(serverName)) {
-            cookieBuilder.secure(false);
-        } else {
-            cookieBuilder.secure(true);
-        }
+        //        String serverName = req.getServerName();
+        //
+        //        if ("localhost".equals(serverName) || "127.0.0.1".equals(serverName)) {
+        //            cookieBuilder.secure(false);
+        //        } else {
+        //            cookieBuilder.secure(true);
+        //        }
 
+        cookieBuilder.secure(true);
         ResponseCookie cookie = cookieBuilder.build();
 
         res.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

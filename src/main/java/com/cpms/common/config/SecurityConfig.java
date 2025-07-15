@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,7 +21,7 @@ import com.cpms.common.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
-@EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -35,8 +35,6 @@ public class SecurityConfig {
             List.of(
                     "/api/auth/login",
                     "/api/auth/refresh-token",
-                    "/api/cookie/save",
-                    "/api/cookie/get",
                     "/api/cookie/delete",
                     "/api/user/verify/send-sms",
                     "/api/user/verify/identity-code",

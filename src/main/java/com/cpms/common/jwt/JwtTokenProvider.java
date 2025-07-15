@@ -1,5 +1,8 @@
 package com.cpms.common.jwt;
 
+import static com.cpms.common.helper.Constants.*;
+import static org.springframework.cloud.openfeign.security.OAuth2AccessTokenInterceptor.BEARER;
+
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,12 +16,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import com.cpms.common.exception.CustomException;
 import com.cpms.common.helper.JwtDTO;
-import com.cpms.common.response.ErrorCode;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -37,20 +36,8 @@ public class JwtTokenProvider {
 
     private final Key key;
 
-    private static final String AUTH_HEADER = "Authorization";
-
-    private static final String BEARER_PREFIX = "Bearer ";
-
-    private static final String BEARER = "Bearer";
-
-    /**
-     * 토큰 서명을 위한 비밀키를 설정한다.
-     *
-     * @param secretKey
-     */
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
-        this.key = Keys.hmacShaKeyFor(keyBytes);
+        this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
     }
 
     /**
@@ -70,22 +57,16 @@ public class JwtTokenProvider {
     /**
      * 토큰에서 클레임 데이터를 가져온다.
      *
+     * @param token
      * @param key
      * @return
      */
-    public String getClaim(String key) {
-        return Optional.ofNullable(RequestContextHolder.currentRequestAttributes())
-                .filter(attr -> attr instanceof ServletRequestAttributes) // 요청 속성이
-                // ServletRequestAttributes인지
-                // 확인한다.
-                .map(attr -> (ServletRequestAttributes) attr)
-                .map(ServletRequestAttributes::getRequest) // HttpServletRequest  객체를 가져온다.
-                .map(req -> req.getHeader(AUTH_HEADER)) // 요청 헤더에서 "Authorization" 값을 가져온다.
-                .map(this::getToken) // Jwt 토큰 추출
-                .map(this::parseClaims) // 토큰 데이터 추출
-                .map(claims -> claims.get(key)) // key에 매핑된 데이터 추출
+    public String getClaim(String token, String key) {
+        return Optional.ofNullable(token)
+                .map(this::parseClaims)
+                .map(claims -> claims.get(key))
                 .map(Object::toString)
-                .orElse("");
+                .orElse(null);
     }
 
     /**
@@ -95,7 +76,7 @@ public class JwtTokenProvider {
      * @param jwtDTO
      * @return
      */
-    public JwtDTO generateToken(Authentication authentication, JwtDTO jwtDTO) {
+    public JwtDTO generateAccessToken(Authentication authentication, JwtDTO jwtDTO) {
         String authorities =
                 authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
@@ -104,7 +85,7 @@ public class JwtTokenProvider {
         Claims claims = createClaims(authentication.getName(), jwtDTO, authorities);
 
         return JwtDTO.builder()
-                .grantType("Bearer")
+                .grantType(BEARER)
                 .authType(jwtDTO.getAuthType())
                 .userId(jwtDTO.getUserId())
                 .companyId(jwtDTO.getCompanyId())
@@ -117,13 +98,14 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 엑세스 토큰 생성
+     * 엑세스 토큰 재발급
      *
      * @param jwtDTO
      * @return
      */
-    public JwtDTO generateAccessToken(JwtDTO jwtDTO) {
-        Claims claims = createClaims(jwtDTO.getLoginId(), jwtDTO, null);
+    public JwtDTO updateAccessToken(JwtDTO jwtDTO) {
+        String authorities = "ROLE_" + jwtDTO.getAuthType(); // 스프링 시큐리티 권한 설정
+        Claims claims = createClaims(jwtDTO.getLoginId(), jwtDTO, authorities);
 
         return JwtDTO.builder()
                 .grantType(BEARER)
@@ -133,29 +115,16 @@ public class JwtTokenProvider {
     }
 
     /**
-     * 리프레쉬 토큰 생성
-     *
-     * @return
-     */
-    public JwtDTO generateRefreshToken() {
-        return JwtDTO.builder()
-                .grantType(BEARER)
-                .refreshToken(createRefreshToken())
-                .refreshTokenExpiration(REFRESH_TOKEN_EXPIRATION)
-                .build();
-    }
-
-    /**
      * 토큰을 복호화하여 정보를 꺼낸다.
      *
-     * @param accessToken
+     * @param token
      * @return
      */
-    public Authentication getAuthentication(String accessToken) {
-        Claims claims = parseClaims(accessToken);
+    public Authentication getAuthentication(String token) {
+        Claims claims = parseClaims(token);
 
         Collection<? extends GrantedAuthority> authorities =
-                Optional.ofNullable(claims.get("auth"))
+                Optional.ofNullable(claims.get(CLAIM_AUTH))
                         .map(Object::toString)
                         .map(
                                 auth ->
@@ -166,31 +135,17 @@ public class JwtTokenProvider {
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
     }
 
     /**
      * 토큰을 복호화하여 클레임 정보를 추출한다.
      *
-     * @param accessToken
+     * @param token
      * @return
      */
-    public Claims parseClaims(String accessToken) {
-        return Optional.ofNullable(accessToken)
-                .map(
-                        token -> {
-                            try {
-                                return Jwts.parserBuilder()
-                                        .setSigningKey(key)
-                                        .build()
-                                        .parseClaimsJws(token)
-                                        .getBody();
-
-                            } catch (ExpiredJwtException e) {
-                                return e.getClaims();
-                            }
-                        })
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_AUTHORITY));
+    public Claims parseClaims(String token) {
+        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
     }
 
     /**
@@ -203,18 +158,17 @@ public class JwtTokenProvider {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info("유효하지 않은 토큰");
+            log.info("유효하지 않은 토큰", e.getMessage());
 
         } catch (ExpiredJwtException e) {
-            log.info("만료된 토큰");
+            log.info("만료된 토큰", e.getMessage());
 
         } catch (UnsupportedJwtException e) {
-            log.info("지원하지 않는 토큰");
+            log.info("지원하지 않는 토큰", e.getMessage());
 
         } catch (IllegalArgumentException e) {
-            log.info("형식이 잘못된 토큰");
+            log.info("형식이 잘못된 토큰", e.getMessage());
         }
 
         return false;
@@ -229,18 +183,18 @@ public class JwtTokenProvider {
      * @return
      */
     private Claims createClaims(String subject, JwtDTO jwtDTO, String authorities) {
-        Claims claims = Jwts.claims().setSubject(subject);
+        Map<String, Object> claimMap = new HashMap<>();
+
+        claimMap.put(CLAIM_AUTH_TYPE, jwtDTO.getAuthType());
+        claimMap.put(CLAIM_USER_ID, jwtDTO.getUserId());
+        claimMap.put(CLAIM_COMPANY_ID, jwtDTO.getCompanyId());
+        claimMap.put(CLAIM_LOGIN_ID, jwtDTO.getLoginId());
 
         if (authorities != null) {
-            claims.put("auth", authorities);
+            claimMap.put(CLAIM_AUTH, authorities);
         }
 
-        claims.put("authType", jwtDTO.getAuthType());
-        claims.put("userId", jwtDTO.getUserId());
-        claims.put("companyId", jwtDTO.getCompanyId());
-        claims.put("loginId", jwtDTO.getLoginId());
-
-        return claims;
+        return Jwts.claims(claimMap).setSubject(subject);
     }
 
     /**
@@ -251,7 +205,6 @@ public class JwtTokenProvider {
      */
     private String createAccessToken(Claims claims) {
         long now = System.currentTimeMillis();
-
         Date expiration = new Date(now + ACCESS_TOKEN_EXPIRATION);
 
         return Jwts.builder()

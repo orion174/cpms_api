@@ -10,7 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -103,8 +102,7 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                 ResLoginDTO.builder()
                         .accessToken(jwtDTO.getAccessToken())
                         .accessTokenExpiration(jwtDTO.getAccessTokenExpiration())
-                        .loginHistoryId(
-                                savedHistory.getLoginHistoryId()) // 프론트가 sessionStorage 에 보관
+                        .loginHistoryId(savedHistory.getLoginHistoryId())
                         .build();
 
         return ResponseEntity.ok(result);
@@ -122,16 +120,18 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
     public ResRefreshTokenDTO refreshToken(
             @CookieValue("refreshToken") String refreshToken,
             @RequestBody ReqRefreshTokenDTO reqDto) {
+        // 토큰이 유효한지 검사
         if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new CustomException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
-
+        // 로그인 이력 검사
         JwtDTO user = customAuthRepository.getUserInfoByLoginHistoryId(reqDto);
+
         if (user == null) {
             throw new CustomException(ErrorCode.INVALID_USER);
         }
 
-        JwtDTO newAccessToken = jwtTokenProvider.generateAccessToken(user);
+        JwtDTO newAccessToken = jwtTokenProvider.updateAccessToken(user);
 
         return ResRefreshTokenDTO.builder()
                 .accessToken(newAccessToken.getAccessToken())
@@ -144,7 +144,6 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
      *
      * @param loginId
      * @return
-     * @throws UsernameNotFoundException
      */
     @Override
     @Transactional(readOnly = true)
@@ -191,14 +190,14 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
             throw new CustomException(ErrorCode.INTERNAL_ERROR);
         }
 
-        JwtDTO jwt =
+        JwtDTO jwtDto =
                 JwtDTO.builder()
-                        .loginId(resLoginDTO.getLoginId())
+                        .userId(resLoginDTO.getUserId())
                         .authType(resLoginDTO.getAuthType())
-                        .userId(String.valueOf(resLoginDTO.getUserId()))
-                        .companyId(String.valueOf(resLoginDTO.getCompanyId()))
+                        .companyId(resLoginDTO.getCompanyId())
+                        .loginId(resLoginDTO.getLoginId())
                         .build();
 
-        return jwtTokenProvider.generateToken(authentication, jwt);
+        return jwtTokenProvider.generateAccessToken(authentication, jwtDto);
     }
 }

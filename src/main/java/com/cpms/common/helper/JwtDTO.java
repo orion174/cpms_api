@@ -7,21 +7,20 @@ import lombok.*;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JwtDTO {
-
     private String grantType;
 
     private String authType;
 
-    private String loginHistoryId;
+    private Integer loginHistoryId;
 
-    private String userId;
+    private Integer userId;
 
     private String userNm;
 
-    private String companyId;
+    private Integer companyId;
 
     private String loginId;
 

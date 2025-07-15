@@ -57,8 +57,8 @@ public class CustomAuthRepositoryImpl implements CustomAuthRepository {
                                         JwtDTO.class,
                                         cpmsUser.userId,
                                         cpmsUser.authType,
-                                        cpmsUser.userNm,
                                         cpmsUser.companyId,
+                                        cpmsUser.userNm,
                                         cpmsUser.loginId))
                         .from(userLoginHistory)
                         .join(cpmsUser)
