@@ -7,7 +7,7 @@ public interface SupportService {
 
     ResSupportListDTO selectSupportList(ReqSupportListDTO reqSupportListDTO);
 
-    ResSupportDetailDTO selectSupportDetail(ReqSupportDTO reqSupportDTO);
+    ResSupportViewDTO selectSupportView(ReqSupportDTO reqSupportDTO);
 
     void insertSupportRequest(ReqSupportDTO reqSupportDTO);
 

@@ -23,9 +23,9 @@ import com.cpms.api.setting.repository.CpmsProjectRepository;
 import com.cpms.api.support.dto.request.ReqSupportDTO;
 import com.cpms.api.support.dto.request.ReqSupportListDTO;
 import com.cpms.api.support.dto.request.ReqSupportResponseDTO;
-import com.cpms.api.support.dto.response.ResSupportDetailDTO;
 import com.cpms.api.support.dto.response.ResSupportFileDTO;
 import com.cpms.api.support.dto.response.ResSupportListDTO;
+import com.cpms.api.support.dto.response.ResSupportViewDTO;
 import com.cpms.api.support.model.SupportFile;
 import com.cpms.api.support.model.SupportRequest;
 import com.cpms.api.support.model.SupportResponse;
@@ -169,14 +169,14 @@ public class SupportServiceImpl implements SupportService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResSupportDetailDTO selectSupportDetail(ReqSupportDTO reqSupportDTO) {
+    public ResSupportViewDTO selectSupportView(ReqSupportDTO reqSupportDTO) {
         Integer supportRequestId = reqSupportDTO.getSupportRequestId();
 
         if (supportRequestId == null || supportRequestId == 0) {
             throw new CustomException(ErrorCode.INVALID_REQUEST_ID);
         }
 
-        ResSupportDetailDTO result = supportRequestRepository.findSupportDetail(supportRequestId);
+        ResSupportViewDTO result = supportRequestRepository.findSupportView(supportRequestId);
 
         // TEMP 권한은 자신의 글만 조회가 가능하다.
         if (jwtUserUtil.isTemp()) {

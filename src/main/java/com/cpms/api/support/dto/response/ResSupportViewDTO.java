@@ -11,7 +11,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResSupportDetailDTO {
+public class ResSupportViewDTO {
     private Integer supportRequestId;
 
     private String requestCompanyNm;

@@ -22,5 +22,7 @@ public class ResUserListDTO {
 
     private String userPos;
 
+    private String regDt;
+
     private YesNo useYn;
 }

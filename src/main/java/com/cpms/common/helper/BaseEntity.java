@@ -6,10 +6,15 @@ import jakarta.persistence.*;
 
 import org.hibernate.annotations.Comment;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Getter
+@SuperBuilder
 @MappedSuperclass
+@NoArgsConstructor
 public abstract class BaseEntity {
 
     @Column(name = "reg_id", columnDefinition = "int(10) unsigned", nullable = false)
@@ -28,6 +33,7 @@ public abstract class BaseEntity {
     @Comment("데이터 마지막 수정일자")
     protected LocalDateTime udtDt;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "del_yn", columnDefinition = "enum('Y','N')", nullable = false)
     @Comment("데이터 삭제 유무")

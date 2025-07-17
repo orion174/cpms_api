@@ -17,13 +17,13 @@ public enum ResponseMessage {
 
     COOKIE_DELETE_SUCCESS("쿠키 삭제 성공"),
 
-    INSERT_SUCCESS("성공적으로 등록되었습니다."),
+    INSERT_SUCCESS("저장이 완료되었습니다."),
 
     UPDATE_SUCCESS("성공적으로 수정되었습니다."),
 
     DELETE_SUCCESS("성공적으로 삭제되었습니다."),
 
-    SELECT_SUCCESS("데이터를 성공적으로 조회했습니다.");
+    SELECT_SUCCESS("데이터가 조회되었습니다.");
 
     private final String message;
 

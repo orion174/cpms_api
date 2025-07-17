@@ -11,5 +11,5 @@ public interface CustomSupportRequestRepository {
     Page<ResSupportListDTO.SupportList> findSupportList(
             ReqSupportListDTO reqSupportListDTO, Pageable pageable);
 
-    ResSupportDetailDTO findSupportDetail(Integer supportRequestId);
+    ResSupportViewDTO findSupportView(Integer supportRequestId);
 }

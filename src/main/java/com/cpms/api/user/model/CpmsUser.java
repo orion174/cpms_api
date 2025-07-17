@@ -5,16 +5,22 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Comment;
 
 import com.cpms.api.setting.model.CpmsCompany;
+import com.cpms.api.user.dto.request.ReqRegisterDTO;
+import com.cpms.api.user.dto.request.ReqUserDTO;
+import com.cpms.common.helper.AuthType;
 import com.cpms.common.helper.BaseEntity;
+import com.cpms.common.helper.Constants;
 import com.cpms.common.helper.YesNo;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
+@SuperBuilder
 @Table(name = "cpms_user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CpmsUser extends BaseEntity {
@@ -56,7 +62,7 @@ public class CpmsUser extends BaseEntity {
     @Comment("전화번호")
     private String userPhone;
 
-    @Column(name = "user_email", length = 255, nullable = false)
+    @Column(name = "user_email", length = 255)
     @Comment("사용자 이메일")
     private String userEmail;
 
@@ -76,34 +82,40 @@ public class CpmsUser extends BaseEntity {
     @Comment("기타 메모")
     private String userNote;
 
+    @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "enum('Y','N')", nullable = false)
     @Comment("사용 유무")
     private YesNo useYn = YesNo.Y;
 
-    @Builder
-    public CpmsUser(
-            String authType,
-            Integer companyId,
-            String loginId,
-            String loginPw,
-            String userNm,
-            String userPhone,
-            String userDept,
-            String userPos,
-            String userInfo,
-            YesNo useYn,
-            Integer regId) {
-        this.authType = authType;
-        this.companyId = companyId;
-        this.loginId = loginId;
-        this.loginPw = loginPw;
-        this.userNm = userNm;
-        this.userPhone = userPhone;
-        this.userDept = userDept;
-        this.userPos = userPos;
-        this.userInfo = userInfo;
-        this.useYn = useYn;
-        this.regId = regId;
+    public static CpmsUser fromRegister(ReqRegisterDTO dto, String password, Integer regId) {
+        return CpmsUser.builder()
+                .authType(AuthType.TEMP.getCode())
+                .companyId(Constants.INIT_COMPANY_ID)
+                .loginId(dto.loginId())
+                .loginPw(password)
+                .userNm(Constants.INIT_USER_NAME)
+                .userPhone(dto.phone())
+                .useYn(YesNo.Y)
+                .regId(regId)
+                .build();
+    }
+
+    public static CpmsUser fromCreate(ReqUserDTO dto, String password, Integer regId) {
+        return CpmsUser.builder()
+                .authType(dto.authType())
+                .companyId(dto.companyId())
+                .loginId(dto.loginId())
+                .loginPw(password)
+                .userNm(dto.userNm())
+                .userPhone(dto.userPhone())
+                .userEmail(dto.userEmail())
+                .userDept(dto.userDept())
+                .userPos(dto.userPos())
+                .userInfo(dto.userInfo())
+                .userNote(dto.userNote())
+                .useYn(YesNo.Y)
+                .regId(regId)
+                .build();
     }
 }

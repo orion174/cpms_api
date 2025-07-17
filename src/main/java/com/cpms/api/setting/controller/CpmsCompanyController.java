@@ -2,12 +2,10 @@ package com.cpms.api.setting.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.cpms.api.setting.dto.request.ReqCompanyDTO;
+import com.cpms.api.setting.dto.request.ReqCompanyListDTO;
 import com.cpms.api.setting.service.CpmsCompanyService;
 import com.cpms.common.response.ApiResponse;
 import com.cpms.common.response.ResponseMessage;
@@ -22,14 +20,33 @@ public class CpmsCompanyController {
     private final CpmsCompanyService cpmsCompanyService;
 
     @PostMapping("/list")
-    public ResponseEntity<ApiResponse> selectCpmsCompanyList(
-            @RequestBody ReqCompanyDTO reqCompanyDTO) {
-        Object result = cpmsCompanyService.selectCpmsCompanyList(reqCompanyDTO);
+    public ResponseEntity<ApiResponse> selectCpmsCompanyList(@RequestBody ReqCompanyDTO reqDTO) {
+        Object result = cpmsCompanyService.selectCpmsCompanyList(reqDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
                         HttpStatus.OK.value(),
                         result,
                         ResponseMessage.SELECT_SUCCESS.getMessage()));
+    }
+
+    @GetMapping("/admin-list")
+    public ResponseEntity<ApiResponse> findAdminCompanylist(ReqCompanyListDTO reqDTO) {
+        Object result = cpmsCompanyService.findAdminCompanylist(reqDTO);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        result,
+                        ResponseMessage.SELECT_SUCCESS.getMessage()));
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse> createCompany(@RequestBody ReqCompanyDTO reqDTO) {
+        cpmsCompanyService.createCompany(reqDTO);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        HttpStatus.OK.value(), ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 }

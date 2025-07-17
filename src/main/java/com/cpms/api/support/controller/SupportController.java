@@ -36,10 +36,9 @@ public class SupportController {
                         ResponseMessage.SELECT_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/detail")
-    public ResponseEntity<ApiResponse> selectSupportDetail(
-            @RequestBody ReqSupportDTO reqSupportDTO) {
-        Object result = supportService.selectSupportDetail(reqSupportDTO);
+    @PostMapping("/view")
+    public ResponseEntity<ApiResponse> selectSupportView(@RequestBody ReqSupportDTO reqSupportDTO) {
+        Object result = supportService.selectSupportView(reqSupportDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(

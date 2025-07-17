@@ -29,14 +29,6 @@ public class CookieUtil {
                         .path("/")
                         .maxAge(maxAge);
 
-        //        String serverName = req.getServerName();
-        //
-        //        if ("localhost".equals(serverName) || "127.0.0.1".equals(serverName)) {
-        //            cookieBuilder.secure(false);
-        //        } else {
-        //            cookieBuilder.secure(true);
-        //        }
-
         cookieBuilder.secure(true);
         ResponseCookie cookie = cookieBuilder.build();
 

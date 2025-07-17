@@ -15,8 +15,8 @@ import com.cpms.api.code.model.QCommonCode;
 import com.cpms.api.setting.model.QCpmsCompany;
 import com.cpms.api.setting.model.QCpmsProject;
 import com.cpms.api.support.dto.request.ReqSupportListDTO;
-import com.cpms.api.support.dto.response.ResSupportDetailDTO;
 import com.cpms.api.support.dto.response.ResSupportListDTO;
+import com.cpms.api.support.dto.response.ResSupportViewDTO;
 import com.cpms.api.support.model.QSupportFile;
 import com.cpms.api.support.model.QSupportRequest;
 import com.cpms.api.support.model.QSupportResponse;
@@ -151,12 +151,12 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
     }
 
     @Override
-    public ResSupportDetailDTO findSupportDetail(Integer supportRequestId) {
-        ResSupportDetailDTO requestDetail =
+    public ResSupportViewDTO findSupportView(Integer supportRequestId) {
+        ResSupportViewDTO requestView =
                 jpaQueryFactory
                         .select(
                                 Projections.fields(
-                                        ResSupportDetailDTO.class,
+                                        ResSupportViewDTO.class,
                                         supportRequest.supportRequestId,
                                         supportRequest.requestCompany.companyNm.as(
                                                 "requestCompanyNm"),
@@ -190,15 +190,15 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                         .where(supportRequest.supportRequestId.eq(supportRequestId))
                         .fetchOne();
 
-        if (requestDetail == null) {
-            return new ResSupportDetailDTO();
+        if (requestView == null) {
+            return new ResSupportViewDTO();
         }
 
-        ResSupportDetailDTO.SupportResponse responseDetail =
+        ResSupportViewDTO.SupportResponse responseView =
                 jpaQueryFactory
                         .select(
                                 Projections.fields(
-                                        ResSupportDetailDTO.SupportResponse.class,
+                                        ResSupportViewDTO.SupportResponse.class,
                                         supportResponse.supportResponseId,
                                         supportResponse.responseTitle,
                                         supportResponse.responseEditor))
@@ -211,16 +211,14 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                                         .and(supportResponse.delYn.eq(YesNo.N)))
                         .fetchOne();
 
-        requestDetail.setSupportResponse(
-                responseDetail != null
-                        ? responseDetail
-                        : new ResSupportDetailDTO.SupportResponse());
+        requestView.setSupportResponse(
+                responseView != null ? responseView : new ResSupportViewDTO.SupportResponse());
 
-        List<ResSupportDetailDTO.FileList> files =
+        List<ResSupportViewDTO.FileList> files =
                 jpaQueryFactory
                         .select(
                                 Projections.fields(
-                                        ResSupportDetailDTO.FileList.class,
+                                        ResSupportViewDTO.FileList.class,
                                         supportFile.supportFileId,
                                         supportFile.fileType,
                                         supportFile.filePath,
@@ -235,8 +233,8 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
                                         .and(supportFile.delYn.eq(YesNo.N)))
                         .fetch();
 
-        requestDetail.setFileList(files != null ? files : new ArrayList<>());
+        requestView.setFileList(files != null ? files : new ArrayList<>());
 
-        return requestDetail;
+        return requestView;
     }
 }
