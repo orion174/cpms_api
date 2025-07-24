@@ -8,7 +8,6 @@ import lombok.*;
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReqCommonCodeDTO {
-
+public class ReqCmmnCodeDTO {
     private String groupCode; // 코드 그룹
 }

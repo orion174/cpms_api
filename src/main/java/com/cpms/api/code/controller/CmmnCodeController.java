@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cpms.api.code.dto.request.ReqCommonCodeDTO;
-import com.cpms.api.code.service.CommonCodeSerivce;
+import com.cpms.api.code.dto.request.ReqCmmnCodeDTO;
+import com.cpms.api.code.service.CmmnCodeSerivce;
 import com.cpms.common.response.ApiResponse;
 import com.cpms.common.response.ResponseMessage;
 
@@ -17,14 +17,14 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/code")
-public class CommonCodeController {
+public class CmmnCodeController {
 
-    private final CommonCodeSerivce commonCodeSerivce;
+    private final CmmnCodeSerivce cmmnCodeSerivce;
 
     @PostMapping("/list")
-    public ResponseEntity<ApiResponse> selectCommonCodeList(
-            @RequestBody ReqCommonCodeDTO reqCommonCodeDTO) {
-        Object result = commonCodeSerivce.selectCommonCodeList(reqCommonCodeDTO);
+    public ResponseEntity<ApiResponse> selectCmmnCodeList(
+            @RequestBody ReqCmmnCodeDTO reqCmmnCodeDTO) {
+        Object result = cmmnCodeSerivce.selectCmmnCodeList(reqCmmnCodeDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(

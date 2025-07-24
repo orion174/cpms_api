@@ -15,6 +15,8 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ReqCompanyListDTO extends ReqPageDTO {
 
+    private Integer companyId;
+
     private String companyNm;
 
     private String useYn;

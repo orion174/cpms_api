@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cpms.api.code.model.CommonCode;
-import com.cpms.api.code.repository.CommonCodeRepository;
+import com.cpms.api.code.repository.CmmnCodeRepository;
 import com.cpms.api.setting.model.CpmsCompany;
 import com.cpms.api.setting.model.CpmsProject;
 import com.cpms.api.setting.repository.CpmsCompanyRepository;
@@ -64,7 +64,7 @@ public class SupportServiceImpl implements SupportService {
 
     private final SupportFileRepository supportFileRepository;
 
-    private final CommonCodeRepository commonCodeRepository;
+    private final CmmnCodeRepository cmmnCodeRepository;
 
     private final CpmsUserRepository cpmsUserRepository;
 
@@ -93,10 +93,10 @@ public class SupportServiceImpl implements SupportService {
                         cpmsProjectRepository, reqSupportDTO.getRequestProjectId());
 
         CommonCode requestCd =
-                entityFinder.findByIdOrThrow(commonCodeRepository, reqSupportDTO.getRequestCd());
+                entityFinder.findByIdOrThrow(cmmnCodeRepository, reqSupportDTO.getRequestCd());
 
         CommonCode statusCd =
-                entityFinder.findByIdOrThrow(commonCodeRepository, reqSupportDTO.getStatusCd());
+                entityFinder.findByIdOrThrow(cmmnCodeRepository, reqSupportDTO.getStatusCd());
 
         SupportRequest supportRequest =
                 new SupportRequest(
@@ -215,7 +215,7 @@ public class SupportServiceImpl implements SupportService {
 
         CommonCode statusCd =
                 entityFinder.findByIdOrThrow(
-                        commonCodeRepository, reqSupportResponseDTO.getResponseStatusCd());
+                        cmmnCodeRepository, reqSupportResponseDTO.getResponseStatusCd());
 
         CpmsUser responseUserId =
                 entityFinder.findByIdOrThrow(cpmsUserRepository, jwtUserUtil.getUserId());
@@ -261,7 +261,7 @@ public class SupportServiceImpl implements SupportService {
 
         CommonCode statusCd =
                 entityFinder.findByIdOrThrow(
-                        commonCodeRepository, reqSupportResponseDTO.getResponseStatusCd());
+                        cmmnCodeRepository, reqSupportResponseDTO.getResponseStatusCd());
 
         SupportRequest supportRequest =
                 entityFinder.findByIdOrThrow(
@@ -350,7 +350,7 @@ public class SupportServiceImpl implements SupportService {
                             supportRequestRepository, reqSupportDTO.getSupportRequestId());
 
             CommonCode statusCd =
-                    entityFinder.findByIdOrThrow(commonCodeRepository, reqSupportDTO.getStatusCd());
+                    entityFinder.findByIdOrThrow(cmmnCodeRepository, reqSupportDTO.getStatusCd());
             supportRequest.updateStatusCd(statusCd);
 
             supportRequestRepository.save(supportRequest);

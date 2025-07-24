@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 import com.cpms.api.code.model.CommonCode;
 
 @Repository
-public interface CommonCodeRepository
-        extends JpaRepository<CommonCode, Integer>, CustomCommonCodeRepository {}
+public interface CmmnCodeRepository
+        extends JpaRepository<CommonCode, Integer>, CustomCmmnCodeRepository {}
