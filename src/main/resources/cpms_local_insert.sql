@@ -38,6 +38,22 @@ INSERT INTO cpms_local.common_code
 VALUES
     (8, '20', '이슈종료', 1, 6, 'Y');
 
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (9, '30', 'ADMIN', 1, 1, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (10, '30', 'USER', 1, 2, 'Y');
+
+INSERT INTO cpms_local.common_code
+(code_id, group_code, code_nm, depth, sort_order, use_yn)
+VALUES
+    (11, '30', 'TEMP', 1, 3, 'Y');
+
+
 INSERT INTO cpms_local.cpms_company
 (company_id, auth_type, company_nm, reg_id, reg_dt, udt_id, udt_dt, del_yn, del_id, del_dt)
 VALUES
