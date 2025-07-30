@@ -12,7 +12,7 @@ import com.cpms.api.user.dto.request.ReqUserListDTO;
 import com.cpms.api.user.dto.response.ResUserListDTO;
 import com.cpms.api.user.model.QCpmsUser;
 import com.cpms.api.user.repository.CustomCpmsUserRepository;
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;

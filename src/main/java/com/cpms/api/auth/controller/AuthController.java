@@ -13,8 +13,8 @@ import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
 import com.cpms.api.auth.dto.response.ResLoginDTO;
 import com.cpms.api.auth.dto.response.ResRefreshTokenDTO;
 import com.cpms.api.auth.service.AuthService;
-import com.cpms.common.response.ApiResponse;
-import com.cpms.common.response.ResponseMessage;
+import com.cpms.cmmn.response.ApiResponse;
+import com.cpms.cmmn.response.ResponseMessage;
 
 import lombok.RequiredArgsConstructor;
 

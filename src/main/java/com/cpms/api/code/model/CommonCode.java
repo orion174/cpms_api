@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import org.hibernate.annotations.Comment;
 
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 
 import lombok.AccessLevel;
 import lombok.Getter;

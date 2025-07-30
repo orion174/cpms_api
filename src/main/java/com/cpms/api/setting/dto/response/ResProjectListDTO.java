@@ -2,7 +2,7 @@ package com.cpms.api.setting.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;

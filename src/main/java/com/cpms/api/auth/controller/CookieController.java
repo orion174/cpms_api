@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.cpms.api.auth.service.CookieService;
-import com.cpms.common.response.ApiResponse;
-import com.cpms.common.response.ResponseMessage;
+import com.cpms.cmmn.response.ApiResponse;
+import com.cpms.cmmn.response.ResponseMessage;
 
 import lombok.RequiredArgsConstructor;
 

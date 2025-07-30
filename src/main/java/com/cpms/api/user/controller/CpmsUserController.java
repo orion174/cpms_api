@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import com.cpms.api.user.dto.request.ReqUserDTO;
 import com.cpms.api.user.dto.request.ReqUserListDTO;
 import com.cpms.api.user.service.CpmsUserService;
-import com.cpms.common.response.ApiResponse;
-import com.cpms.common.response.ResponseMessage;
+import com.cpms.cmmn.response.ApiResponse;
+import com.cpms.cmmn.response.ResponseMessage;
 
 import lombok.RequiredArgsConstructor;
 

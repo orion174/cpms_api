@@ -18,6 +18,7 @@ CREATE TABLE `cpms_company` (
   `homepage` varchar(255) DEFAULT NULL COMMENT '홈페이지',
   `company_info` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '회사 추가 정보',
   `admin_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '관리자 메모',
+  `use_yn` enum('N','Y') NOT NULL DEFAULT 'N' COMMENT '사용 여부',
   `reg_id` int(11) unsigned DEFAULT NULL COMMENT '생성자',
   `reg_dt` datetime NOT NULL DEFAULT current_timestamp() COMMENT '생성일',
   `udt_id` int(11) unsigned DEFAULT NULL COMMENT '수정자',

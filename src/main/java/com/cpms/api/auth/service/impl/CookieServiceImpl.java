@@ -9,8 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
 import com.cpms.api.auth.service.CookieService;
-import com.cpms.common.config.CorsProperties;
-import com.cpms.common.util.CookieUtil;
+import com.cpms.cmmn.config.CorsProperties;
+import com.cpms.cmmn.util.CookieUtil;
 
 import lombok.RequiredArgsConstructor;
 

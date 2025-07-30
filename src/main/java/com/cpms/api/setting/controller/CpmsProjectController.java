@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import com.cpms.api.setting.dto.request.ReqProjectDTO;
 import com.cpms.api.setting.dto.request.ReqProjectListDTO;
 import com.cpms.api.setting.service.CpmsProjectService;
-import com.cpms.common.response.ApiResponse;
-import com.cpms.common.response.ResponseMessage;
+import com.cpms.cmmn.response.ApiResponse;
+import com.cpms.cmmn.response.ResponseMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,9 +19,8 @@ public class CpmsProjectController {
 
     private final CpmsProjectService cpmsProjectService;
 
-    @PostMapping("/list")
-    public ResponseEntity<ApiResponse> selectCpmsProjectList(
-            @RequestBody ReqProjectDTO reqProjectDTO) {
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse> selectCpmsProjectList(ReqProjectDTO reqProjectDTO) {
         Object result = cpmsProjectService.selectCpmsProjectList(reqProjectDTO);
 
         return ResponseEntity.ok(

@@ -22,7 +22,7 @@ import com.cpms.api.support.model.QSupportRequest;
 import com.cpms.api.support.model.QSupportResponse;
 import com.cpms.api.support.repository.CustomSupportRequestRepository;
 import com.cpms.api.user.model.QCpmsUser;
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;

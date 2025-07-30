@@ -1,6 +1,6 @@
 package com.cpms.api.auth.dto.response;
 
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.querydsl.core.annotations.QueryProjection;
 

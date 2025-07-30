@@ -3,7 +3,7 @@ package com.cpms.api.user.service;
 import com.cpms.api.user.dto.request.ReqCheckIdDTO;
 import com.cpms.api.user.dto.request.ReqRegisterDTO;
 import com.cpms.api.user.dto.request.ReqSmsCodeDTO;
-import com.cpms.common.sms.dto.SmsDTO;
+import com.cpms.cmmn.sms.dto.SmsDTO;
 
 public interface VerifyService {
 

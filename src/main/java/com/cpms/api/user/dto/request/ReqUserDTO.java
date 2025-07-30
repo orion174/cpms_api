@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 
 public record ReqUserDTO(
         @NotBlank @Size(max = 30, message = "아이디는 30자 이내여야 합니다.") String loginId,

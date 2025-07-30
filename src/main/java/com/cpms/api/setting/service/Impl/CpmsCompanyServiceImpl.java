@@ -16,9 +16,9 @@ import com.cpms.api.setting.dto.response.ResCompanyListDTO;
 import com.cpms.api.setting.model.CpmsCompany;
 import com.cpms.api.setting.repository.CpmsCompanyRepository;
 import com.cpms.api.setting.service.CpmsCompanyService;
-import com.cpms.common.helper.AuthType;
-import com.cpms.common.util.JwtUserUtil;
-import com.cpms.common.util.PageUtil;
+import com.cpms.cmmn.helper.AuthType;
+import com.cpms.cmmn.util.JwtUserUtil;
+import com.cpms.cmmn.util.PageUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,13 +33,13 @@ public class CpmsCompanyServiceImpl implements CpmsCompanyService {
     @Override
     @PermitAll
     @Transactional(readOnly = true)
-    public List<ResCompanyListDTO> selectCpmsCompanyList(ReqCompanyDTO reqCompanyDTO) {
+    public List<ResCompanyListDTO> selectCpmsCompanyList(ReqCompanyDTO reqDTO) {
 
         if (jwtUserUtil.isNotAdmin()) {
-            reqCompanyDTO.setAuthType(AuthType.ADMIN.getCode());
+            reqDTO.setAuthType(AuthType.ADMIN.getCode());
         }
 
-        return cpmsCompanyRepository.selectCpmsCompanyList(reqCompanyDTO);
+        return cpmsCompanyRepository.selectCpmsCompanyList(reqDTO);
     }
 
     @Override

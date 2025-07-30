@@ -12,7 +12,7 @@ import com.cpms.api.code.model.CommonCode;
 import com.cpms.api.setting.model.CpmsCompany;
 import com.cpms.api.setting.model.CpmsProject;
 import com.cpms.api.user.model.CpmsUser;
-import com.cpms.common.helper.BaseEntity;
+import com.cpms.cmmn.helper.BaseEntity;
 
 import lombok.AccessLevel;
 import lombok.Getter;

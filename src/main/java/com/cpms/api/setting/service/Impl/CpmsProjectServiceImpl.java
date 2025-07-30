@@ -16,8 +16,8 @@ import com.cpms.api.setting.dto.response.ResProjectListDTO;
 import com.cpms.api.setting.model.CpmsProject;
 import com.cpms.api.setting.repository.CpmsProjectRepository;
 import com.cpms.api.setting.service.CpmsProjectService;
-import com.cpms.common.util.JwtUserUtil;
-import com.cpms.common.util.PageUtil;
+import com.cpms.cmmn.util.JwtUserUtil;
+import com.cpms.cmmn.util.PageUtil;
 
 import lombok.RequiredArgsConstructor;
 

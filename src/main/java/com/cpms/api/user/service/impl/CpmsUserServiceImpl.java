@@ -13,10 +13,10 @@ import com.cpms.api.user.dto.response.ResUserListDTO;
 import com.cpms.api.user.model.CpmsUser;
 import com.cpms.api.user.repository.CpmsUserRepository;
 import com.cpms.api.user.service.CpmsUserService;
-import com.cpms.common.helper.Constants;
-import com.cpms.common.helper.EntityFinder;
-import com.cpms.common.util.JwtUserUtil;
-import com.cpms.common.util.PageUtil;
+import com.cpms.cmmn.helper.Constants;
+import com.cpms.cmmn.helper.EntityFinder;
+import com.cpms.cmmn.util.JwtUserUtil;
+import com.cpms.cmmn.util.PageUtil;
 
 import lombok.RequiredArgsConstructor;
 

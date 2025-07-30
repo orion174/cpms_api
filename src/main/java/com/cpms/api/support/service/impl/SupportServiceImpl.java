@@ -1,6 +1,6 @@
 package com.cpms.api.support.service.impl;
 
-import static com.cpms.common.util.CommonUtil.hasFiles;
+import static com.cpms.cmmn.util.CommonUtil.hasFiles;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -35,15 +35,15 @@ import com.cpms.api.support.repository.SupportResponseRepository;
 import com.cpms.api.support.service.SupportService;
 import com.cpms.api.user.model.CpmsUser;
 import com.cpms.api.user.repository.CpmsUserRepository;
-import com.cpms.common.exception.CustomException;
-import com.cpms.common.helper.EntityFinder;
-import com.cpms.common.helper.FileDTO;
-import com.cpms.common.helper.FileType;
-import com.cpms.common.helper.YesNo;
-import com.cpms.common.response.ErrorCode;
-import com.cpms.common.util.FileUtil;
-import com.cpms.common.util.JwtUserUtil;
-import com.cpms.common.util.PageUtil;
+import com.cpms.cmmn.exception.CustomException;
+import com.cpms.cmmn.helper.EntityFinder;
+import com.cpms.cmmn.helper.FileDTO;
+import com.cpms.cmmn.helper.FileType;
+import com.cpms.cmmn.helper.YesNo;
+import com.cpms.cmmn.response.ErrorCode;
+import com.cpms.cmmn.util.FileUtil;
+import com.cpms.cmmn.util.JwtUserUtil;
+import com.cpms.cmmn.util.PageUtil;
 
 import lombok.RequiredArgsConstructor;
 

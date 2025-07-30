@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
 import com.cpms.api.auth.dto.response.ResLoginDTO;
-import com.cpms.common.helper.JwtDTO;
+import com.cpms.cmmn.helper.JwtDTO;
 
 public interface CustomAuthRepository {
 

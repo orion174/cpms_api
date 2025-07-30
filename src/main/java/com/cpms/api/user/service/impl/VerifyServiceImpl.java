@@ -16,18 +16,19 @@ import com.cpms.api.user.dto.request.ReqSmsCodeDTO;
 import com.cpms.api.user.model.CpmsUser;
 import com.cpms.api.user.repository.CpmsUserRepository;
 import com.cpms.api.user.service.VerifyService;
-import com.cpms.common.exception.CustomException;
-import com.cpms.common.response.ErrorCode;
-import com.cpms.common.sms.dto.SmsDTO;
-import com.cpms.common.sms.service.SmsService;
-import com.cpms.common.util.CommonUtil;
-import com.cpms.common.util.JwtUserUtil;
+import com.cpms.cmmn.exception.CustomException;
+import com.cpms.cmmn.response.ErrorCode;
+import com.cpms.cmmn.sms.dto.SmsDTO;
+import com.cpms.cmmn.sms.service.SmsService;
+import com.cpms.cmmn.util.CommonUtil;
+import com.cpms.cmmn.util.JwtUserUtil;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class VerifyServiceImpl implements VerifyService {
+
     private static final long CODE_VALIDITY_DURATION = 5 * 60 * 1000;
     private static final long VALIDITY_DURATION = 10 * 60 * 1000;
     private static final long CLEANUP_INTERVAL = 15 * 60 * 1000;
@@ -61,6 +62,7 @@ public class VerifyServiceImpl implements VerifyService {
     @Override
     public void sendSmsCode(SmsDTO smsDTO) {
         String phone = smsDTO.getReceiver();
+
         if (phone == null || phone.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
@@ -74,6 +76,7 @@ public class VerifyServiceImpl implements VerifyService {
                 SmsDTO.builder().receiver(phone).message("[CPMS] 휴대폰 인증 번호 : " + code).build();
 
         int result = smsService.sendSMS(smsRequest);
+
         if (result != 0) {
             throw new CustomException(ErrorCode.SMS_SEND_FAILED);
         }
@@ -85,6 +88,7 @@ public class VerifyServiceImpl implements VerifyService {
         String inputCode = reqSmsCodeDTO.getCheckCode();
 
         AuthCodeInfo auth = authCodeMap.get(phone);
+
         if (auth == null) {
             throw new CustomException(ErrorCode.AUTH_CODE_NOT_FOUND);
         }
@@ -108,6 +112,7 @@ public class VerifyServiceImpl implements VerifyService {
     @Override
     public void validateDuplicateLoginId(ReqCheckIdDTO reqCheckIdDTO) {
         String loginId = reqCheckIdDTO.getLoginId();
+
         if (loginId == null || loginId.isBlank()) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }

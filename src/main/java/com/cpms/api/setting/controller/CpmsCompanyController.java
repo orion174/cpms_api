@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import com.cpms.api.setting.dto.request.ReqCompanyDTO;
 import com.cpms.api.setting.dto.request.ReqCompanyListDTO;
 import com.cpms.api.setting.service.CpmsCompanyService;
-import com.cpms.common.response.ApiResponse;
-import com.cpms.common.response.ResponseMessage;
+import com.cpms.cmmn.response.ApiResponse;
+import com.cpms.cmmn.response.ResponseMessage;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,8 +19,8 @@ public class CpmsCompanyController {
 
     private final CpmsCompanyService cpmsCompanyService;
 
-    @PostMapping("/list")
-    public ResponseEntity<ApiResponse> selectCpmsCompanyList(@RequestBody ReqCompanyDTO reqDTO) {
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse> selectCpmsCompanyList(ReqCompanyDTO reqDTO) {
         Object result = cpmsCompanyService.selectCpmsCompanyList(reqDTO);
 
         return ResponseEntity.ok(

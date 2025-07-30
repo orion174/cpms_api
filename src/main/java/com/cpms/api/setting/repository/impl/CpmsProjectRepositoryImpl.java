@@ -14,7 +14,7 @@ import com.cpms.api.setting.dto.response.ResProjectListDTO;
 import com.cpms.api.setting.model.QCpmsCompany;
 import com.cpms.api.setting.model.QCpmsProject;
 import com.cpms.api.setting.repository.CustomCpmsProjectRepository;
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;

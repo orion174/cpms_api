@@ -11,9 +11,9 @@ import com.cpms.api.support.dto.request.ReqSupportListDTO;
 import com.cpms.api.support.dto.request.ReqSupportResponseDTO;
 import com.cpms.api.support.dto.response.ResSupportFileDTO;
 import com.cpms.api.support.service.SupportService;
-import com.cpms.common.response.ApiResponse;
-import com.cpms.common.response.ResponseMessage;
-import com.cpms.common.util.FileUtil;
+import com.cpms.cmmn.response.ApiResponse;
+import com.cpms.cmmn.response.ResponseMessage;
+import com.cpms.cmmn.util.FileUtil;
 
 import lombok.RequiredArgsConstructor;
 

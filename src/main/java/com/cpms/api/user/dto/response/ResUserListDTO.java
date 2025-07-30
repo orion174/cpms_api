@@ -1,6 +1,6 @@
 package com.cpms.api.user.dto.response;
 
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.*;

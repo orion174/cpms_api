@@ -7,10 +7,10 @@ import org.hibernate.annotations.Comment;
 import com.cpms.api.setting.model.CpmsCompany;
 import com.cpms.api.user.dto.request.ReqRegisterDTO;
 import com.cpms.api.user.dto.request.ReqUserDTO;
-import com.cpms.common.helper.AuthType;
-import com.cpms.common.helper.BaseEntity;
-import com.cpms.common.helper.Constants;
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.AuthType;
+import com.cpms.cmmn.helper.BaseEntity;
+import com.cpms.cmmn.helper.Constants;
+import com.cpms.cmmn.helper.YesNo;
 
 import lombok.AccessLevel;
 import lombok.Builder;

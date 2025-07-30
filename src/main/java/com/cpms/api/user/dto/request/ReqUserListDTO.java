@@ -1,6 +1,6 @@
 package com.cpms.api.user.dto.request;
 
-import com.cpms.common.helper.ReqPageDTO;
+import com.cpms.cmmn.helper.ReqPageDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Getter;

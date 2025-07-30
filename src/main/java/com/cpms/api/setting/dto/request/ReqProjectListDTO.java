@@ -1,6 +1,6 @@
 package com.cpms.api.setting.dto.request;
 
-import com.cpms.common.helper.ReqPageDTO;
+import com.cpms.cmmn.helper.ReqPageDTO;
 
 import lombok.*;
 

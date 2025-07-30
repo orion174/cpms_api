@@ -7,7 +7,7 @@ import com.cpms.api.code.dto.response.QResCmmnCodeDTO;
 import com.cpms.api.code.dto.response.ResCmmnCodeDTO;
 import com.cpms.api.code.model.QCommonCode;
 import com.cpms.api.code.repository.CustomCmmnCodeRepository;
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;

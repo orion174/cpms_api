@@ -14,9 +14,9 @@ import com.cpms.api.user.dto.request.ReqRegisterDTO;
 import com.cpms.api.user.dto.request.ReqSmsCodeDTO;
 import com.cpms.api.user.dto.response.ResCheckIdDTO;
 import com.cpms.api.user.service.VerifyService;
-import com.cpms.common.response.ApiResponse;
-import com.cpms.common.response.ResponseMessage;
-import com.cpms.common.sms.dto.SmsDTO;
+import com.cpms.cmmn.response.ApiResponse;
+import com.cpms.cmmn.response.ResponseMessage;
+import com.cpms.cmmn.sms.dto.SmsDTO;
 
 import lombok.RequiredArgsConstructor;
 

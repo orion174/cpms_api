@@ -10,7 +10,7 @@ import com.cpms.api.auth.dto.response.ResLoginDTO;
 import com.cpms.api.auth.model.QUserLoginHistory;
 import com.cpms.api.auth.repository.CustomAuthRepository;
 import com.cpms.api.user.model.QCpmsUser;
-import com.cpms.common.helper.JwtDTO;
+import com.cpms.cmmn.helper.JwtDTO;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 

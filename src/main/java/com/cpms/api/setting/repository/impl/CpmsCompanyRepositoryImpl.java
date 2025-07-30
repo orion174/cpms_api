@@ -13,7 +13,7 @@ import com.cpms.api.setting.dto.response.QResCompanyListDTO;
 import com.cpms.api.setting.dto.response.ResCompanyListDTO;
 import com.cpms.api.setting.model.QCpmsCompany;
 import com.cpms.api.setting.repository.CustomCpmsCompanyRepository;
-import com.cpms.common.helper.YesNo;
+import com.cpms.cmmn.helper.YesNo;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
