@@ -8,6 +8,14 @@ CREATE TABLE `common_code` (
   PRIMARY KEY (`code_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='공통 코드';
 
+CREATE TABLE `cpms_auth` (
+  `auth_type` varchar(10) NOT NULL COMMENT '권한 분류',
+  `auth_nm` varchar(30) DEFAULT NULL COMMENT '권한 명',
+  `sort_order` int(10) unsigned NOT NULL COMMENT '정렬 순서',
+  `use_yn` enum('Y','N') NOT NULL DEFAULT 'N' COMMENT '사용 유무',
+  PRIMARY KEY (`auth_type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='권한 정보';
+
 CREATE TABLE `cpms_company` (
   `company_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `auth_type` varchar(30) DEFAULT NULL COMMENT '업체 권한',

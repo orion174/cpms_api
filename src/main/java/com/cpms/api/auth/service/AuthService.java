@@ -1,5 +1,7 @@
 package com.cpms.api.auth.service;
 
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.cpms.api.auth.dto.request.ReqLoginDTO;
 import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
+import com.cpms.api.auth.dto.response.ResAuthDTO;
 import com.cpms.api.auth.dto.response.ResLoginDTO;
 import com.cpms.api.auth.dto.response.ResRefreshTokenDTO;
 
@@ -23,4 +26,6 @@ public interface AuthService {
             @RequestBody ReqRefreshTokenDTO reqDto);
 
     UserDetails loadUserByUsername(String loginId);
+
+    List<ResAuthDTO> seletCpmsAuthList();
 }

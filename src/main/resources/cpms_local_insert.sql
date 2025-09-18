@@ -53,6 +53,12 @@ INSERT INTO cpms_local.common_code
 VALUES
     (11, '30', 'TEMP', 1, 3, 'Y');
 
+INSERT INTO cpms_local.cpms_auth
+(auth_type, auth_nm, sort_order, use_yn)
+VALUES
+    ('ADMIN', '관리자', 1, 'Y'),
+    ('USER',  '일반',   2, 'Y'),
+    ('TEMP',  '임시',   3, 'Y');
 
 INSERT INTO cpms_local.cpms_company
 (company_id, auth_type, company_nm, reg_id, reg_dt, udt_id, udt_dt, del_yn, del_id, del_dt)

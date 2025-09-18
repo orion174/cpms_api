@@ -24,38 +24,27 @@ public class SupportController {
 
     private final SupportService supportService;
 
-    @PostMapping("/list")
-    public ResponseEntity<ApiResponse> selectSupportList(
-            @RequestBody ReqSupportListDTO reqSupportListDTO) {
-        Object result = supportService.selectSupportList(reqSupportListDTO);
-
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse> selectSupportList(ReqSupportListDTO reqSupportListDTO) {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         HttpStatus.OK.value(),
-                        result,
+                        supportService.selectSupportList(reqSupportListDTO),
                         ResponseMessage.SELECT_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/view")
-    public ResponseEntity<ApiResponse> selectSupportView(@RequestBody ReqSupportDTO reqSupportDTO) {
-        Object result = supportService.selectSupportView(reqSupportDTO);
-
+    @GetMapping("/view")
+    public ResponseEntity<ApiResponse> selectSupportView(Integer supportRequestId) {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         HttpStatus.OK.value(),
-                        result,
+                        supportService.selectSupportView(supportRequestId),
                         ResponseMessage.SELECT_SUCCESS.getMessage()));
     }
 
     @PostMapping("/insert")
     public ResponseEntity<ApiResponse> insertSupportRequest(
-            @RequestPart(value = "supportFile", required = false) MultipartFile[] supportFile,
             @ModelAttribute ReqSupportDTO reqSupportDTO) {
-
-        if (supportFile != null) {
-            reqSupportDTO.setSupportFile(supportFile);
-        }
-
         supportService.insertSupportRequest(reqSupportDTO);
 
         return ResponseEntity.ok(
@@ -63,9 +52,18 @@ public class SupportController {
                         HttpStatus.OK.value(), ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 
+    @PatchMapping("/update/{id}/status")
+    public ResponseEntity<ApiResponse> updateSupportStatus(
+            @PathVariable("id") Integer supportRequestId) {
+        supportService.updateSupportStatus(supportRequestId);
+
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
+    }
+
     @PostMapping("/insert-response")
     public ResponseEntity<ApiResponse> insertSupportResponse(
-            @RequestPart(value = "responseFile", required = false) MultipartFile[] responseFile,
             @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
         supportService.insertSupportResponse(reqSupportResponseDTO);
 
@@ -85,34 +83,27 @@ public class SupportController {
                         HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
+    //    @PutMapping("/update/{id}/response")
+    //    public ResponseEntity<ApiResponse> updateSupportResponse(
+    //            @PathVariable("id") Integer supportRequestId,
+    //            @RequestPart(value = "responseFile", required = false) MultipartFile[]
+    // responseFile,
+    //            @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
+    //        supportService.updateSupportResponse(reqSupportResponseDTO);
+    //
+    //        return ResponseEntity.ok(
+    //                ApiResponse.success(
+    //                        HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
+    //    }
+
     @PostMapping("/delete-response")
     public ResponseEntity<ApiResponse> deleteSupportResponse(
-            @RequestBody ReqSupportDTO reqSupportDTO) {
-        supportService.deleteSupportResponse(reqSupportDTO);
+            @RequestBody Integer supportRequestId) {
+        supportService.deleteSupportResponse(supportRequestId);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
                         HttpStatus.OK.value(), ResponseMessage.DELETE_SUCCESS.getMessage()));
-    }
-
-    @PostMapping("/update-status")
-    public ResponseEntity<ApiResponse> updateSupportStatus(
-            @RequestBody ReqSupportDTO reqSupportDTO) {
-        supportService.updateSupportStatus(reqSupportDTO);
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
-    }
-
-    @PostMapping("/update-user")
-    public ResponseEntity<ApiResponse> updateResponseUserInfo(
-            @RequestBody ReqSupportDTO reqSupportDTO) {
-        supportService.updateResponseUserInfo(reqSupportDTO);
-
-        return ResponseEntity.ok(
-                ApiResponse.success(
-                        HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
     @GetMapping("/file/{supportFileId}/download")

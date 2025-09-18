@@ -54,4 +54,13 @@ public class AuthController {
                         result,
                         ResponseMessage.REFRESH_SUCCESS.getMessage()));
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse> cpmsAuthList() {
+        return ResponseEntity.ok(
+                ApiResponse.success(
+                        HttpStatus.OK.value(),
+                        authService.seletCpmsAuthList(),
+                        ResponseMessage.SELECT_SUCCESS.getMessage()));
+    }
 }

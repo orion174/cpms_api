@@ -1,4 +1,5 @@
 ALTER TABLE `cpms_company`
+    ADD COLUMN `auth_type` varchar(30) DEFAULT NULL COMMENT '업체 권한' AFTER `company_id`,
     ADD COLUMN `zip_code` varchar(255) DEFAULT NULL COMMENT '우편번호' AFTER `company_nm`,
     ADD COLUMN `address` varchar(255) DEFAULT NULL COMMENT '주소' AFTER `zip_code`,
     ADD COLUMN `extra_address` varchar(255) DEFAULT NULL COMMENT '추가 주소' AFTER `address`,

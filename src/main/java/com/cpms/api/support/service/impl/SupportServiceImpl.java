@@ -36,6 +36,7 @@ import com.cpms.api.support.service.SupportService;
 import com.cpms.api.user.model.CpmsUser;
 import com.cpms.api.user.repository.CpmsUserRepository;
 import com.cpms.cmmn.exception.CustomException;
+import com.cpms.cmmn.helper.Constants;
 import com.cpms.cmmn.helper.EntityFinder;
 import com.cpms.cmmn.helper.FileDTO;
 import com.cpms.cmmn.helper.FileType;
@@ -164,14 +165,13 @@ public class SupportServiceImpl implements SupportService {
     /**
      * 문의 상세 조회
      *
-     * @param reqSupportDTO
+     * @param supportRequestId
      * @return
      */
     @Override
     @Transactional(readOnly = true)
-    public ResSupportViewDTO selectSupportView(ReqSupportDTO reqSupportDTO) {
-        Integer supportRequestId = reqSupportDTO.getSupportRequestId();
-
+    public ResSupportViewDTO selectSupportView(Integer supportRequestId) {
+        // 유효하지 않은 데이터 조회 시
         if (supportRequestId == null || supportRequestId == 0) {
             throw new CustomException(ErrorCode.INVALID_REQUEST_ID);
         }
@@ -244,6 +244,27 @@ public class SupportServiceImpl implements SupportService {
     }
 
     /**
+     * 관리자 등급의 사용자가 문의글을 조회하면 처리상태가 업데이트 된다.
+     *
+     * @param supportRequestId
+     */
+    @Override
+    @Transactional
+    public void updateSupportStatus(Integer supportRequestId) {
+        if (jwtUserUtil.isAdmin()) {
+            SupportRequest supportRequest =
+                    entityFinder.findByIdOrThrow(supportRequestRepository, supportRequestId);
+
+            CommonCode statusCd =
+                    entityFinder.findByIdOrThrow(cmmnCodeRepository, Constants.CHECK_STATUS_CD);
+
+            supportRequest.updateStatusCd(statusCd);
+
+            supportRequestRepository.save(supportRequest);
+        }
+    }
+
+    /**
      * 응답 답변을 수정한다.
      *
      * @param reqSupportResponseDTO
@@ -298,14 +319,12 @@ public class SupportServiceImpl implements SupportService {
     /**
      * 답변을 삭제한다.
      *
-     * @param reqSupportDTO
-     * @return
+     * @param supportRequestId
      */
     @Override
     @Transactional
-    public void deleteSupportResponse(ReqSupportDTO reqSupportDTO) {
+    public void deleteSupportResponse(Integer supportRequestId) {
         Integer userId = jwtUserUtil.getUserId();
-        Integer supportRequestId = reqSupportDTO.getSupportRequestId();
 
         // 일반 사용자는 답변의 파일을 삭제할 수 없다.
         if (jwtUserUtil.isUser()) {
@@ -332,50 +351,6 @@ public class SupportServiceImpl implements SupportService {
                 () -> {
                     throw new CustomException(ErrorCode.ENTITY_NOT_FOUND);
                 });
-    }
-
-    /**
-     * 'ADMIN' 권한 사용자가 문의글을 조회하면 자동으로 처리상태가 업데이트 된다.
-     *
-     * @param reqSupportDTO
-     * @return
-     */
-    @Override
-    @Transactional
-    public void updateSupportStatus(ReqSupportDTO reqSupportDTO) {
-        // ADMIN 권한일때만 상태코드를 변경한다.
-        if (jwtUserUtil.isAdmin()) {
-            SupportRequest supportRequest =
-                    entityFinder.findByIdOrThrow(
-                            supportRequestRepository, reqSupportDTO.getSupportRequestId());
-
-            CommonCode statusCd =
-                    entityFinder.findByIdOrThrow(cmmnCodeRepository, reqSupportDTO.getStatusCd());
-            supportRequest.updateStatusCd(statusCd);
-
-            supportRequestRepository.save(supportRequest);
-        }
-    }
-
-    /**
-     * 처리 담당자 업데이트
-     *
-     * @param reqSupportDTO
-     * @return
-     */
-    @Override
-    @Transactional
-    public void updateResponseUserInfo(ReqSupportDTO reqSupportDTO) {
-        SupportRequest supportRequest =
-                entityFinder.findByIdOrThrow(
-                        supportRequestRepository, reqSupportDTO.getSupportRequestId());
-
-        CpmsUser responseUser =
-                entityFinder.findByIdOrThrow(cpmsUserRepository, reqSupportDTO.getUserId());
-
-        supportRequest.updateResponseUser(responseUser);
-
-        supportRequestRepository.save(supportRequest);
     }
 
     /**

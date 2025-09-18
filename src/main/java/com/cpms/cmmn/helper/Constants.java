@@ -10,4 +10,7 @@ public class Constants {
     public static final int INIT_COMPANY_ID = 1;
     public static final String INIT_USER_NAME = "임시계정";
     public static final String INIT_PASSWORD = "1234";
+    public static final int CHECK_STATUS_CD = 4;
+
+    public static final int INIT_USER_ID = 1;
 }

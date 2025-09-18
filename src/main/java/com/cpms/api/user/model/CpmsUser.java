@@ -88,7 +88,7 @@ public class CpmsUser extends BaseEntity {
     @Comment("사용 유무")
     private YesNo useYn = YesNo.Y;
 
-    public static CpmsUser fromRegister(ReqRegisterDTO dto, String password, Integer regId) {
+    public static CpmsUser fromRegister(ReqRegisterDTO dto, String password) {
         return CpmsUser.builder()
                 .authType(AuthType.TEMP.getCode())
                 .companyId(Constants.INIT_COMPANY_ID)
@@ -97,7 +97,7 @@ public class CpmsUser extends BaseEntity {
                 .userNm(Constants.INIT_USER_NAME)
                 .userPhone(dto.phone())
                 .useYn(YesNo.Y)
-                .regId(regId)
+                .regId(Constants.INIT_USER_ID)
                 .build();
     }
 

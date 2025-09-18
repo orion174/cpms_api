@@ -20,8 +20,8 @@ public class CpmsProjectController {
     private final CpmsProjectService cpmsProjectService;
 
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse> selectCpmsProjectList(ReqProjectDTO reqProjectDTO) {
-        Object result = cpmsProjectService.selectCpmsProjectList(reqProjectDTO);
+    public ResponseEntity<ApiResponse> selectCpmsProjectList(ReqProjectDTO reqDTO) {
+        Object result = cpmsProjectService.selectCpmsProjectList(reqDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(

@@ -138,9 +138,7 @@ public class VerifyServiceImpl implements VerifyService {
 
         CpmsUser user =
                 CpmsUser.fromRegister(
-                        reqRegisterDTO,
-                        passwordEncoder.encode(reqRegisterDTO.password()),
-                        jwtUserUtil.getUserId());
+                        reqRegisterDTO, passwordEncoder.encode(reqRegisterDTO.password()));
 
         userRepository.save(user);
     }

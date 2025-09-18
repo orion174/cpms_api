@@ -25,6 +25,4 @@ public class ReqSupportResponseDTO {
     private String responseEditor;
 
     private MultipartFile[] responseFile;
-
-    private Integer userId;
 }

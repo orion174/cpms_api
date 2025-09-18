@@ -1,5 +1,7 @@
 package com.cpms.api.auth.service.impl;
 
+import java.util.List;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.cpms.api.auth.dto.request.ReqLoginDTO;
 import com.cpms.api.auth.dto.request.ReqRefreshTokenDTO;
+import com.cpms.api.auth.dto.response.ResAuthDTO;
 import com.cpms.api.auth.dto.response.ResLoginDTO;
 import com.cpms.api.auth.dto.response.ResRefreshTokenDTO;
 import com.cpms.api.auth.model.UserLoginHistory;
@@ -157,6 +160,12 @@ public class AuthServiceImpl implements AuthService, UserDetailsService {
                 .password(resLoginDTO.getLoginPw())
                 .roles(resLoginDTO.getAuthType())
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ResAuthDTO> seletCpmsAuthList() {
+        return customAuthRepository.selectCpmsAuthList();
     }
 
     /**

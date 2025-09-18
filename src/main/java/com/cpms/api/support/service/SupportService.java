@@ -7,19 +7,17 @@ public interface SupportService {
 
     ResSupportListDTO selectSupportList(ReqSupportListDTO reqSupportListDTO);
 
-    ResSupportViewDTO selectSupportView(ReqSupportDTO reqSupportDTO);
+    ResSupportViewDTO selectSupportView(Integer supportRequestId);
 
     void insertSupportRequest(ReqSupportDTO reqSupportDTO);
 
     void insertSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
 
+    void updateSupportStatus(Integer supportRequestId);
+
     void updateSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
 
-    void deleteSupportResponse(ReqSupportDTO reqSupportDTO);
-
-    void updateSupportStatus(ReqSupportDTO reqSupportDTO);
-
-    void updateResponseUserInfo(ReqSupportDTO reqSupportDTO);
+    void deleteSupportResponse(Integer supportRequestId);
 
     ResSupportFileDTO fileDownload(int supportFileId);
 

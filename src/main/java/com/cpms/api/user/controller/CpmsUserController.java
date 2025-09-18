@@ -19,8 +19,8 @@ public class CpmsUserController {
 
     private final CpmsUserService cpmsUserService;
 
-    @PostMapping("/list")
-    public ResponseEntity<ApiResponse> selectCpmsUserList(@RequestBody ReqUserListDTO reqDTO) {
+    @GetMapping("/list")
+    public ResponseEntity<ApiResponse> selectCpmsUserList(ReqUserListDTO reqDTO) {
         Object result = cpmsUserService.selectCpmsUserList(reqDTO);
 
         return ResponseEntity.ok(
