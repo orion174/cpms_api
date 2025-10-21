@@ -55,42 +55,36 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
 
     @Override
     public Page<ResSupportListDTO.SupportList> findSupportList(
-            ReqSupportListDTO reqSupportListDTO, Pageable pageable) {
+            ReqSupportListDTO reqDTO, Pageable pageable) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
         builder.and(supportRequest.delYn.eq(YesNo.valueOf("N")));
 
-        if (reqSupportListDTO.getRegId() != null && reqSupportListDTO.getRegId() != 0) {
-            builder.and(supportRequest.regId.eq(reqSupportListDTO.getRegId()));
+        if (reqDTO.getRegId() != null && reqDTO.getRegId() != 0) {
+            builder.and(supportRequest.regId.eq(reqDTO.getRegId()));
         }
 
-        if (reqSupportListDTO.getSearchCompanyId() != null
-                && reqSupportListDTO.getSearchCompanyId() != 0) {
-            builder.and(
-                    supportRequest.userCompany.companyId.eq(
-                            reqSupportListDTO.getSearchCompanyId()));
+        if (reqDTO.getSearchCompanyId() != null && reqDTO.getSearchCompanyId() != 0) {
+            builder.and(supportRequest.userCompany.companyId.eq(reqDTO.getSearchCompanyId()));
         }
 
-        if (reqSupportListDTO.getSearchRequestCd() != null
-                && reqSupportListDTO.getSearchRequestCd() != 0) {
-            builder.and(supportRequest.requestCd.codeId.eq(reqSupportListDTO.getSearchRequestCd()));
+        if (reqDTO.getSearchRequestCd() != null && reqDTO.getSearchRequestCd() != 0) {
+            builder.and(supportRequest.requestCd.codeId.eq(reqDTO.getSearchRequestCd()));
         }
 
-        if (reqSupportListDTO.getSearchStatusCd() != null
-                && reqSupportListDTO.getSearchStatusCd() != 0) {
-            builder.and(supportRequest.statusCd.codeId.eq(reqSupportListDTO.getSearchStatusCd()));
+        if (reqDTO.getSearchStatusCd() != null && reqDTO.getSearchStatusCd() != 0) {
+            builder.and(supportRequest.statusCd.codeId.eq(reqDTO.getSearchStatusCd()));
         }
 
-        if (StringUtils.hasText(reqSupportListDTO.getSearchStartDt())
-                && StringUtils.hasText(reqSupportListDTO.getSearchEndDt())) {
+        if (StringUtils.hasText(reqDTO.getSearchStartDt())
+                && StringUtils.hasText(reqDTO.getSearchEndDt())) {
 
             LocalDate startDate =
-                    LocalDate.parse(
-                            reqSupportListDTO.getSearchStartDt(), DateTimeFormatter.ISO_DATE);
+                    LocalDate.parse(reqDTO.getSearchStartDt(), DateTimeFormatter.ISO_DATE);
 
             LocalDate endDate =
-                    LocalDate.parse(reqSupportListDTO.getSearchEndDt(), DateTimeFormatter.ISO_DATE);
+                    LocalDate.parse(reqDTO.getSearchEndDt(), DateTimeFormatter.ISO_DATE);
 
             LocalDateTime startDt = startDate.atStartOfDay();
             LocalDateTime endDt = endDate.atTime(23, 59, 59);
@@ -98,10 +92,8 @@ public class SupportRequestRepositoryImpl implements CustomSupportRequestReposit
             builder.and(supportRequest.regDt.between(startDt, endDt));
         }
 
-        if (StringUtils.hasText(reqSupportListDTO.getSearchTitle())) {
-            builder.and(
-                    supportRequest.supportTitle.containsIgnoreCase(
-                            reqSupportListDTO.getSearchTitle()));
+        if (StringUtils.hasText(reqDTO.getSearchTitle())) {
+            builder.and(supportRequest.supportTitle.containsIgnoreCase(reqDTO.getSearchTitle()));
         }
 
         // 조회 쿼리

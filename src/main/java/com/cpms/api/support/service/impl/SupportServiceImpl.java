@@ -20,9 +20,10 @@ import com.cpms.api.setting.model.CpmsCompany;
 import com.cpms.api.setting.model.CpmsProject;
 import com.cpms.api.setting.repository.CpmsCompanyRepository;
 import com.cpms.api.setting.repository.CpmsProjectRepository;
-import com.cpms.api.support.dto.request.ReqSupportDTO;
+import com.cpms.api.support.dto.request.ReqInsertSupportDTO;
+import com.cpms.api.support.dto.request.ReqInsertSupportResponseDTO;
 import com.cpms.api.support.dto.request.ReqSupportListDTO;
-import com.cpms.api.support.dto.request.ReqSupportResponseDTO;
+import com.cpms.api.support.dto.request.ReqUpdateSupportResponseDTO;
 import com.cpms.api.support.dto.response.ResSupportFileDTO;
 import com.cpms.api.support.dto.response.ResSupportListDTO;
 import com.cpms.api.support.dto.response.ResSupportViewDTO;
@@ -74,56 +75,6 @@ public class SupportServiceImpl implements SupportService {
     private final CpmsProjectRepository cpmsProjectRepository;
 
     /**
-     * 문의를 신규 등록한다.
-     *
-     * @param reqSupportDTO
-     * @return
-     */
-    @Override
-    @Transactional
-    public void insertSupportRequest(ReqSupportDTO reqSupportDTO) {
-        CpmsCompany requestCompany =
-                entityFinder.findByIdOrThrow(
-                        cpmsCompanyRepository, reqSupportDTO.getRequestCompanyId());
-
-        CpmsCompany userCompany =
-                entityFinder.findByIdOrThrow(cpmsCompanyRepository, jwtUserUtil.getCompanyId());
-
-        CpmsProject requestProject =
-                entityFinder.findByIdOrThrow(
-                        cpmsProjectRepository, reqSupportDTO.getRequestProjectId());
-
-        CommonCode requestCd =
-                entityFinder.findByIdOrThrow(cmmnCodeRepository, reqSupportDTO.getRequestCd());
-
-        CommonCode statusCd =
-                entityFinder.findByIdOrThrow(cmmnCodeRepository, reqSupportDTO.getStatusCd());
-
-        SupportRequest supportRequest =
-                new SupportRequest(
-                        requestCompany,
-                        userCompany,
-                        requestProject,
-                        null,
-                        requestCd,
-                        statusCd,
-                        reqSupportDTO.getRequestDate(),
-                        null,
-                        reqSupportDTO.getSupportTitle(),
-                        reqSupportDTO.getSupportEditor(),
-                        jwtUserUtil.getUserId());
-
-        // 유지보수 요청 저장
-        supportRequestRepository.save(supportRequest);
-
-        // 파일 업로드 처리
-        if (hasFiles(reqSupportDTO.getSupportFile())) {
-            String fileType = FileType.REQUEST.getCode();
-            supportFileUpload(reqSupportDTO.getSupportFile(), supportRequest, fileType);
-        }
-    }
-
-    /**
      * 문의 목록을 조회한다.
      *
      * @param reqSupportListDTO
@@ -131,27 +82,23 @@ public class SupportServiceImpl implements SupportService {
      */
     @Override
     @Transactional(readOnly = true)
-    public ResSupportListDTO selectSupportList(ReqSupportListDTO reqSupportListDTO) {
+    public ResSupportListDTO selectSupportList(ReqSupportListDTO reqDTO) {
         // 날짜형 데이터 처리
-        reqSupportListDTO.setSearchStartDt(
-                Optional.ofNullable(reqSupportListDTO.getSearchStartDt()).orElse(""));
+        reqDTO.setSearchStartDt(Optional.ofNullable(reqDTO.getSearchStartDt()).orElse(""));
 
-        reqSupportListDTO.setSearchEndDt(
-                Optional.ofNullable(reqSupportListDTO.getSearchEndDt()).orElse(""));
+        reqDTO.setSearchEndDt(Optional.ofNullable(reqDTO.getSearchEndDt()).orElse(""));
 
         if (jwtUserUtil.isUser()) {
-            reqSupportListDTO.setSearchCompanyId(jwtUserUtil.getCompanyId());
+            reqDTO.setSearchCompanyId(jwtUserUtil.getCompanyId());
 
         } else if (jwtUserUtil.isTemp()) {
-            reqSupportListDTO.setRegId(jwtUserUtil.getUserId());
+            reqDTO.setRegId(jwtUserUtil.getUserId());
         }
 
-        Pageable pageable =
-                PageUtil.createPageable(
-                        reqSupportListDTO.getPageNo(), reqSupportListDTO.getPageSize());
+        Pageable pageable = PageUtil.createPageable(reqDTO.getPageNo(), reqDTO.getPageSize());
 
         Page<ResSupportListDTO.SupportList> supportListPage =
-                supportRequestRepository.findSupportList(reqSupportListDTO, pageable);
+                supportRequestRepository.findSupportList(reqDTO, pageable);
 
         ResSupportListDTO result =
                 ResSupportListDTO.builder()
@@ -201,45 +148,50 @@ public class SupportServiceImpl implements SupportService {
     }
 
     /**
-     * 응답을 등록 한다.
+     * 문의를 신규 등록한다.
      *
-     * @param reqSupportResponseDTO
+     * @param reqInsertSupportDTO
      * @return
      */
     @Override
     @Transactional
-    public void insertSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO) {
-        SupportRequest supportRequest =
-                entityFinder.findByIdOrThrow(
-                        supportRequestRepository, reqSupportResponseDTO.getSupportRequestId());
+    public void insertSupportRequest(ReqInsertSupportDTO reqDTO) {
+        CpmsCompany requestCompany =
+                entityFinder.findByIdOrThrow(cpmsCompanyRepository, reqDTO.getRequestCompanyId());
+
+        CpmsCompany userCompany =
+                entityFinder.findByIdOrThrow(cpmsCompanyRepository, jwtUserUtil.getCompanyId());
+
+        CpmsProject requestProject =
+                entityFinder.findByIdOrThrow(cpmsProjectRepository, reqDTO.getRequestProjectId());
+
+        CommonCode requestCd =
+                entityFinder.findByIdOrThrow(cmmnCodeRepository, reqDTO.getRequestCd());
 
         CommonCode statusCd =
-                entityFinder.findByIdOrThrow(
-                        cmmnCodeRepository, reqSupportResponseDTO.getResponseStatusCd());
+                entityFinder.findByIdOrThrow(cmmnCodeRepository, reqDTO.getStatusCd());
 
-        CpmsUser responseUserId =
-                entityFinder.findByIdOrThrow(cpmsUserRepository, jwtUserUtil.getUserId());
-
-        // 처리 상태 업데이트
-        supportRequest.updateStatusCd(statusCd);
-
-        // 처리 담당자 업데이트
-        supportRequest.updateResponseUser(responseUserId);
-
-        SupportResponse supportResponse =
-                new SupportResponse(
-                        supportRequest,
-                        reqSupportResponseDTO.getResponseTitle(),
-                        reqSupportResponseDTO.getResponseEditor(),
+        SupportRequest supportRequest =
+                new SupportRequest(
+                        requestCompany,
+                        userCompany,
+                        requestProject,
+                        null,
+                        requestCd,
+                        statusCd,
+                        reqDTO.getRequestDate(),
+                        null,
+                        reqDTO.getSupportTitle(),
+                        reqDTO.getSupportEditor(),
                         jwtUserUtil.getUserId());
 
-        // 응답 저장
-        supportResponseRepository.save(supportResponse);
+        // 유지보수 요청 저장
+        supportRequestRepository.save(supportRequest);
 
-        // 응답 첨부파일 저장
-        if (hasFiles(reqSupportResponseDTO.getResponseFile())) {
-            String fileType = FileType.RESPONSE.getCode();
-            supportFileUpload(reqSupportResponseDTO.getResponseFile(), supportRequest, fileType);
+        // 파일 업로드 처리
+        if (hasFiles(reqDTO.getSupportFile())) {
+            String fileType = FileType.REQUEST.getCode();
+            supportFileUpload(reqDTO.getSupportFile(), supportRequest, fileType);
         }
     }
 
@@ -265,6 +217,48 @@ public class SupportServiceImpl implements SupportService {
     }
 
     /**
+     * 응답을 등록 한다.
+     *
+     * @param reqInsertSupportResponseDTO
+     * @return
+     */
+    @Override
+    @Transactional
+    public void insertSupportResponse(ReqInsertSupportResponseDTO reqDTO) {
+        SupportRequest supportRequest =
+                entityFinder.findByIdOrThrow(
+                        supportRequestRepository, reqDTO.getSupportRequestId());
+
+        CommonCode statusCd =
+                entityFinder.findByIdOrThrow(cmmnCodeRepository, reqDTO.getResponseStatusCd());
+
+        CpmsUser responseUserId =
+                entityFinder.findByIdOrThrow(cpmsUserRepository, jwtUserUtil.getUserId());
+
+        // 처리 상태 업데이트
+        supportRequest.updateStatusCd(statusCd);
+
+        // 처리 담당자 업데이트
+        supportRequest.updateResponseUser(responseUserId);
+
+        SupportResponse supportResponse =
+                new SupportResponse(
+                        supportRequest,
+                        reqDTO.getResponseTitle(),
+                        reqDTO.getResponseEditor(),
+                        jwtUserUtil.getUserId());
+
+        // 응답 저장
+        supportResponseRepository.save(supportResponse);
+
+        // 응답 첨부파일 저장
+        if (hasFiles(reqDTO.getResponseFile())) {
+            String fileType = FileType.RESPONSE.getCode();
+            supportFileUpload(reqDTO.getResponseFile(), supportRequest, fileType);
+        }
+    }
+
+    /**
      * 응답 답변을 수정한다.
      *
      * @param reqSupportResponseDTO
@@ -272,7 +266,10 @@ public class SupportServiceImpl implements SupportService {
      */
     @Override
     @Transactional
-    public void updateSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO) {
+    public void updateSupportResponse(
+            Integer supportRequestId,
+            Integer supportResponseId,
+            ReqUpdateSupportResponseDTO reqDTO) {
         Integer userId = jwtUserUtil.getUserId();
 
         // 일반 사용자는 답변을 수정 할 수 없다.
@@ -281,34 +278,28 @@ public class SupportServiceImpl implements SupportService {
         }
 
         CommonCode statusCd =
-                entityFinder.findByIdOrThrow(
-                        cmmnCodeRepository, reqSupportResponseDTO.getResponseStatusCd());
+                entityFinder.findByIdOrThrow(cmmnCodeRepository, reqDTO.getResponseStatusCd());
 
         SupportRequest supportRequest =
-                entityFinder.findByIdOrThrow(
-                        supportRequestRepository, reqSupportResponseDTO.getSupportRequestId());
+                entityFinder.findByIdOrThrow(supportRequestRepository, supportRequestId);
 
         // 답변 문의 본문 처리상태 업데이트
         supportRequest.updateStatusCd(statusCd);
 
         // 답변 수정
         supportResponseRepository
-                .findById(reqSupportResponseDTO.getSupportResponseId())
+                .findById(supportResponseId)
                 .ifPresentOrElse(
                         supportResponse -> {
                             supportResponse.updateResponse(
-                                    reqSupportResponseDTO.getResponseTitle(),
-                                    reqSupportResponseDTO.getResponseEditor(),
-                                    userId);
+                                    reqDTO.getResponseTitle(), reqDTO.getResponseEditor(), userId);
 
                             // 파일이 있는 경우 업로드 처리
-                            if (hasFiles(reqSupportResponseDTO.getResponseFile())) {
+                            if (hasFiles(reqDTO.getResponseFile())) {
                                 String fileType = FileType.RESPONSE.getCode();
 
                                 supportFileUpload(
-                                        reqSupportResponseDTO.getResponseFile(),
-                                        supportRequest,
-                                        fileType);
+                                        reqDTO.getResponseFile(), supportRequest, fileType);
                             }
                         },
                         () -> {

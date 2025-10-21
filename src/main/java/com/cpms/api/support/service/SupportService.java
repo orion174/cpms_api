@@ -5,17 +5,20 @@ import com.cpms.api.support.dto.response.*;
 
 public interface SupportService {
 
-    ResSupportListDTO selectSupportList(ReqSupportListDTO reqSupportListDTO);
+    ResSupportListDTO selectSupportList(ReqSupportListDTO reqDTO);
 
     ResSupportViewDTO selectSupportView(Integer supportRequestId);
 
-    void insertSupportRequest(ReqSupportDTO reqSupportDTO);
-
-    void insertSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
+    void insertSupportRequest(ReqInsertSupportDTO reqDTO);
 
     void updateSupportStatus(Integer supportRequestId);
 
-    void updateSupportResponse(ReqSupportResponseDTO reqSupportResponseDTO);
+    void insertSupportResponse(ReqInsertSupportResponseDTO reqDTO);
+
+    void updateSupportResponse(
+            Integer supportRequestId,
+            Integer supportResponseId,
+            ReqUpdateSupportResponseDTO reqDTO);
 
     void deleteSupportResponse(Integer supportRequestId);
 

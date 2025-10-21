@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ReqSupportDTO {
+public class ReqInsertSupportDTO {
 
     private Integer supportRequestId;
 

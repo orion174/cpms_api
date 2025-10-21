@@ -65,6 +65,7 @@ CREATE TABLE `cpms_user` (
   `user_dept` varchar(255) DEFAULT NULL,
   `user_pos` varchar(255) DEFAULT NULL,
   `user_info` varchar(255) DEFAULT NULL,
+  `user_note` varchar(255) DEFAULT NULL,
   `use_yn` enum('Y','N') CHARACTER SET utf8mb4 DEFAULT NULL,
   `reg_id` int(10) unsigned DEFAULT NULL,
   `reg_dt` datetime DEFAULT NULL,

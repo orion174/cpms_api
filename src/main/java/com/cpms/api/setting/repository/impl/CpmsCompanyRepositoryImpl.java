@@ -37,6 +37,7 @@ public class CpmsCompanyRepositoryImpl implements CustomCpmsCompanyRepository {
             builder.and(cpmsCompany.cpmsCompany.authType.eq(authType));
         }
 
+        builder.and(cpmsCompany.useYn.eq(YesNo.Y));
         builder.and(cpmsCompany.delYn.eq(YesNo.N));
 
         return jpaQueryFactory

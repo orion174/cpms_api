@@ -9,7 +9,7 @@ import com.cpms.api.support.dto.response.*;
 public interface CustomSupportRequestRepository {
 
     Page<ResSupportListDTO.SupportList> findSupportList(
-            ReqSupportListDTO reqSupportListDTO, Pageable pageable);
+            ReqSupportListDTO reqDTO, Pageable pageable);
 
     ResSupportViewDTO findSupportView(Integer supportRequestId);
 }

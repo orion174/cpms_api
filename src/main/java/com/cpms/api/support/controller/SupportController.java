@@ -4,11 +4,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.cpms.api.support.dto.request.ReqSupportDTO;
+import com.cpms.api.support.dto.request.ReqInsertSupportDTO;
+import com.cpms.api.support.dto.request.ReqInsertSupportResponseDTO;
 import com.cpms.api.support.dto.request.ReqSupportListDTO;
-import com.cpms.api.support.dto.request.ReqSupportResponseDTO;
+import com.cpms.api.support.dto.request.ReqUpdateSupportResponseDTO;
 import com.cpms.api.support.dto.response.ResSupportFileDTO;
 import com.cpms.api.support.service.SupportService;
 import com.cpms.cmmn.response.ApiResponse;
@@ -25,11 +25,11 @@ public class SupportController {
     private final SupportService supportService;
 
     @GetMapping("/list")
-    public ResponseEntity<ApiResponse> selectSupportList(ReqSupportListDTO reqSupportListDTO) {
+    public ResponseEntity<ApiResponse> selectSupportList(ReqSupportListDTO reqDTO) {
         return ResponseEntity.ok(
                 ApiResponse.success(
                         HttpStatus.OK.value(),
-                        supportService.selectSupportList(reqSupportListDTO),
+                        supportService.selectSupportList(reqDTO),
                         ResponseMessage.SELECT_SUCCESS.getMessage()));
     }
 
@@ -44,8 +44,8 @@ public class SupportController {
 
     @PostMapping("/insert")
     public ResponseEntity<ApiResponse> insertSupportRequest(
-            @ModelAttribute ReqSupportDTO reqSupportDTO) {
-        supportService.insertSupportRequest(reqSupportDTO);
+            @ModelAttribute ReqInsertSupportDTO reqDTO) {
+        supportService.insertSupportRequest(reqDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
@@ -64,41 +64,29 @@ public class SupportController {
 
     @PostMapping("/insert-response")
     public ResponseEntity<ApiResponse> insertSupportResponse(
-            @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
-        supportService.insertSupportResponse(reqSupportResponseDTO);
+            @ModelAttribute ReqInsertSupportResponseDTO reqDTO) {
+        supportService.insertSupportResponse(reqDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
                         HttpStatus.OK.value(), ResponseMessage.INSERT_SUCCESS.getMessage()));
     }
 
-    @PostMapping("/update-response")
+    @PutMapping("/update/{requestId}/response/{responseId}")
     public ResponseEntity<ApiResponse> updateSupportResponse(
-            @RequestPart(value = "responseFile", required = false) MultipartFile[] responseFile,
-            @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
-        supportService.updateSupportResponse(reqSupportResponseDTO);
+            @PathVariable("requestId") Integer supportRequestId,
+            @PathVariable("responseId") Integer supportResponseId,
+            @ModelAttribute ReqUpdateSupportResponseDTO reqDTO) {
+        supportService.updateSupportResponse(supportRequestId, supportResponseId, reqDTO);
 
         return ResponseEntity.ok(
                 ApiResponse.success(
                         HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
     }
 
-    //    @PutMapping("/update/{id}/response")
-    //    public ResponseEntity<ApiResponse> updateSupportResponse(
-    //            @PathVariable("id") Integer supportRequestId,
-    //            @RequestPart(value = "responseFile", required = false) MultipartFile[]
-    // responseFile,
-    //            @ModelAttribute ReqSupportResponseDTO reqSupportResponseDTO) {
-    //        supportService.updateSupportResponse(reqSupportResponseDTO);
-    //
-    //        return ResponseEntity.ok(
-    //                ApiResponse.success(
-    //                        HttpStatus.OK.value(), ResponseMessage.UPDATE_SUCCESS.getMessage()));
-    //    }
-
-    @PostMapping("/delete-response")
+    @PatchMapping("/delete/{requestId}/response")
     public ResponseEntity<ApiResponse> deleteSupportResponse(
-            @RequestBody Integer supportRequestId) {
+            @PathVariable("requestId") Integer supportRequestId) {
         supportService.deleteSupportResponse(supportRequestId);
 
         return ResponseEntity.ok(
@@ -113,7 +101,7 @@ public class SupportController {
         return FileUtil.fileDownload(dto.getFilePath(), dto.getFileNm());
     }
 
-    @PostMapping("/file/{supportFileId}/delete")
+    @PatchMapping("/file/{supportFileId}/delete")
     public ResponseEntity<ApiResponse> fileDelete(@PathVariable int supportFileId) {
         supportService.fileDelete(supportFileId);
 
